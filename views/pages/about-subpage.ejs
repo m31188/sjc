@@ -1,0 +1,66 @@
+<!-- ===== HERO BANNER (SCG-style: full-bleed image with centered title) ===== -->
+<section class="ab2-hero" <% if (page.banner_image || settings.default_page_banner) { %>style="background-image: url('<%= page.banner_image || settings.default_page_banner %>');"<% } %>>
+  <div class="ab2-hero-overlay"></div>
+  <div class="container">
+    <div class="ab2-hero-content">
+      <h1 class="ab2-hero-title"><%= page.banner_title || page.title || (meta && meta.defaultTitle) || '' %></h1>
+      <% if (typeof breadcrumb !== 'undefined' && breadcrumb && breadcrumb.length > 0) { %>
+        <nav class="ab2-breadcrumb" aria-label="Breadcrumb">
+          <% breadcrumb.forEach((b, i) => { %>
+            <% if (i === 0 && b.url) { %>
+              <a href="<%= b.url %>"><i class="fas fa-home"></i> <%= b.label %></a>
+            <% } else if (b.url) { %>
+              <a href="<%= b.url %>"><%= b.label %></a>
+            <% } else { %>
+              <span class="ab2-breadcrumb-current"><%= b.label %></span>
+            <% } %>
+            <% if (i < breadcrumb.length - 1) { %><span class="ab2-breadcrumb-sep">/</span><% } %>
+          <% }); %>
+        </nav>
+      <% } %>
+      <a href="#ab2-content" class="ab2-scroll-arrow" aria-label="Scroll down">
+        <i class="fas fa-chevron-down"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SUB-PAGE NAV ===== -->
+<section class="ab2-subnav">
+  <div class="container">
+    <div class="ab2-subnav-list">
+      <% const subnavItems = [
+        { slug: 'business-purpose', label: 'Business Purpose', url: '/about/business-purpose' },
+        { slug: 'executives-and-board-of-directors', label: 'คณะกรรมการบริษัทและผู้บริหารระดับสูง', url: '/about/executives-and-board-of-directors' },
+        { slug: 'organization-structure', label: 'โครงสร้างองค์กร', url: '/about/organization-structure' },
+        { slug: 'awards-and-recognition', label: 'มาตรฐานระดับโลก', url: '/about/awards-and-recognition' },
+        { slug: 'milestones', label: 'ประวัติความเป็นมา', url: '/about/milestones' },
+        { slug: 'corporate-governance', label: 'บรรษัทภิบาล', url: '/about/corporate-governance' },
+        { slug: 'company-profile', label: 'Company Profile', url: '/company-profile' }
+      ]; %>
+      <% subnavItems.forEach(item => { %>
+        <a href="<%= item.url %>" class="ab2-subnav-link <%= (meta && meta.slug === item.slug) ? 'active' : '' %>">
+          <%= item.label %>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<!-- ===== MAIN CONTENT ===== -->
+<section class="ab2-content" id="ab2-content">
+  <div class="container">
+    <% if (page.content) { %>
+      <div class="ab2-intro rich-content"><%- page.content %></div>
+    <% } %>
+
+    <%- include('../partials/content-blocks', { blocks: typeof blocks !== 'undefined' ? blocks : [] }) %>
+
+    <% if (!page.content && (!blocks || blocks.length === 0)) { %>
+      <div class="ab2-empty">
+        <i class="fas fa-edit"></i>
+        <p>This page doesn't have content yet. Add content from the admin panel.</p>
+      </div>
+    <% } %>
+  </div>
+</section>

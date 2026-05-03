@@ -1,0 +1,52 @@
+<div class="page-header">
+  <div>
+    <h2><%= adminLang === 'en' ? 'Message Details' : 'รายละเอียดข้อความ' %></h2>
+  </div>
+  <a href="/<%= adminSlug %>/messages" class="btn btn-outline"><i class="fas fa-arrow-left"></i> <%= adminLang === 'en' ? 'Back' : 'กลับ' %></a>
+</div>
+
+<div class="card">
+  <div class="card-body">
+    <div class="message-detail">
+      <div class="message-meta-row">
+        <div class="message-meta-item">
+          <span class="meta-label"><%= adminLang === 'en' ? 'From' : 'จาก' %></span>
+          <span class="meta-value"><strong><%= message.name %></strong></span>
+        </div>
+        <div class="message-meta-item">
+          <span class="meta-label"><%= adminLang === "en" ? "Email" : "อีเมล" %></span>
+          <span class="meta-value"><a href="mailto:<%= message.email %>"><%= message.email %></a></span>
+        </div>
+        <% if (message.phone) { %>
+          <div class="message-meta-item">
+            <span class="meta-label"><%= adminLang === 'en' ? 'Phone' : 'โทรศัพท์' %></span>
+            <span class="meta-value"><a href="tel:<%= message.phone %>"><%= message.phone %></a></span>
+          </div>
+        <% } %>
+        <div class="message-meta-item">
+          <span class="meta-label"><%= adminLang === "en" ? "Date" : "วันที่" %></span>
+          <span class="meta-value"><%= new Date(message.created_at).toLocaleString('th-TH') %></span>
+        </div>
+      </div>
+
+      <% if (message.subject) { %>
+        <h3 class="message-subject"><%= message.subject %></h3>
+      <% } %>
+
+      <div class="message-body">
+        <%= message.message %>
+      </div>
+
+      <div class="message-actions">
+        <a href="mailto:<%= message.email %>?subject=Re: <%= message.subject || '' %>" class="btn btn-primary">
+          <i class="fas fa-reply"></i> <%= adminLang === 'en' ? 'Reply via email' : 'ตอบกลับทางอีเมล' %>
+        </a>
+        <form method="POST" action="/<%= adminSlug %>/messages/<%= message.id %>/delete" class="d-inline" onsubmit="return confirm('ยืนยันลบข้อความนี้?')">
+          <button type="submit" class="btn btn-outline btn-danger">
+            <i class="fas fa-trash"></i> <%= adminLang === 'en' ? 'Delete message' : 'ลบข้อความ' %>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

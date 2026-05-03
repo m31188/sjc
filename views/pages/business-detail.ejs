@@ -1,0 +1,89 @@
+<%
+  const _curLang = typeof currentLang !== 'undefined' ? currentLang : 'th';
+  const _isEN = _curLang !== 'th';
+  const _bf = (key) => {
+    if (_curLang !== 'th') {
+      const lk = key + '_' + _curLang;
+      if (business[lk] && String(business[lk]).trim()) return business[lk];
+    }
+    return business[key] || '';
+  };
+  const bizName = _bf('name');
+  const bizShort = _bf('short_description');
+  const bizFull = _bf('full_description');
+%>
+<%- include('../partials/page-banner', {
+  bannerImage: business.banner || business.thumbnail || settings.default_business_banner || '/images/banner-default.jpg',
+  bannerTitle: bizName,
+  breadcrumbs: [
+    { label: _isEN ? 'Our Businesses' : 'ธุรกิจของเรา', url: '/businesses' },
+    { label: bizName }
+  ]
+}) %>
+
+<section class="section-content">
+  <div class="container">
+    <div class="content-narrow">
+      <% if (bizShort) { %>
+        <p class="lead" data-aos="fade-up"><%= bizShort %></p>
+      <% } %>
+
+      <% if (bizFull) { %>
+        <div class="rich-content" data-aos="fade-up" data-aos-delay="100">
+          <%- bizFull %>
+        </div>
+      <% } %>
+
+      <!-- Extra content sections -->
+      <% [2, 3, 4].forEach(function(n) {
+           const heading = _isEN && business['section' + n + '_heading_en'] ? business['section' + n + '_heading_en'] : business['section' + n + '_heading'];
+           const body = _isEN && business['section' + n + '_body_en'] ? business['section' + n + '_body_en'] : business['section' + n + '_body'];
+           const image = business['section' + n + '_image'];
+           if (!heading && !body && !image) return;
+      %>
+        <section class="post-extra-section" data-aos="fade-up">
+          <% if (heading) { %><h2 class="post-extra-heading"><%= heading %></h2><% } %>
+          <div class="post-extra-grid <%= image ? 'has-image' : '' %>">
+            <% if (image) { %>
+              <div class="post-extra-image-wrap">
+                <img src="<%= image %>" alt="<%= heading || '' %>" loading="lazy">
+              </div>
+            <% } %>
+            <% if (body) { %>
+              <div class="rich-content post-extra-body"><%- body %></div>
+            <% } %>
+          </div>
+        </section>
+      <% }); %>
+
+      <%- include('../partials/content-blocks', { blocks: typeof blocks !== 'undefined' ? blocks : [] }) %>
+
+      <% if (business.website_url) { %>
+        <div class="content-cta" data-aos="fade-up">
+          <a href="<%= business.website_url %>" target="_blank" rel="noopener" class="btn btn-primary">
+            <%= tUI('btn.visit_website') %> <i class="fas fa-external-link-alt"></i>
+          </a>
+        </div>
+      <% } %>
+    </div>
+
+    <% if (related && related.length > 0) { %>
+      <div class="related-section" data-aos="fade-up">
+        <h3 class="section-subtitle">ธุรกิจอื่นๆ ที่น่าสนใจ</h3>
+        <div class="businesses-grid">
+          <% related.forEach(b => { %>
+            <a href="/businesses/<%= b.slug %>" class="business-card">
+              <div class="business-card-image">
+                <img src="<%= b.thumbnail || (settings.default_business_thumb || '/images/business-placeholder.jpg') %>" alt="<%= b.name %>" loading="lazy">
+              </div>
+              <div class="business-card-body">
+                <h3 class="business-card-title"><%= b.name %></h3>
+                <p class="business-card-desc"><%= b.short_description || '' %></p>
+              </div>
+            </a>
+          <% }); %>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</section>

@@ -1,0 +1,58 @@
+<div class="page-header">
+  <div>
+    <h2><%= t('businesses.title') %></h2>
+    <p class="text-muted"><%= adminLang === 'en' ? 'Business groups shown on website. Drag to reorder.' : 'กลุ่มธุรกิจที่แสดงบนเว็บไซต์ ลากเพื่อจัดเรียง' %></p>
+  </div>
+  <a href="/<%= adminSlug %>/businesses/new" class="btn btn-primary">
+    <i class="fas fa-plus"></i> <%= t('businesses.add') %>
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <% if (businesses && businesses.length > 0) { %>
+      <table class="data-table sortable-table">
+        <thead>
+          <tr>
+            <th width="40"></th>
+            <th width="100"><%= adminLang === "en" ? "Image" : "รูป" %></th>
+            <th><%= adminLang === 'en' ? 'Business name' : 'ชื่อธุรกิจ' %></th>
+            <th><%= adminLang === 'en' ? 'Description' : 'คำอธิบาย' %></th>
+            <th width="80">แนะนำ</th>
+            <th width="100"><%= adminLang === "en" ? "Status" : "สถานะ" %></th>
+            <th width="160"><%= adminLang === "en" ? "Actions" : "การจัดการ" %></th>
+          </tr>
+        </thead>
+        <tbody class="sortable" data-table-name="businesses">
+          <% businesses.forEach(b => { %>
+            <tr data-id="<%= b.id %>">
+              <td class="drag-handle"><i class="fas fa-grip-vertical"></i></td>
+              <td><img src="<%= b.thumbnail || '/images/business-placeholder.jpg' %>" alt="" class="thumb"></td>
+              <td><strong><%= b.name %></strong></td>
+              <td><small class="text-muted"><%= (b.short_description || '').substring(0, 80) %></small></td>
+              <td><%= b.featured ? '<i class="fas fa-star text-yellow"></i>' : '-' %></td>
+              <td>
+                <button class="status-toggle <%= b.active ? 'active' : '' %>" data-table="businesses" data-id="<%= b.id %>">
+                  <%= b.active ? 'เปิด' : 'ปิด' %>
+                </button>
+              </td>
+              <td>
+                <a href="/businesses/<%= b.slug %>" target="_blank" class="btn-icon"><i class="fas fa-eye"></i></a>
+                <a href="/<%= adminSlug %>/businesses/<%= b.id %>/edit" class="btn-icon"><i class="fas fa-edit"></i></a>
+                <form method="POST" action="/<%= adminSlug %>/businesses/<%= b.id %>/delete" class="d-inline" onsubmit="return confirm('ยืนยันลบ?')">
+                  <button type="submit" class="btn-icon btn-icon-danger"><i class="fas fa-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty-state">
+        <i class="fas fa-briefcase"></i>
+        <p><%= adminLang === 'en' ? 'No businesses yet' : 'ยังไม่มีธุรกิจ' %></p>
+        <a href="/<%= adminSlug %>/businesses/new" class="btn btn-primary">เพิ่มธุรกิจแรก</a>
+      </div>
+    <% } %>
+  </div>
+</div>

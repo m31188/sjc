@@ -1,0 +1,145 @@
+<div class="page-header">
+  <div>
+    <h2><i class="fas fa-file-pdf"></i> <%= adminLang === 'en' ? 'Investor Documents' : 'เอกสารนักลงทุน' %></h2>
+    <p class="text-muted"><%= adminLang === 'en' ? 'Documents shown on the Investor Relations page for download' : 'เอกสารที่แสดงในหน้านักลงทุนสัมพันธ์' %></p>
+  </div>
+  <a href="/<%= adminSlug %>/ir-documents/new" class="btn btn-primary">
+    <i class="fas fa-plus"></i> <%= adminLang === 'en' ? 'Add Document' : 'เพิ่มเอกสาร' %>
+  </a>
+</div>
+
+<% function getCatName(slug) {
+  if (!categories || !categories.length) return slug;
+  const c = categories.find(x => x.slug === slug);
+  if (!c) return slug;
+  return adminLang === 'en' && c.name_en ? c.name_en : c.name;
+} %>
+
+<div class="card">
+  <div class="card-body p-0">
+    <% if (docs && docs.length > 0) { %>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th><%= adminLang === 'en' ? 'Title' : 'หัวข้อ' %></th>
+            <th width="170"><%= adminLang === 'en' ? 'Category' : 'หมวดหมู่' %></th>
+            <th width="80"><%= adminLang === 'en' ? 'Year' : 'ปี' %></th>
+            <th width="80"><%= adminLang === 'en' ? 'Size' : 'ขนาด' %></th>
+            <th width="100"><%= adminLang === 'en' ? 'Status' : 'สถานะ' %></th>
+            <th width="180"><%= adminLang === 'en' ? 'Actions' : 'การจัดการ' %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% docs.forEach(d => { %>
+            <tr>
+              <td>
+                <% if (d.file_path) { %>
+                  <a href="<%= d.file_path %>" target="_blank" rel="noopener"><i class="fas fa-file-pdf" style="color:#c8102e;"></i> <%= d.title %></a>
+                <% } else { %>
+                  <%= d.title %>
+                <% } %>
+                <% if (d.description) { %><div class="text-muted" style="font-size:12px;margin-top:4px;"><%= d.description.substring(0,80) %></div><% } %>
+              </td>
+              <td><span class="badge"><%= getCatName(d.category) %></span></td>
+              <td><%= d.year || '-' %></td>
+              <td><%= d.file_size ? Math.round(d.file_size/1024) + ' KB' : '-' %></td>
+              <td>
+                <% if (d.active) { %>
+                  <span class="badge badge-success"><%= adminLang === 'en' ? 'Active' : 'แสดง' %></span>
+                <% } else { %>
+                  <span class="badge badge-secondary">OFF</span>
+                <% } %>
+              </td>
+              <td>
+                <a href="/<%= adminSlug %>/ir-documents/<%= d.id %>/edit" class="btn btn-sm btn-outline">
+                  <i class="fas fa-edit"></i> <%= adminLang === 'en' ? 'Edit' : 'แก้ไข' %>
+                </a>
+                <form method="POST" action="/<%= adminSlug %>/ir-documents/<%= d.id %>/delete" style="display:inline;" onsubmit="return confirm('<%= adminLang === 'en' ? 'Delete this document?' : 'ลบเอกสารนี้?' %>');">
+                  <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="text-center" style="padding:60px 20px;">
+        <i class="fas fa-file-pdf" style="font-size:48px;color:#d1d5db;margin-bottom:16px;"></i>
+        <p class="text-muted"><%= adminLang === 'en' ? 'No documents yet. Click "Add Document" to upload your first one.' : 'ยังไม่มีเอกสาร คลิก "เพิ่มเอกสาร" เพื่ออัปโหลด' %></p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- ===== Category Management ===== -->
+<div class="card" style="margin-top: 24px;">
+  <div class="card-header">
+    <h3 style="margin:0;"><i class="fas fa-tags"></i> <%= adminLang === 'en' ? 'Manage Categories' : 'จัดการหมวดหมู่' %></h3>
+  </div>
+  <div class="card-body">
+    <p class="text-muted" style="font-size:13px;margin-bottom:16px;">
+      <%= adminLang === 'en' ? 'Add, edit, or remove categories used to group investor documents.' : 'เพิ่ม แก้ไข หรือลบหมวดหมู่ที่ใช้จัดกลุ่มเอกสารนักลงทุน' %>
+    </p>
+
+    <% if (categories && categories.length > 0) { %>
+      <table class="data-table" style="margin-bottom: 20px;">
+        <thead>
+          <tr>
+            <th><%= adminLang === 'en' ? 'Slug' : 'รหัส' %></th>
+            <th><%= adminLang === 'en' ? 'Name (Thai)' : 'ชื่อ (ไทย)' %></th>
+            <th><%= adminLang === 'en' ? 'Name (English)' : 'ชื่อ (อังกฤษ)' %></th>
+            <th width="80"><%= adminLang === 'en' ? 'Order' : 'ลำดับ' %></th>
+            <th width="180"><%= adminLang === 'en' ? 'Actions' : 'การจัดการ' %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% categories.forEach(c => { %>
+            <tr>
+              <td><code style="font-size:12px;color:#6b7280;"><%= c.slug %></code></td>
+              <td>
+                <form method="POST" action="/<%= adminSlug %>/ir-categories/<%= c.id %>/edit" style="display:flex;gap:6px;align-items:center;">
+                  <input type="text" name="name" value="<%= c.name %>" class="form-control form-control-sm" style="width:auto;flex:1;" required>
+                  <input type="hidden" name="name_en" value="<%= c.name_en || '' %>">
+                  <input type="hidden" name="sort_order" value="<%= c.sort_order || 0 %>">
+              </td>
+              <td>
+                <input type="text" name="name_en" value="<%= c.name_en || '' %>" class="form-control form-control-sm" style="width:auto;" form="cat-edit-<%= c.id %>" placeholder="(optional)">
+              </td>
+              <td>
+                <input type="number" name="sort_order" value="<%= c.sort_order || 0 %>" class="form-control form-control-sm" style="width:70px;" form="cat-edit-<%= c.id %>">
+              </td>
+              <td>
+                <button type="submit" class="btn btn-sm btn-primary"><i class="fas fa-save"></i></button>
+                </form>
+                <form method="POST" action="/<%= adminSlug %>/ir-categories/<%= c.id %>/delete" style="display:inline;" onsubmit="return confirm('<%= adminLang === 'en' ? 'Delete this category? Documents will be moved to Other.' : 'ลบหมวดหมู่นี้? เอกสารจะถูกย้ายไปอื่นๆ' %>');">
+                  <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+
+    <h4 style="margin-top:20px;font-size:15px;"><%= adminLang === 'en' ? 'Add New Category' : 'เพิ่มหมวดหมู่ใหม่' %></h4>
+    <form method="POST" action="/<%= adminSlug %>/ir-categories/new" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;">
+      <div style="flex:1;min-width:140px;">
+        <label style="font-size:12px;display:block;margin-bottom:4px;"><%= adminLang === 'en' ? 'Slug (e.g. quarterly_2026)' : 'รหัส (เช่น quarterly_2026)' %></label>
+        <input type="text" name="slug" required class="form-control form-control-sm" placeholder="my_category" pattern="[a-z0-9_]+">
+      </div>
+      <div style="flex:2;min-width:180px;">
+        <label style="font-size:12px;display:block;margin-bottom:4px;"><%= adminLang === 'en' ? 'Name (Thai)' : 'ชื่อ (ไทย)' %> *</label>
+        <input type="text" name="name" required class="form-control form-control-sm" placeholder="<%= adminLang === 'en' ? 'Display name in Thai' : 'ชื่อภาษาไทย' %>">
+      </div>
+      <div style="flex:2;min-width:180px;">
+        <label style="font-size:12px;display:block;margin-bottom:4px;"><%= adminLang === 'en' ? 'Name (English)' : 'ชื่อ (อังกฤษ)' %></label>
+        <input type="text" name="name_en" class="form-control form-control-sm" placeholder="<%= adminLang === 'en' ? 'Optional' : 'ไม่บังคับ' %>">
+      </div>
+      <div style="width:100px;">
+        <label style="font-size:12px;display:block;margin-bottom:4px;"><%= adminLang === 'en' ? 'Order' : 'ลำดับ' %></label>
+        <input type="number" name="sort_order" value="10" class="form-control form-control-sm">
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> <%= adminLang === 'en' ? 'Add' : 'เพิ่ม' %></button>
+    </form>
+  </div>
+</div>

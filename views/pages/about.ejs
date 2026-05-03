@@ -1,0 +1,73 @@
+<%- include('../partials/page-banner', {
+  bannerImage: page.banner_image || settings.default_page_banner || '/images/banner-about.jpg',
+  bannerTitle: page.banner_title || 'เกี่ยวกับเรา',
+  bannerSubtitle: page.banner_subtitle
+}) %>
+
+<section class="section-content">
+  <div class="container">
+    <% if (page.content) { %>
+      <div class="rich-content" data-aos="fade-up">
+        <%- page.content %>
+      </div>
+    <% } else { %>
+      <!-- Default about content -->
+      <div class="about-intro" data-aos="fade-up">
+        <span class="section-tag">เกี่ยวกับเรา</span>
+        <h2 class="section-title">SJC คือใคร</h2>
+        <div class="about-grid">
+          <div class="about-text">
+            <p class="lead">SJC เป็นองค์กรที่มุ่งมั่นในการสร้างสรรค์นวัตกรรมและพัฒนาอย่างยั่งยืน เพื่อตอบสนองความต้องการของลูกค้าและผู้มีส่วนได้ส่วนเสียทุกกลุ่ม</p>
+            <p>ด้วยประสบการณ์ที่สั่งสมมาอย่างยาวนาน เราพร้อมที่จะนำพาธุรกิจของคุณก้าวสู่อนาคตด้วยเทคโนโลยีและความเชี่ยวชาญในระดับสากล</p>
+          </div>
+          <div class="about-image">
+            <img src="<%= settings.home_about_image || '/images/about-placeholder.jpg' %>" alt="SJC">
+          </div>
+        </div>
+      </div>
+
+      <!-- Vision & Mission -->
+      <div class="vision-mission" id="vision">
+        <div class="vm-grid">
+          <div class="vm-card" data-aos="fade-up">
+            <div class="vm-icon"><i class="fas fa-eye"></i></div>
+            <h3 class="vm-title">วิสัยทัศน์</h3>
+            <p class="vm-text">เป็นผู้นำด้านนวัตกรรมและการพัฒนาอย่างยั่งยืน สร้างคุณค่าให้กับสังคมและสิ่งแวดล้อม</p>
+          </div>
+          <div class="vm-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="vm-icon"><i class="fas fa-bullseye"></i></div>
+            <h3 class="vm-title">พันธกิจ</h3>
+            <p class="vm-text">มุ่งมั่นพัฒนาผลิตภัณฑ์และบริการที่ตอบโจทย์ความต้องการของลูกค้า ด้วยคุณภาพและมาตรฐานระดับสากล</p>
+          </div>
+          <div class="vm-card" data-aos="fade-up" data-aos-delay="200">
+            <div class="vm-icon"><i class="fas fa-heart"></i></div>
+            <h3 class="vm-title">ค่านิยม</h3>
+            <p class="vm-text">ความซื่อสัตย์ ความรับผิดชอบ และการพัฒนาอย่างต่อเนื่อง คือสิ่งที่เรายึดถือ</p>
+          </div>
+        </div>
+      </div>
+    <% } %>
+
+    <!-- Sections from CMS -->
+    <% if (sections && sections.length > 0) { %>
+      <% sections.forEach((sec, i) => { %>
+        <div class="page-section page-section-<%= sec.section_type %>" data-aos="fade-up">
+          <% if (sec.section_type === 'image_text') { %>
+            <div class="section-grid <%= i % 2 === 0 ? '' : 'reverse' %>">
+              <div class="section-image"><img src="<%= sec.image %>" alt="<%= sec.title %>"></div>
+              <div class="section-text">
+                <% if (sec.subtitle) { %><span class="section-tag"><%= sec.subtitle %></span><% } %>
+                <h2 class="section-title"><%= sec.title %></h2>
+                <div class="rich-content"><%- sec.content %></div>
+              </div>
+            </div>
+          <% } else { %>
+            <% if (sec.title) { %><h2 class="section-title text-center"><%= sec.title %></h2><% } %>
+            <% if (sec.subtitle) { %><p class="section-desc text-center"><%= sec.subtitle %></p><% } %>
+            <div class="rich-content"><%- sec.content %></div>
+          <% } %>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+</section>

@@ -1,0 +1,50 @@
+<%
+  const _curLang = typeof currentLang !== 'undefined' ? currentLang : 'th';
+  const _isEN = _curLang !== 'th';
+  function _lf(obj, key) {
+    if (!obj) return '';
+    if (_curLang !== 'th') {
+      const lk = key + '_' + _curLang;
+      if (obj[lk] && String(obj[lk]).trim()) return obj[lk];
+    }
+    return obj[key] || '';
+  }
+%>
+<%- include('../partials/page-banner', {
+  bannerImage: page.banner_image || settings.default_business_banner || '/images/banner-businesses.jpg',
+  bannerTitle: page.banner_title || (_isEN ? 'Our Businesses' : 'ธุรกิจของเรา'),
+  bannerSubtitle: page.banner_subtitle
+}) %>
+
+<section class="section-content">
+  <div class="container">
+    <div class="section-header" data-aos="fade-up">
+      <span class="section-tag">ธุรกิจของเรา</span>
+      <h2 class="section-title">กลุ่มธุรกิจที่ครอบคลุม</h2>
+      <p class="section-desc">ดำเนินธุรกิจหลากหลายเพื่อตอบโจทย์ลูกค้าทุกกลุ่ม</p>
+    </div>
+
+    <% if (businesses && businesses.length > 0) { %>
+      <div class="businesses-grid">
+        <% businesses.forEach((b, i) => { %>
+          <a href="/businesses/<%= b.slug %>" class="business-card" data-aos="fade-up" data-aos-delay="<%= (i % 4) * 100 %>">
+            <div class="business-card-image">
+              <img src="<%= b.thumbnail || (settings.default_business_thumb || '/images/business-placeholder.jpg') %>" alt="<%= _lf(b, 'name') %>" loading="lazy">
+              <div class="business-card-overlay"><i class="fas fa-arrow-right"></i></div>
+            </div>
+            <div class="business-card-body">
+              <h3 class="business-card-title"><%= _lf(b, 'name') %></h3>
+              <p class="business-card-desc"><%= b.short_description || '' %></p>
+              <span class="business-card-link"><%= tUI('btn.learn_more') %> <i class="fas fa-arrow-right"></i></span>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <i class="fas fa-briefcase"></i>
+        <p>ยังไม่มีข้อมูลธุรกิจ</p>
+      </div>
+    <% } %>
+  </div>
+</section>

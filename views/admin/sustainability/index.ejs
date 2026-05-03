@@ -1,0 +1,56 @@
+<div class="page-header">
+  <div>
+    <h2>จัดการความยั่งยืน</h2>
+    <p class="text-muted">โครงการและกิจกรรมความยั่งยืน CSR</p>
+  </div>
+  <a href="/<%= adminSlug %>/sustainability/new" class="btn btn-primary">
+    <i class="fas fa-plus"></i> เพิ่มรายการใหม่
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <% if (items && items.length > 0) { %>
+      <table class="data-table sortable-table">
+        <thead>
+          <tr>
+            <th width="40"></th>
+            <th width="100"><%= adminLang === "en" ? "Image" : "รูป" %></th>
+            <th><%= adminLang === "en" ? "Title" : "หัวข้อ" %></th>
+            <th><%= adminLang === "en" ? "Category" : "หมวดหมู่" %></th>
+            <th width="100"><%= adminLang === "en" ? "Status" : "สถานะ" %></th>
+            <th width="160"><%= adminLang === "en" ? "Actions" : "การจัดการ" %></th>
+          </tr>
+        </thead>
+        <tbody class="sortable" data-table-name="sustainability">
+          <% items.forEach(s => { %>
+            <tr data-id="<%= s.id %>">
+              <td class="drag-handle"><i class="fas fa-grip-vertical"></i></td>
+              <td><img src="<%= s.thumbnail || '/images/sustain-placeholder.jpg' %>" alt="" class="thumb"></td>
+              <td><strong><%= s.title %></strong></td>
+              <td><%= s.category || '-' %></td>
+              <td>
+                <button class="status-toggle <%= s.active ? 'active' : '' %>" data-table="sustainability" data-id="<%= s.id %>">
+                  <%= s.active ? 'เปิด' : 'ปิด' %>
+                </button>
+              </td>
+              <td>
+                <a href="/sustainability/<%= s.slug %>" target="_blank" class="btn-icon"><i class="fas fa-eye"></i></a>
+                <a href="/<%= adminSlug %>/sustainability/<%= s.id %>/edit" class="btn-icon"><i class="fas fa-edit"></i></a>
+                <form method="POST" action="/<%= adminSlug %>/sustainability/<%= s.id %>/delete" class="d-inline" onsubmit="return confirm('ยืนยันลบ?')">
+                  <button type="submit" class="btn-icon btn-icon-danger"><i class="fas fa-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty-state">
+        <i class="fas fa-leaf"></i>
+        <p>ยังไม่มีรายการ</p>
+        <a href="/<%= adminSlug %>/sustainability/new" class="btn btn-primary">เพิ่มรายการแรก</a>
+      </div>
+    <% } %>
+  </div>
+</div>

@@ -1,0 +1,166 @@
+<div class="page-header">
+  <div>
+    <h2><%= slider.id ? t('sliders.edit') : t('sliders.add') %></h2>
+    <p class="text-muted"><%= t('nav.sliders') %></p>
+  </div>
+  <a href="/<%= adminSlug %>/sliders" class="btn btn-outline"><i class="fas fa-arrow-left"></i> <%= t('btn.back') %></a>
+</div>
+
+<form method="POST" action="/<%= adminSlug %>/sliders<%= slider.id ? '/' + slider.id : '' %>" enctype="multipart/form-data">
+  <div class="form-grid">
+    <div class="form-main">
+      <div class="card">
+        <div class="card-body">
+          <div class="form-group">
+            <label><%= t('label.title') %></label>
+            <input type="text" name="title" value="<%= slider.title || '' %>" placeholder="<%= adminLang === 'en' ? 'e.g. Innovation for Tomorrow' : 'เช่น นวัตกรรมเพื่ออนาคต' %>">
+          </div>
+
+          <div class="form-group">
+            <label><%= t('label.subtitle') %></label>
+            <input type="text" name="subtitle" value="<%= slider.subtitle || '' %>" placeholder="<%= adminLang === 'en' ? 'Small text shown above' : 'ข้อความขนาดเล็กที่แสดงด้านบน' %>">
+          </div>
+
+          <div class="form-group">
+            <label><%= t('label.description') %></label>
+            <textarea name="description" rows="3"><%= slider.description || '' %></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label><%= t('label.button_text') %></label>
+              <input type="text" name="button_text" value="<%= slider.button_text || '' %>" placeholder="<%= adminLang === 'en' ? 'e.g. Learn More' : 'เช่น เรียนรู้เพิ่มเติม' %>">
+            </div>
+            <div class="form-group">
+              <label><%= t('label.button_url') %></label>
+              <input type="text" name="button_url" value="<%= slider.button_url || '' %>" placeholder="/about <%= adminLang === 'en' ? 'or' : 'หรือ' %> https://...">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label><%= t('label.text_position') %></label>
+              <select name="text_position">
+                <option value="left" <%= slider.text_position === 'left' ? 'selected' : '' %>><%= t('label.left') %></option>
+                <option value="center" <%= slider.text_position === 'center' ? 'selected' : '' %>><%= t('label.center') %></option>
+                <option value="right" <%= slider.text_position === 'right' ? 'selected' : '' %>><%= t('label.right') %></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label><%= t('label.text_color') %></label>
+              <input type="color" name="text_color" value="<%= slider.text_color || '#ffffff' %>">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-side">
+      <div class="card">
+        <div class="card-body">
+          <h4><%= t('label.published') %></h4>
+          <div class="form-group">
+            <label class="check-label">
+              <input type="checkbox" name="active" value="1" <%= slider.active === undefined || slider.active ? 'checked' : '' %>>
+              <span><%= adminLang === 'en' ? 'Show this slide' : 'แสดงสไลด์นี้' %></span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label><%= t('label.sort_order') %></label>
+            <input type="number" name="sort_order" value="<%= slider.sort_order || 0 %>" min="0">
+            <small><%= adminLang === 'en' ? 'Lower numbers show first' : 'ตัวเลขน้อยจะแสดงก่อน' %></small>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-save"></i> <%= t('btn.save') %>
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4><%= t('sliders.image_section') %></h4>
+          <div class="image-hint" style="background:#fff8e1;border-left:3px solid #f59e0b;padding:10px 14px;border-radius:6px;margin-bottom:14px;">
+            <i class="fas fa-info-circle" style="color:#f59e0b;"></i>
+            <strong><%= adminLang === 'en' ? 'Recommended Size' : 'ขนาดที่แนะนำ' %>:</strong>
+            <br>
+            <span style="display:inline-block;margin-top:4px;">
+              <strong>Desktop:</strong> 1920×800px (12:5 ratio)<br>
+              <strong><%= adminLang === 'en' ? 'Mobile' : 'มือถือ' %>:</strong> 750×1000px (3:4 portrait)<br>
+            </span>
+            <small style="color:#92400e;">JPG, PNG, WEBP (max 5MB). Use the same aspect ratio across all slides for a consistent look.</small>
+          </div>
+          <% if (slider.image) { %>
+            <div class="current-image">
+              <img src="<%= slider.image %>" alt="">
+              <small><%= adminLang === 'en' ? 'Current image (desktop)' : 'ภาพปัจจุบัน (เดสก์ท็อป)' %></small>
+            </div>
+          <% } %>
+          <div class="form-group">
+            <label class="upload-area">
+              <input type="file" name="image" accept="image/*" <%= slider.id ? '' : 'required' %>>
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span><%= adminLang === 'en' ? 'Desktop image (1920×800px recommended)' : 'ภาพเดสก์ท็อป (แนะนำ 1920×800px)' %></span>
+            </label>
+          </div>
+
+          <hr style="margin:18px 0;border:0;border-top:1px solid #e5e7eb;">
+
+          <div style="margin-bottom:8px;font-weight:600;font-size:13px;color:#1a2540;">
+            <i class="fas fa-mobile-alt"></i>
+            <%= adminLang === 'en' ? 'Mobile image (optional - taller portrait)' : 'ภาพมือถือ (ไม่บังคับ - แนวตั้ง)' %>
+          </div>
+          <div class="image-hint">
+            <i class="fas fa-info-circle"></i>
+            <%= adminLang === 'en' ? 'If set, this image is used on phones (recommended 750×1000px portrait, 3:4 ratio). Leave empty to use desktop image cropped.' : 'หากตั้งค่า ภาพนี้จะใช้บนมือถือ (แนะนำ 750×1000px แนวตั้ง อัตราส่วน 3:4) เว้นว่างจะใช้ภาพเดสก์ท็อปที่ครอบตัด' %>
+          </div>
+          <% if (slider.mobile_image) { %>
+            <div class="current-image">
+              <img src="<%= slider.mobile_image %>" alt="" style="max-width:140px;">
+              <small><%= adminLang === 'en' ? 'Current mobile image' : 'ภาพมือถือปัจจุบัน' %></small>
+            </div>
+          <% } %>
+          <div class="form-group">
+            <label class="upload-area">
+              <input type="file" name="mobile_image" accept="image/*">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span><%= adminLang === 'en' ? 'Choose mobile image (optional)' : 'เลือกภาพมือถือ (ไม่บังคับ)' %></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4><i class="fas fa-video"></i> <%= t('sliders.video_section') %></h4>
+          <div class="image-hint">
+            <i class="fas fa-info-circle"></i>
+            <%= t('sliders.video_help') %><br>
+            MP4, max 50MB, 10-20s, no sound
+          </div>
+
+          <% if (slider.video_url) { %>
+            <div class="current-image" style="background: #f5f6f8; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+              <video src="<%= slider.video_url %>" style="max-width: 100%; border-radius: 4px;" controls muted></video>
+              <small style="display: block; margin-top: 6px; word-break: break-all;"><code><%= slider.video_url %></code></small>
+            </div>
+          <% } %>
+
+          <div class="form-group">
+            <label><i class="fas fa-upload"></i> <%= t('sliders.upload_video') %></label>
+            <label class="upload-area">
+              <input type="file" name="video_file" accept="video/mp4,video/webm,video/ogg">
+              <i class="fas fa-cloud-upload-alt"></i>
+              <span><%= adminLang === 'en' ? 'Click to upload MP4 video' : 'คลิกเพื่อเลือกวิดีโอ MP4' %></span>
+            </label>
+          </div>
+
+          <div class="form-group">
+            <label><%= adminLang === 'en' ? 'Or paste video URL' : 'หรือใส่ URL วิดีโอ' %></label>
+            <input type="text" name="video_url" value="<%= slider.video_url || '' %>" placeholder="https://example.com/video.mp4">
+            <small><%= adminLang === 'en' ? 'Leave empty if not using video. Upload a file above OR paste a URL here.' : 'เว้นว่างถ้าไม่ใช้วิดีโอ - อัปโหลดไฟล์ด้านบน หรือใส่ URL ที่นี่' %></small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

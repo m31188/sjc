@@ -1,0 +1,125 @@
+<div class="page-header">
+  <div>
+    <h2><i class="fas fa-user"></i> <%= application.full_name %></h2>
+    <p class="text-muted">
+      สมัครตำแหน่ง: <strong><%= application.job_title || application.current_job_title || '-' %></strong>
+      · <%= formatThaiDate(application.created_at) %>
+    </p>
+  </div>
+  <div class="page-header-actions">
+    <a href="/<%= adminSlug %>/applications" class="btn btn-outline">
+      <i class="fas fa-arrow-left"></i> <%= adminLang === 'en' ? 'Back' : 'กลับ' %>
+    </a>
+  </div>
+</div>
+
+<div class="app-detail-wrap">
+  <div class="app-detail-main">
+    <div class="card">
+      <div class="card-header"><h3>ข้อมูลผู้สมัคร</h3></div>
+      <div class="card-body">
+        <div class="app-info-grid">
+          <div class="app-info-item">
+            <label>ชื่อ-นามสกุล</label>
+            <div><%= application.full_name %></div>
+          </div>
+          <div class="app-info-item">
+            <label><%= adminLang === "en" ? "Email" : "อีเมล" %></label>
+            <div><a href="mailto:<%= application.email %>"><%= application.email %></a></div>
+          </div>
+          <% if (application.phone) { %>
+          <div class="app-info-item">
+            <label>เบอร์โทร</label>
+            <div><a href="tel:<%= application.phone %>"><%= application.phone %></a></div>
+          </div>
+          <% } %>
+          <div class="app-info-item">
+            <label>ตำแหน่งที่สมัคร</label>
+            <div>
+              <%= application.job_title || application.current_job_title || '-' %>
+              <% if (application.career_slug) { %>
+                <a href="/careers/<%= application.career_slug %>" target="_blank">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+
+        <% if (application.resume_path) { %>
+          <div class="app-resume-block">
+            <label>Resume / CV</label>
+            <a href="<%= application.resume_path %>" target="_blank" class="btn btn-primary">
+              <i class="fas fa-download"></i> ดาวน์โหลด Resume
+            </a>
+            <% if (application.resume_size) { %>
+              <span class="text-muted">(<%= (application.resume_size / 1024 / 1024).toFixed(2) %> MB)</span>
+            <% } %>
+          </div>
+        <% } %>
+
+        <% if (application.cover_letter) { %>
+          <div class="app-cover-letter">
+            <label>จดหมายแนะนำตัว / Cover Letter</label>
+            <div class="app-cover-text"><%= application.cover_letter %></div>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3>ข้อมูลเทคนิค</h3></div>
+      <div class="card-body">
+        <div class="app-tech-info">
+          <div><span class="text-muted">IP:</span> <%= application.ip_address || '-' %></div>
+          <div><span class="text-muted">Browser:</span> <%= (application.user_agent || '-').substring(0, 80) %></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="app-detail-side">
+    <form method="POST" action="/<%= adminSlug %>/applications/<%= application.id %>" class="card">
+      <div class="card-header"><h3>สถานะและบันทึก</h3></div>
+      <div class="card-body">
+        <div class="form-group">
+          <label><%= adminLang === "en" ? "Status" : "สถานะ" %></label>
+          <select name="status" class="form-control">
+            <% const statuses = [
+              ['new', 'ใหม่'],
+              ['reviewing', 'กำลังพิจารณา'],
+              ['contacted', 'ติดต่อแล้ว'],
+              ['hired', 'จ้างแล้ว'],
+              ['rejected', 'ไม่ผ่าน']
+            ]; %>
+            <% statuses.forEach(s => { %>
+              <option value="<%= s[0] %>" <%= application.status === s[0] ? 'selected' : '' %>><%= s[1] %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>บันทึกภายใน</label>
+          <textarea name="admin_notes" rows="6" placeholder="เขียนบันทึกเกี่ยวกับผู้สมัครคนนี้..."><%= application.admin_notes || '' %></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <i class="fas fa-save"></i> <%= adminLang === 'en' ? 'Save' : 'บันทึก' %>
+        </button>
+      </div>
+    </form>
+
+    <div class="card">
+      <div class="card-body">
+        <a href="mailto:<%= application.email %>?subject=<%= encodeURIComponent('SJC: ' + (application.job_title || 'Job Application')) %>" class="btn btn-outline btn-block">
+          <i class="fas fa-envelope"></i> ตอบกลับทางอีเมล
+        </a>
+        <form method="POST" action="/<%= adminSlug %>/applications/<%= application.id %>/delete"
+              onsubmit="return confirm('ลบใบสมัครนี้? การกระทำนี้ไม่สามารถยกเลิกได้');"
+              style="margin-top: 10px;">
+          <button type="submit" class="btn btn-outline-danger btn-block">
+            <i class="fas fa-trash"></i> ลบใบสมัคร
+          </button>
+        </form>
+      </div>
+    </div>
+  </aside>
+</div>

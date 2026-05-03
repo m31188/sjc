@@ -1,0 +1,104 @@
+<div class="page-header">
+  <div>
+    <h2><i class="fas fa-th-large"></i> Content Blocks</h2>
+    <p class="text-muted"><strong><%= parent.title %></strong> &middot; <%= parentType %></p>
+  </div>
+  <div class="page-header-actions">
+    <a href="<%= parentReturnPath %>" class="btn btn-outline">
+      <i class="fas fa-arrow-left"></i> <%= adminLang === 'en' ? 'Back to item' : 'กลับ' %>
+    </a>
+  </div>
+</div>
+
+<div class="blocks-add-toolbar">
+  <span class="blocks-add-label"><%= adminLang === 'en' ? 'Add a block:' : 'เพิ่มบล็อก:' %></span>
+  <% const types = [
+    ['heading', 'fa-heading', adminLang === 'en' ? 'Heading' : 'หัวข้อ'],
+    ['text', 'fa-paragraph', adminLang === 'en' ? 'Text' : 'ข้อความ'],
+    ['image', 'fa-image', adminLang === 'en' ? 'Image' : 'รูปภาพ'],
+    ['video', 'fa-video', adminLang === 'en' ? 'Video' : 'วิดีโอ'],
+    ['gallery', 'fa-images', adminLang === 'en' ? 'Gallery' : 'แกลเลอรี'],
+    ['quote', 'fa-quote-right', adminLang === 'en' ? 'Quote' : 'คำพูด'],
+    ['cta', 'fa-bullhorn', adminLang === 'en' ? 'Call-to-Action' : 'CTA'],
+    ['embed', 'fa-code', adminLang === 'en' ? 'Embed/iframe' : 'ฝัง'],
+    ['divider', 'fa-grip-lines', adminLang === 'en' ? 'Divider' : 'เส้นคั่น']
+  ]; %>
+  <% types.forEach(t => { %>
+    <a href="/<%= adminSlug %>/blocks/<%= parentType %>/<%= parentId %>/new?type=<%= t[0] %>" class="blocks-add-btn">
+      <i class="fas <%= t[1] %>"></i> <%= t[2] %>
+    </a>
+  <% }); %>
+</div>
+
+<% if (blocks.length === 0) { %>
+  <div class="card">
+    <div class="card-body text-center" style="padding: 60px 20px;">
+      <i class="fas fa-th-large" style="font-size: 48px; color: #d1d5db; margin-bottom: 16px;"></i>
+      <p class="text-muted"><%= adminLang === 'en' ? 'No content blocks yet. Click an "Add" button above to start.' : 'ยังไม่มีบล็อกเนื้อหา คลิกปุ่ม "เพิ่ม" ด้านบนเพื่อเริ่มต้น' %></p>
+    </div>
+  </div>
+<% } else { %>
+  <div class="blocks-list" id="blocksList">
+    <% blocks.forEach(b => { %>
+      <div class="block-row block-row-<%= b.block_type %> <%= b.active ? '' : 'block-row-inactive' %>" data-id="<%= b.id %>">
+        <div class="block-row-handle"><i class="fas fa-grip-vertical"></i></div>
+        <div class="block-row-icon">
+          <% const icons = { heading: 'fa-heading', text: 'fa-paragraph', image: 'fa-image', video: 'fa-video', gallery: 'fa-images', quote: 'fa-quote-right', cta: 'fa-bullhorn', embed: 'fa-code', divider: 'fa-grip-lines' }; %>
+          <i class="fas <%= icons[b.block_type] || 'fa-cube' %>"></i>
+        </div>
+        <div class="block-row-info">
+          <div class="block-row-type"><%= b.block_type.toUpperCase() %></div>
+          <div class="block-row-preview">
+            <% if (b.block_type === 'heading') { %>
+              <strong><%= b.heading || '(no heading)' %></strong>
+            <% } else if (b.block_type === 'text') { %>
+              <%= (b.body || '').replace(/<[^>]+>/g, '').substring(0, 120) || '(empty)' %>
+            <% } else if (b.block_type === 'image') { %>
+              <% if (b.image_url) { %><img src="<%= b.image_url %>" alt="" style="height:32px;border-radius:4px;margin-right:8px;vertical-align:middle"><% } %>
+              <%= b.image_alt || b.image_url || '(no image)' %>
+            <% } else if (b.block_type === 'video') { %>
+              <%= b.video_url || '(no video)' %>
+            <% } else if (b.block_type === 'cta') { %>
+              <%= b.cta_text || '' %> → <%= b.cta_url || '' %>
+            <% } else if (b.block_type === 'quote') { %>
+              "<%= (b.body || '').substring(0, 100) %>"
+            <% } else if (b.block_type === 'embed') { %>
+              <code style="font-size:11px;"><%= (b.embed_code || '').substring(0, 80) %>...</code>
+            <% } else { %>
+              <%= b.heading || '' %>
+            <% } %>
+          </div>
+        </div>
+        <div class="block-row-actions">
+          <% if (!b.active) { %><span class="block-inactive-badge">OFF</span><% } %>
+          <a href="/<%= adminSlug %>/blocks/<%= parentType %>/<%= parentId %>/<%= b.id %>/edit" class="btn btn-sm btn-outline">
+            <i class="fas fa-edit"></i>
+          </a>
+          <form method="POST" action="/<%= adminSlug %>/blocks/<%= parentType %>/<%= parentId %>/<%= b.id %>/delete"
+                onsubmit="return confirm('<%= adminLang === 'en' ? 'Delete this block?' : 'ลบบล็อกนี้?' %>');" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fas fa-trash"></i></button>
+          </form>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+<% } %>
+
+<script>
+(function() {
+  const list = document.getElementById('blocksList');
+  if (!list || !window.Sortable) return;
+  Sortable.create(list, {
+    handle: '.block-row-handle',
+    animation: 150,
+    onEnd: function() {
+      const ids = Array.from(list.querySelectorAll('.block-row')).map(el => parseInt(el.dataset.id));
+      fetch('/<%= adminSlug %>/blocks/<%= parentType %>/<%= parentId %>/reorder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order: ids })
+      });
+    }
+  });
+})();
+</script>

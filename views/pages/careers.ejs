@@ -1,0 +1,80 @@
+<%- include('../partials/page-banner', {
+  bannerImage: page.banner_image || settings.default_career_banner || '/images/banner-careers.jpg',
+  bannerTitle: page.banner_title || 'ร่วมงานกับเรา',
+  bannerSubtitle: page.banner_subtitle
+}) %>
+
+<section class="section-content">
+  <div class="container">
+    <div class="section-header" data-aos="fade-up">
+      <span class="section-tag">ร่วมงานกับเรา</span>
+      <h2 class="section-title">เติบโตไปด้วยกันกับ SJC</h2>
+      <p class="section-desc">เรามองหาคนที่มีศักยภาพและพร้อมเรียนรู้สิ่งใหม่ๆ มาร่วมเป็นส่วนหนึ่งของทีม</p>
+    </div>
+
+    <!-- Why work with us -->
+    <div class="why-us-grid">
+      <div class="why-card" data-aos="fade-up">
+        <div class="why-icon"><i class="fas fa-graduation-cap"></i></div>
+        <h3>การพัฒนาตนเอง</h3>
+        <p>โอกาสในการเรียนรู้และพัฒนาทักษะใหม่ๆ อย่างต่อเนื่อง</p>
+      </div>
+      <div class="why-card" data-aos="fade-up" data-aos-delay="100">
+        <div class="why-icon"><i class="fas fa-users"></i></div>
+        <h3>วัฒนธรรมที่ดี</h3>
+        <p>บรรยากาศการทำงานที่อบอุ่น เป็นมิตร และส่งเสริมการทำงานเป็นทีม</p>
+      </div>
+      <div class="why-card" data-aos="fade-up" data-aos-delay="200">
+        <div class="why-icon"><i class="fas fa-chart-line"></i></div>
+        <h3>โอกาสเติบโต</h3>
+        <p>เส้นทางอาชีพที่ชัดเจน และโอกาสก้าวหน้าตามความสามารถ</p>
+      </div>
+      <div class="why-card" data-aos="fade-up" data-aos-delay="300">
+        <div class="why-icon"><i class="fas fa-heart"></i></div>
+        <h3>ดูแลพนักงาน</h3>
+        <p>สวัสดิการครบครัน ใส่ใจคุณภาพชีวิตของพนักงานทุกคน</p>
+      </div>
+    </div>
+
+    <!-- Job listings -->
+    <div class="jobs-section" data-aos="fade-up">
+      <h3 class="section-subtitle">ตำแหน่งที่เปิดรับ</h3>
+
+      <% if (jobs && jobs.length > 0) { %>
+        <div class="jobs-list">
+          <% jobs.forEach((j, i) => { %>
+            <a href="/careers/<%= j.slug %>" class="job-card" data-aos="fade-up" data-aos-delay="<%= (i % 3) * 50 %>">
+              <% if (j.featured) { %><span class="job-featured">แนะนำ</span><% } %>
+              <div class="job-card-header">
+                <h4 class="job-title"><%= j.title %></h4>
+                <% if (j.department) { %><span class="job-dept"><i class="fas fa-building"></i> <%= j.department %></span><% } %>
+              </div>
+              <div class="job-card-meta">
+                <% if (j.location) { %><span><i class="fas fa-map-marker-alt"></i> <%= j.location %></span><% } %>
+                <span class="job-type job-type-<%= j.job_type %>">
+                  <% const typeLabels = {
+                    'full-time': 'งานประจำ',
+                    'part-time': 'พาร์ทไทม์',
+                    'contract': 'สัญญาจ้าง',
+                    'internship': 'ฝึกงาน'
+                  }; %>
+                  <%= typeLabels[j.job_type] || j.job_type %>
+                </span>
+                <% if (j.salary_range) { %><span><i class="fas fa-coins"></i> <%= j.salary_range %></span><% } %>
+              </div>
+              <div class="job-card-action">
+                <span><%= tUI('btn.view_details') %> <i class="fas fa-arrow-right"></i></span>
+              </div>
+            </a>
+          <% }); %>
+        </div>
+      <% } else { %>
+        <div class="empty-state">
+          <i class="fas fa-briefcase"></i>
+          <p>ขณะนี้ยังไม่มีตำแหน่งที่เปิดรับ</p>
+          <p class="text-muted">หากสนใจร่วมงาน สามารถส่งประวัติมาที่ <a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>

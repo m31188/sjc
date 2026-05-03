@@ -1,0 +1,87 @@
+<%
+  const _curLang = typeof currentLang !== 'undefined' ? currentLang : 'th';
+  const _isEN = _curLang !== 'th';
+  function _lf(obj, key) {
+    if (!obj) return '';
+    if (_curLang !== 'th') {
+      const lk = key + '_' + _curLang;
+      if (obj[lk] && String(obj[lk]).trim()) return obj[lk];
+    }
+    return obj[key] || '';
+  }
+%>
+<%- include('../partials/page-banner', {
+  bannerImage: settings.default_news_banner || '/images/banner-news.jpg',
+  bannerTitle: _isEN ? 'News & Events' : 'ข่าวสารและกิจกรรม',
+  bannerSubtitle: _isEN ? 'Stay updated with our latest activities' : 'ติดตามความเคลื่อนไหวล่าสุด'
+}) %>
+
+<section class="section-content">
+  <div class="container">
+
+    <!-- Category filter -->
+    <% const _activeCategory = (typeof activeCategory !== 'undefined') ? activeCategory : null; %>
+    <% if (categories && categories.length > 0) { %>
+      <div class="news-filter" data-aos="fade-up">
+        <a href="/news" class="filter-pill <%= !_activeCategory ? 'active' : '' %>"><%= tUI('news.all_categories') %></a>
+        <% categories.forEach(c => { %>
+          <a href="/news?category=<%= c.slug %>" class="filter-pill <%= _activeCategory === c.slug ? 'active' : '' %>"><%= c.name %></a>
+        <% }); %>
+      </div>
+    <% } %>
+
+    <% if (items && items.length > 0) { %>
+      <div class="news-grid">
+        <% items.forEach((n, i) => { %>
+          <article class="news-card" data-aos="fade-up" data-aos-delay="<%= (i % 3) * 100 %>">
+            <a href="/news/<%= n.slug %>" class="news-card-image">
+              <img src="<%= n.thumbnail || settings.default_news_thumb || '/images/news-placeholder.jpg' %>" alt="<%= _lf(n, 'title') %>" loading="lazy">
+              <% if (n.category_name) { %>
+                <span class="news-card-category"><%= n.category_name %></span>
+              <% } %>
+            </a>
+            <div class="news-card-body">
+              <div class="news-card-meta">
+                <span><i class="far fa-calendar"></i> <%= formatThaiDate(n.published_at, { short: true }) %></span>
+                <% if (n.views) { %><span><i class="far fa-eye"></i> <%= n.views %></span><% } %>
+              </div>
+              <h3 class="news-card-title">
+                <a href="/news/<%= n.slug %>"><%= _lf(n, 'title') %></a>
+              </h3>
+              <p class="news-card-excerpt"><%= truncate(_lf(n, 'excerpt') || _lf(n, 'content'), 120) %></p>
+              <a href="/news/<%= n.slug %>" class="news-card-link">อ่านต่อ <i class="fas fa-arrow-right"></i></a>
+            </div>
+          </article>
+        <% }); %>
+      </div>
+
+      <!-- Pagination -->
+      <% if (pagination.total > 1) { %>
+        <nav class="pagination" data-aos="fade-up">
+          <% if (pagination.current > 1) { %>
+            <a href="?page=<%= pagination.current - 1 %><%= activeCategory ? '&category=' + activeCategory : '' %>" class="pag-btn"><i class="fas fa-chevron-left"></i> ก่อนหน้า</a>
+          <% } %>
+
+          <% for (let i = 1; i <= pagination.total; i++) { %>
+            <% if (i === pagination.current) { %>
+              <span class="pag-num active"><%= i %></span>
+            <% } else if (i === 1 || i === pagination.total || (i >= pagination.current - 2 && i <= pagination.current + 2)) { %>
+              <a href="?page=<%= i %><%= activeCategory ? '&category=' + activeCategory : '' %>" class="pag-num"><%= i %></a>
+            <% } else if (i === pagination.current - 3 || i === pagination.current + 3) { %>
+              <span class="pag-dots">...</span>
+            <% } %>
+          <% } %>
+
+          <% if (pagination.current < pagination.total) { %>
+            <a href="?page=<%= pagination.current + 1 %><%= activeCategory ? '&category=' + activeCategory : '' %>" class="pag-btn">ถัดไป <i class="fas fa-chevron-right"></i></a>
+          <% } %>
+        </nav>
+      <% } %>
+    <% } else { %>
+      <div class="empty-state">
+        <i class="far fa-newspaper"></i>
+        <p>ยังไม่มีข่าวในหมวดหมู่นี้</p>
+      </div>
+    <% } %>
+  </div>
+</section>

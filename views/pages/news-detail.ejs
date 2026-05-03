@@ -1,0 +1,119 @@
+<%
+  // Pick TH or EN field based on currentLang (with fallback to TH)
+  const _curLang = typeof currentLang !== 'undefined' ? currentLang : 'th';
+  const _isEN = _curLang !== 'th';
+  const _f = (key) => {
+    if (_curLang !== 'th') {
+      const lk = key + '_' + _curLang;
+      if (news[lk] && String(news[lk]).trim()) return news[lk];
+    }
+    return news[key] || '';
+  };
+  const newsTitle = _f('title');
+  const newsExcerpt = _f('excerpt');
+  const newsContent = _f('content');
+%>
+<%- include('../partials/page-banner', {
+  bannerImage: news.banner || news.thumbnail || settings.default_news_banner || '/images/banner-news.jpg',
+  bannerTitle: newsTitle,
+  breadcrumbs: [
+    { label: _isEN ? 'News' : 'ข่าวสาร', url: '/news' },
+    { label: news.category_name || (_isEN ? 'Detail' : 'รายละเอียด'), url: news.category_slug ? '/news?category=' + news.category_slug : null },
+    { label: truncate(newsTitle, 40) }
+  ]
+}) %>
+
+<section class="section-content">
+  <div class="container">
+    <article class="news-detail">
+      <div class="content-narrow">
+        <div class="news-detail-meta" data-aos="fade-up">
+          <% if (news.category_name) { %>
+            <a href="/news?category=<%= news.category_slug %>" class="news-detail-category"><%= news.category_name %></a>
+          <% } %>
+          <span><i class="far fa-calendar"></i> <%= formatThaiDate(news.published_at) %></span>
+          <% if (news.author) { %>
+            <span><i class="far fa-user"></i> <%= news.author %></span>
+          <% } %>
+          <span><i class="far fa-eye"></i> <%= news.views %> ครั้ง</span>
+        </div>
+
+        <% if (newsExcerpt) { %>
+          <p class="lead" data-aos="fade-up" data-aos-delay="100"><%= newsExcerpt %></p>
+        <% } %>
+
+        <div class="rich-content news-detail-content" data-aos="fade-up" data-aos-delay="200">
+          <%- newsContent %>
+        </div>
+
+        <!-- Extra content sections - rendered only if heading or body exists -->
+        <% [2, 3, 4].forEach(function(n) {
+             const heading = _isEN && news['section' + n + '_heading_en'] ? news['section' + n + '_heading_en'] : news['section' + n + '_heading'];
+             const body = _isEN && news['section' + n + '_body_en'] ? news['section' + n + '_body_en'] : news['section' + n + '_body'];
+             const image = news['section' + n + '_image'];
+             if (!heading && !body && !image) return;
+        %>
+          <section class="post-extra-section" data-aos="fade-up">
+            <% if (heading) { %><h2 class="post-extra-heading"><%= heading %></h2><% } %>
+            <div class="post-extra-grid <%= image ? 'has-image' : '' %>">
+              <% if (image) { %>
+                <div class="post-extra-image-wrap">
+                  <img src="<%= image %>" alt="<%= heading || '' %>" loading="lazy">
+                </div>
+              <% } %>
+              <% if (body) { %>
+                <div class="rich-content post-extra-body"><%- body %></div>
+              <% } %>
+            </div>
+          </section>
+        <% }); %>
+
+        <%- include('../partials/content-blocks', { blocks: typeof blocks !== 'undefined' ? blocks : [] }) %>
+
+        <% if (news.tags) { %>
+          <div class="news-tags" data-aos="fade-up">
+            <i class="fas fa-tags"></i>
+            <% news.tags.split(',').forEach(t => { %>
+              <span class="tag"><%= t.trim() %></span>
+            <% }); %>
+          </div>
+        <% } %>
+
+        <!-- Share buttons -->
+        <div class="share-bar" data-aos="fade-up">
+          <span class="share-label"><%= tUI('news.share') %>:</span>
+          <a href="https://www.facebook.com/sharer/sharer.php?u=<%= siteUrl + currentPath %>" target="_blank" class="share-btn share-fb"><i class="fab fa-facebook-f"></i></a>
+          <a href="https://twitter.com/intent/tweet?url=<%= siteUrl + currentPath %>&text=<%= encodeURIComponent(news.title) %>" target="_blank" class="share-btn share-tw"><i class="fab fa-twitter"></i></a>
+          <a href="https://line.me/R/msg/text/?<%= encodeURIComponent(news.title + ' ' + siteUrl + currentPath) %>" target="_blank" class="share-btn share-line"><i class="fab fa-line"></i></a>
+          <a href="mailto:?subject=<%= encodeURIComponent(news.title) %>&body=<%= encodeURIComponent(siteUrl + currentPath) %>" class="share-btn share-email"><i class="fas fa-envelope"></i></a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Related news -->
+    <% if (related && related.length > 0) { %>
+      <div class="related-section" data-aos="fade-up">
+        <h3 class="section-subtitle"><%= tUI('news.related') %></h3>
+        <div class="news-grid">
+          <% related.forEach(r => { %>
+            <article class="news-card">
+              <a href="/news/<%= r.slug %>" class="news-card-image">
+                <img src="<%= r.thumbnail || (settings.default_news_thumb || '/images/news-placeholder.jpg') %>" alt="<%= r.title %>" loading="lazy">
+                <% if (r.category_name) { %><span class="news-card-category"><%= r.category_name %></span><% } %>
+              </a>
+              <div class="news-card-body">
+                <div class="news-card-meta">
+                  <span><i class="far fa-calendar"></i> <%= formatThaiDate(r.published_at, { short: true }) %></span>
+                </div>
+                <h3 class="news-card-title">
+                  <a href="/news/<%= r.slug %>"><%= r.title %></a>
+                </h3>
+                <p class="news-card-excerpt"><%= truncate(r.excerpt || r.content, 100) %></p>
+              </div>
+            </article>
+          <% }); %>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</section>

@@ -1,0 +1,42 @@
+<div class="hpm-bg-field">
+  <div class="hpm-bg-preview">
+    <% if (settingImg.setting_value) { %>
+      <div class="hpm-bg-current" style="width:200px;height:110px;border:1px solid #d1d5db;border-radius:6px;overflow:hidden;position:relative;">
+        <img src="<%= settingImg.setting_value %>" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+        <button type="button" class="hpm-bg-clear-btn"
+                data-clear-key="<%= settingImg.setting_key %>"
+                data-confirm="<%= adminLang === 'en' ? 'Clear this background?' : 'ลบพื้นหลังนี้?' %>"
+                data-url="/<%= adminSlug %>/homepage-manager/clear-bg/<%= settingImg.setting_key %>"
+                aria-label="Clear">
+          <i class="fas fa-trash"></i>
+        </button>
+      </div>
+    <% } else { %>
+      <div class="hpm-bg-empty">
+        <i class="fas fa-image"></i>
+        <span><%= adminLang === 'en' ? 'No background uploaded' : 'ยังไม่ได้อัปโหลดพื้นหลัง' %></span>
+      </div>
+    <% } %>
+  </div>
+
+  <div class="hpm-bg-controls">
+    <label class="hpm-upload-area">
+      <input type="file" name="<%= settingImg.setting_key %>" accept="image/*">
+      <i class="fas fa-cloud-upload-alt"></i>
+      <span><%= settingImg.setting_value ? (adminLang === 'en' ? 'Replace background' : 'เปลี่ยนพื้นหลัง') : (adminLang === 'en' ? 'Upload background' : 'อัปโหลดพื้นหลัง') %></span>
+    </label>
+
+    <% if (typeof settingOpacity !== 'undefined' && settingOpacity) { %>
+    <div class="hpm-opacity-row">
+      <label><%= adminLang === 'en' ? 'Overlay Opacity' : 'ความทึบของชั้นทับ' %>:</label>
+      <input type="range" name="<%= settingOpacity.setting_key %>"
+             min="0" max="100" step="5"
+             value="<%= settingOpacity.setting_value || 92 %>"
+             oninput="this.nextElementSibling.textContent = this.value + '%'"
+             class="hpm-opacity-slider">
+      <span class="hpm-opacity-value"><%= settingOpacity.setting_value || 92 %>%</span>
+    </div>
+    <small class="hpm-help-tiny"><%= adminLang === 'en' ? '0% = image fully visible, 100% = solid color over image' : '0% = ภาพชัดเต็มที่, 100% = พื้นทึบทับภาพหมด' %></small>
+    <% } %>
+  </div>
+</div>

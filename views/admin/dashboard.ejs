@@ -1,0 +1,148 @@
+<div class="page-header">
+  <div>
+    <h2><%= t('dashboard.welcome') %> <%= user.name %> 👋</h2>
+    <p class="text-muted"><%= t('dashboard.overview') %></p>
+  </div>
+  <!-- v47: Quick restart button -->
+  <form method="POST" action="/<%= adminSlug %>/restart-app" style="margin:0;" onsubmit="return confirm('<%= adminLang === 'en' ? 'Restart the application now? Active visitors will see a brief delay (~2 seconds).' : 'รีสตาร์ทแอปพลิเคชันตอนนี้? ผู้เข้าชมที่กำลังใช้งานจะรู้สึกหน่วงเล็กน้อย (~2 วินาที)' %>');">
+    <button type="submit" class="btn" style="background:#0ea5e9;color:#fff;font-weight:600;display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:8px;border:0;cursor:pointer;box-shadow:0 4px 10px rgba(14,165,233,0.25);">
+      <i class="fas fa-sync-alt"></i>
+      <%= adminLang === 'en' ? 'Restart App' : 'รีสตาร์ทแอป' %>
+    </button>
+  </form>
+</div>
+
+<!-- Stats cards -->
+<div class="stats-row">
+  <div class="stat-card stat-blue">
+    <div class="stat-card-icon"><i class="fas fa-newspaper"></i></div>
+    <div class="stat-card-info">
+      <div class="stat-card-num"><%= stats.news_count %></div>
+      <div class="stat-card-lbl"><%= t('stat.total_news') %></div>
+    </div>
+    <a href="/<%= adminSlug %>/news" class="stat-card-link"><i class="fas fa-arrow-right"></i></a>
+  </div>
+
+  <div class="stat-card stat-green">
+    <div class="stat-card-icon"><i class="fas fa-images"></i></div>
+    <div class="stat-card-info">
+      <div class="stat-card-num"><%= stats.slider_count %></div>
+      <div class="stat-card-lbl"><%= t('nav.sliders') %></div>
+    </div>
+    <a href="/<%= adminSlug %>/sliders" class="stat-card-link"><i class="fas fa-arrow-right"></i></a>
+  </div>
+
+  <div class="stat-card stat-orange">
+    <div class="stat-card-icon"><i class="fas fa-briefcase"></i></div>
+    <div class="stat-card-info">
+      <div class="stat-card-num"><%= stats.business_count %></div>
+      <div class="stat-card-lbl"><%= t('stat.businesses') %></div>
+    </div>
+    <a href="/<%= adminSlug %>/businesses" class="stat-card-link"><i class="fas fa-arrow-right"></i></a>
+  </div>
+
+  <div class="stat-card stat-purple">
+    <div class="stat-card-icon"><i class="fas fa-user-tie"></i></div>
+    <div class="stat-card-info">
+      <div class="stat-card-num"><%= stats.career_count %></div>
+      <div class="stat-card-lbl"><%= t('stat.open_jobs') %></div>
+    </div>
+    <a href="/<%= adminSlug %>/careers" class="stat-card-link"><i class="fas fa-arrow-right"></i></a>
+  </div>
+
+  <div class="stat-card stat-red">
+    <div class="stat-card-icon"><i class="fas fa-envelope"></i></div>
+    <div class="stat-card-info">
+      <div class="stat-card-num"><%= stats.unread_msgs %></div>
+      <div class="stat-card-lbl"><%= t('stat.unread_messages') %></div>
+    </div>
+    <a href="/<%= adminSlug %>/messages" class="stat-card-link"><i class="fas fa-arrow-right"></i></a>
+  </div>
+</div>
+
+<div class="dash-grid">
+  <!-- Recent messages -->
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="fas fa-envelope"></i> <%= t('dashboard.recent_messages') %></h3>
+      <a href="/<%= adminSlug %>/messages" class="btn-sm"><%= t('dashboard.view_all') %></a>
+    </div>
+    <div class="card-body p-0">
+      <% if (recentMessages && recentMessages.length > 0) { %>
+        <ul class="dash-list">
+          <% recentMessages.forEach(m => { %>
+            <li class="<%= m.is_read ? '' : 'unread' %>">
+              <a href="/<%= adminSlug %>/messages/<%= m.id %>">
+                <div class="dash-list-main">
+                  <strong><%= m.name %></strong>
+                  <p><%= m.subject || (m.message ? m.message.substring(0, 60) + '...' : '') %></p>
+                </div>
+                <span class="dash-list-meta"><%= new Date(m.created_at).toLocaleDateString(adminLang === 'en' ? 'en-US' : 'th-TH') %></span>
+              </a>
+            </li>
+          <% }); %>
+        </ul>
+      <% } else { %>
+        <div class="empty-mini"><%= t('dashboard.no_messages') %></div>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- Recent news -->
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="fas fa-newspaper"></i> <%= t('dashboard.recent_news') %></h3>
+      <a href="/<%= adminSlug %>/news/new" class="btn-sm btn-primary">+ <%= t('dashboard.add_news') %></a>
+    </div>
+    <div class="card-body p-0">
+      <% if (recentNews && recentNews.length > 0) { %>
+        <ul class="dash-list">
+          <% recentNews.forEach(n => { %>
+            <li>
+              <a href="/<%= adminSlug %>/news/<%= n.id %>/edit">
+                <div class="dash-list-main">
+                  <strong><%= n.title %></strong>
+                  <p><i class="far fa-eye"></i> <%= n.views || 0 %> <%= t('label.views') %></p>
+                </div>
+                <span class="dash-list-meta"><%= new Date(n.published_at).toLocaleDateString(adminLang === 'en' ? 'en-US' : 'th-TH') %></span>
+              </a>
+            </li>
+          <% }); %>
+        </ul>
+      <% } else { %>
+        <div class="empty-mini"><%= t('dashboard.no_news') %></div>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<!-- Quick actions -->
+<div class="card">
+  <div class="card-header">
+    <h3><i class="fas fa-bolt"></i> <%= t('dashboard.quick_actions') %></h3>
+  </div>
+  <div class="card-body">
+    <div class="quick-actions">
+      <a href="/<%= adminSlug %>/news/new" class="quick-action">
+        <i class="fas fa-newspaper"></i>
+        <span><%= t('dashboard.add_news') %></span>
+      </a>
+      <a href="/<%= adminSlug %>/sliders/new" class="quick-action">
+        <i class="fas fa-images"></i>
+        <span><%= t('dashboard.add_slider') %></span>
+      </a>
+      <a href="/<%= adminSlug %>/businesses/new" class="quick-action">
+        <i class="fas fa-briefcase"></i>
+        <span><%= t('dashboard.add_business') %></span>
+      </a>
+      <a href="/<%= adminSlug %>/careers/new" class="quick-action">
+        <i class="fas fa-user-tie"></i>
+        <span><%= t('dashboard.add_career') %></span>
+      </a>
+      <a href="/<%= adminSlug %>/settings" class="quick-action">
+        <i class="fas fa-cog"></i>
+        <span><%= t('nav.settings') %></span>
+      </a>
+    </div>
+  </div>
+</div>

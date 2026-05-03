@@ -1,0 +1,64 @@
+<div class="page-header">
+  <div>
+    <h2><%= t('menus.title') %></h2>
+    <p class="text-muted"><%= adminLang === 'en' ? 'Menus shown in Header and Footer' : 'เมนูที่แสดงใน Header และ Footer ของเว็บไซต์' %></p>
+  </div>
+</div>
+
+<div class="menus-grid">
+  <% const locations = [
+    { key: 'header', label: (adminLang === 'en' ? 'Main Menu (Header)' : 'เมนูหลัก (Header)'), list: headerMenu },
+    { key: 'footer', label: (adminLang === 'en' ? 'Footer Column 1 (About)' : 'Footer คอลัมน์ 1 (เกี่ยวกับเรา)'), list: footerMenu },
+    { key: 'footer_2', label: (adminLang === 'en' ? 'Footer Column 2 (Services)' : 'Footer คอลัมน์ 2 (บริการ)'), list: footerMenu2 },
+    { key: 'footer_3', label: (adminLang === 'en' ? 'Footer Bottom' : 'Footer ด้านล่าง'), list: footerMenu3 }
+  ]; %>
+
+  <% locations.forEach(loc => { %>
+    <div class="card">
+      <div class="card-header">
+        <h3><%= loc.label %></h3>
+      </div>
+      <div class="card-body">
+        <% if (loc.list && loc.list.length > 0) { %>
+          <ul class="menu-list sortable" data-table-name="menus">
+            <% loc.list.forEach(m => { %>
+              <li data-id="<%= m.id %>">
+                <i class="fas fa-grip-vertical drag-handle"></i>
+                <form method="POST" action="/<%= adminSlug %>/menus/<%= m.id %>" class="menu-edit-form">
+                  <input type="text" name="label" value="<%= m.label %>" placeholder="<%= adminLang === 'en' ? 'Menu label (Thai)' : 'ชื่อเมนู (ไทย)' %>">
+                  <input type="text" name="label_en" value="<%= m.label_en || '' %>" placeholder="EN" style="max-width:90px;">
+                  <input type="text" name="label_zh" value="<%= m.label_zh || '' %>" placeholder="中文" style="max-width:90px;">
+                  <input type="text" name="label_ja" value="<%= m.label_ja || '' %>" placeholder="日本語" style="max-width:90px;">
+                  <input type="text" name="url" value="<%= m.url %>" placeholder="URL">
+                  <label class="check-inline">
+                    <input type="checkbox" name="open_new_tab" value="1" <%= m.open_new_tab ? 'checked' : '' %>>
+                    <span><%= adminLang === 'en' ? 'New tab' : 'แท็บใหม่' %></span>
+                  </label>
+                  <label class="check-inline">
+                    <input type="checkbox" name="active" value="1" <%= m.active ? 'checked' : '' %>>
+                    <span><%= adminLang === 'en' ? 'Active' : 'เปิด' %></span>
+                  </label>
+                  <button type="submit" class="btn-icon" title="<%= adminLang === 'en' ? 'Save' : 'บันทึก' %>"><i class="fas fa-save"></i></button>
+                </form>
+                <form method="POST" action="/<%= adminSlug %>/menus/<%= m.id %>/delete" class="d-inline" onsubmit="return confirm('ลบเมนูนี้?')">
+                  <button type="submit" class="btn-icon btn-icon-danger"><i class="fas fa-trash"></i></button>
+                </form>
+              </li>
+            <% }); %>
+          </ul>
+        <% } else { %>
+          <p class="empty-mini"><%= adminLang === 'en' ? 'No menus yet' : 'ยังไม่มีเมนู' %></p>
+        <% } %>
+
+        <form method="POST" action="/<%= adminSlug %>/menus" class="menu-add-form">
+          <input type="hidden" name="location" value="<%= loc.key %>">
+          <input type="text" name="label" placeholder="<%= adminLang === 'en' ? 'Menu label' : 'ชื่อเมนู' %>" required>
+          <input type="text" name="url" placeholder="<%= adminLang === 'en' ? '/about or https://...' : '/about หรือ https://...' %>" required>
+          <button type="submit" class="btn btn-primary btn-sm">
+            <i class="fas fa-plus"></i> <%= adminLang === 'en' ? 'Add' : 'เพิ่ม' %>
+          </button>
+        </form>
+      </div>
+    </div>
+  <% }); %>
+</div>

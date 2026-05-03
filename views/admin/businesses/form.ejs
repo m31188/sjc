@@ -1,0 +1,265 @@
+<div class="page-header">
+  <div>
+    <h2><%= business.id ? (adminLang === 'en' ? 'Edit Business' : 'แก้ไขธุรกิจ') : (adminLang === 'en' ? 'New Business' : 'เพิ่มธุรกิจใหม่') %></h2>
+  </div>
+  <div class="page-header-actions">
+    <% if (business.id) { %>
+      <a href="/<%= adminSlug %>/blocks/business/<%= business.id %>" class="btn btn-primary">
+        <i class="fas fa-th-large"></i> <%= adminLang === 'en' ? 'Manage Content Blocks' : 'จัดการบล็อกเนื้อหา' %>
+      </a>
+    <% } %>
+    <a href="/<%= adminSlug %>/businesses" class="btn btn-outline"><i class="fas fa-arrow-left"></i> <%= adminLang === 'en' ? 'Back' : 'กลับ' %></a>
+  </div>
+</div>
+
+<div style="background:#eff6ff;border-left:4px solid #3b82f6;color:#1e3a8a;padding:14px 18px;border-radius:8px;margin-bottom:20px;font-size:13px;">
+  <i class="fas fa-lightbulb" style="color:#3b82f6;"></i>
+  <strong><%= adminLang === 'en' ? 'Tip:' : 'เคล็ดลับ:' %></strong>
+  <%= adminLang === 'en' ? 'Use the Full Description field below to write the full business page. The rich-text editor supports headings, bold text, lists, images, and links. Content will be displayed on the business page automatically.' : 'ใช้ช่อง Full Description ด้านล่างเพื่อเขียนหน้าธุรกิจเต็มรูปแบบ Rich-Text Editor รองรับหัวข้อ ตัวหนา รายการ รูปภาพ และลิงก์ เนื้อหาจะแสดงในหน้าธุรกิจโดยอัตโนมัติ' %>
+</div>
+
+<% if (business.id) { %>
+<div style="background:linear-gradient(135deg,#0ea5e9 0%,#0284c7 100%);color:#fff;padding:14px 20px;border-radius:10px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+  <i class="fas fa-language" style="font-size:24px;"></i>
+  <div style="flex:1;min-width:240px;">
+    <div style="font-weight:700;font-size:14px;"><%= adminLang === 'en' ? 'Auto-translate to English' : 'แปลเป็นภาษาอังกฤษอัตโนมัติ' %></div>
+    <div style="font-size:12.5px;color:rgba(255,255,255,0.9);margin-top:3px;"><%= adminLang === 'en' ? 'Click to auto-translate ALL Thai fields to English. Review and edit results below.' : 'คลิกเพื่อแปลทุกช่องภาษาไทยเป็นภาษาอังกฤษอัตโนมัติ' %></div>
+  </div>
+  <form method="POST" action="/<%= adminSlug %>/businesses/<%= business.id %>/translate" style="margin:0;" onsubmit="return confirm('<%= adminLang === 'en' ? 'This will overwrite any existing English fields. Continue?' : 'การกระทำนี้จะเขียนทับช่องภาษาอังกฤษที่มีอยู่ ดำเนินการต่อ?' %>');">
+    <button type="submit" style="background:#fff;color:#0284c7;padding:10px 18px;border:0;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;">
+      <i class="fas fa-language"></i> <%= adminLang === 'en' ? 'Translate to English' : 'แปลเป็นอังกฤษ' %>
+    </button>
+  </form>
+</div>
+<% } %>
+
+<form method="POST" action="/<%= adminSlug %>/businesses<%= business.id ? '/' + business.id : '' %>" enctype="multipart/form-data">
+  <div class="form-grid">
+    <div class="form-main">
+      <div class="card">
+        <div class="card-body">
+          <div class="form-group">
+            <label><%= adminLang === 'en' ? 'Business name' : 'ชื่อธุรกิจ' %> <span class="required">*</span></label>
+            <input type="text" name="name" value="<%= business.name || '' %>" required>
+          </div>
+
+          <div class="form-group">
+            <label>คำอธิบายสั้น</label>
+            <textarea name="short_description" rows="2" placeholder="ข้อความสั้นๆ แสดงในรายการ"><%= business.short_description || '' %></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>คำอธิบายเต็ม</label>
+            <textarea name="full_description" id="contentEditor" class="rich-editor" rows="12"><%= business.full_description || '' %></textarea>
+          </div>
+
+          <!-- ===== ENGLISH TRANSLATION FIELDS ===== -->
+          <details class="extra-section-block en-fields-block" <%= business.name_en ? 'open' : '' %>
+                   style="margin: 24px 0; border: 2px solid #0ea5e9; border-radius: 10px; overflow: hidden;">
+            <summary style="padding: 14px 18px; background: linear-gradient(135deg,#0ea5e9 0%,#0284c7 100%); cursor: pointer; font-weight: 700; font-size: 14px; color: #fff; display: flex; align-items: center; gap: 10px;">
+              <i class="fas fa-flag-usa"></i>
+              <span><%= adminLang === 'en' ? 'English Translation' : 'คำแปลภาษาอังกฤษ' %></span>
+              <% if (business.name_en) { %>
+                <span style="margin-left:auto;background:rgba(255,255,255,0.25);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">
+                  <i class="fas fa-check"></i> Filled
+                </span>
+              <% } %>
+            </summary>
+            <div style="padding: 18px; background: #f0f9ff;">
+              <div class="form-group">
+                <label>Name (English)</label>
+                <input type="text" name="name_en" value="<%= business.name_en || '' %>" placeholder="English business name">
+              </div>
+              <div class="form-group">
+                <label>Short description (English)</label>
+                <textarea name="short_description_en" rows="2" placeholder="Short English description"><%= business.short_description_en || '' %></textarea>
+              </div>
+              <div class="form-group">
+                <label>Full description (English)</label>
+                <textarea name="full_description_en" class="rich-editor section-rich-editor" rows="10"><%= business.full_description_en || '' %></textarea>
+              </div>
+            </div>
+          </details>
+
+          <!-- ===== Additional Content Sections ===== -->
+          <div style="margin: 32px 0 24px; padding: 18px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <i class="fas fa-layer-group" style="color:#3b82f6;font-size:18px;"></i>
+              <strong style="font-size:14px;color:#1e3a8a;">
+                <%= adminLang === 'en' ? 'Optional: Add up to 3 more content sections' : 'เพิ่มเติม: เพิ่มได้สูงสุด 3 ส่วนเนื้อหา' %>
+              </strong>
+            </div>
+            <p style="font-size:12.5px;color:#64748b;margin:0;">
+              <%= adminLang === 'en' ? 'Each section can have a heading, rich text, and an optional image. Empty sections are hidden on the frontend.' : 'แต่ละส่วนสามารถมีหัวข้อ ข้อความ และรูปภาพ (ไม่บังคับ) ส่วนที่ว่างจะไม่แสดงในเว็บไซต์' %>
+            </p>
+          </div>
+
+          <% [2, 3, 4].forEach(function(n) { %>
+            <details class="extra-section-block" <%= business['section' + n + '_heading'] || business['section' + n + '_body'] || business['section' + n + '_image'] ? 'open' : '' %>
+                     style="margin-bottom:16px;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+              <summary style="padding:12px 16px;background:#f9fafb;cursor:pointer;font-weight:600;font-size:14px;color:#374151;">
+                <i class="fas fa-chevron-right" style="font-size:11px;margin-right:6px;color:#9ca3af;"></i>
+                <%= adminLang === 'en' ? `Section ${n - 1}` : `ส่วนที่ ${n - 1}` %>
+                <% if (business['section' + n + '_heading']) { %>
+                  <span style="color:#9ca3af;font-weight:400;font-size:13px;"> · <%= business['section' + n + '_heading'] %></span>
+                <% } %>
+              </summary>
+              <div style="padding:16px;background:#fff;">
+                <div class="form-group">
+                  <label><%= adminLang === 'en' ? 'Section heading' : 'หัวข้อส่วน' %></label>
+                  <input type="text" name="section<%= n %>_heading" value="<%= business['section' + n + '_heading'] || '' %>"
+                         placeholder="<%= adminLang === 'en' ? 'e.g. Our Approach' : 'เช่น แนวทางของเรา' %>">
+                </div>
+                <div class="form-group">
+                  <label><%= adminLang === 'en' ? 'Section content' : 'เนื้อหาส่วน' %></label>
+                  <textarea name="section<%= n %>_body" class="rich-editor section-rich-editor" rows="8"><%= business['section' + n + '_body'] || '' %></textarea>
+                </div>
+                <div class="form-group">
+                  <label><%= adminLang === 'en' ? 'Section image (optional)' : 'รูปภาพประกอบ (ไม่บังคับ)' %></label>
+                  <% if (business['section' + n + '_image']) { %>
+                    <div style="margin-bottom:8px;">
+                      <img src="<%= business['section' + n + '_image'] %>" alt="" style="max-width:200px;border-radius:6px;border:1px solid #e5e7eb;">
+                      <label style="display:inline-flex;align-items:center;gap:6px;margin-left:14px;font-size:13px;color:#dc2626;cursor:pointer;">
+                        <input type="checkbox" name="section<%= n %>_image_remove" value="1">
+                        <%= adminLang === 'en' ? 'Remove this image' : 'ลบรูปภาพนี้' %>
+                      </label>
+                    </div>
+                  <% } %>
+                  <input type="file" name="section<%= n %>_image" accept="image/*">
+                  <small style="color:#6b7280;font-size:12px;display:block;margin-top:4px;">
+                    <%= adminLang === 'en' ? 'Max 5MB.' : 'สูงสุด 5MB' %>
+                  </small>
+                </div>
+
+                <!-- EN translation for this section -->
+                <details style="margin-top:16px;border:1px solid #bae6fd;border-radius:6px;overflow:hidden;background:#f0f9ff;"
+                         <%= business['section' + n + '_heading_en'] || business['section' + n + '_body_en'] ? 'open' : '' %>>
+                  <summary style="padding:10px 14px;cursor:pointer;font-weight:600;font-size:13px;color:#0c4a6e;display:flex;align-items:center;gap:8px;">
+                    <i class="fas fa-flag-usa" style="color:#0284c7;"></i>
+                    English version
+                  </summary>
+                  <div style="padding:12px 14px;">
+                    <div class="form-group">
+                      <label>Heading (English)</label>
+                      <input type="text" name="section<%= n %>_heading_en" value="<%= business['section' + n + '_heading_en'] || '' %>" placeholder="English heading">
+                    </div>
+                    <div class="form-group">
+                      <label>Body (English)</label>
+                      <textarea name="section<%= n %>_body_en" class="rich-editor section-rich-editor" rows="6"><%= business['section' + n + '_body_en'] || '' %></textarea>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            </details>
+          <% }); %>
+
+          <div class="form-group">
+            <label>เว็บไซต์ภายนอก (ถ้ามี)</label>
+            <input type="url" name="website_url" value="<%= business.website_url || '' %>" placeholder="https://...">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-side">
+      <div class="card">
+        <div class="card-body">
+          <h4><%= adminLang === 'en' ? 'Publishing' : 'การเผยแพร่' %></h4>
+          <div class="form-group">
+            <label class="check-label">
+              <input type="checkbox" name="active" value="1" <%= business.active === undefined || business.active ? 'checked' : '' %>>
+              <span>แสดงบนเว็บไซต์</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="check-label">
+              <input type="checkbox" name="featured" value="1" <%= business.featured ? 'checked' : '' %>>
+              <span>แนะนำในหน้าแรก</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label>ลำดับการแสดง</label>
+            <input type="number" name="sort_order" value="<%= business.sort_order || 0 %>" min="0">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-save"></i> <%= adminLang === 'en' ? 'Save' : 'บันทึก' %>
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4>รูปย่อ</h4>
+          <div class="image-hint">
+            <i class="fas fa-info-circle"></i>
+            <strong><%= adminLang === 'en' ? 'Recommended size:' : 'ขนาดที่แนะนำ:' %></strong> 800×600px<br>
+            แสดงในรายการธุรกิจ
+          </div>
+          <% if (business.thumbnail) { %>
+            <div class="current-image"><img src="<%= business.thumbnail %>" alt=""></div>
+          <% } %>
+          <label class="upload-area">
+            <input type="file" name="thumbnail" accept="image/*">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span><%= adminLang === 'en' ? 'Choose image' : 'เลือกรูป' %></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4><%= adminLang === 'en' ? 'Banner image' : 'รูปแบนเนอร์' %></h4>
+          <div class="image-hint">
+            <i class="fas fa-info-circle"></i>
+            <strong><%= adminLang === 'en' ? 'Recommended size:' : 'ขนาดที่แนะนำ:' %></strong> 1920×600px
+          </div>
+          <% if (business.banner) { %>
+            <div class="current-image"><img src="<%= business.banner %>" alt=""></div>
+          <% } %>
+          <label class="upload-area">
+            <input type="file" name="banner" accept="image/*">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span><%= adminLang === 'en' ? 'Choose image' : 'เลือกรูป' %></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4>ไอคอน (ถ้ามี)</h4>
+          <div class="image-hint">
+            <i class="fas fa-info-circle"></i>
+            <strong><%= adminLang === 'en' ? 'Recommended size:' : 'ขนาดที่แนะนำ:' %></strong> 80×80px PNG โปร่งใส
+          </div>
+          <% if (business.icon) { %>
+            <div class="current-image"><img src="<%= business.icon %>" alt="" style="width: 80px"></div>
+          <% } %>
+          <label class="upload-area">
+            <input type="file" name="icon" accept="image/*">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span>เลือกไอคอน</span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  tinymce.init({
+    selector: '.rich-editor',
+    height: 400,
+    plugins: 'lists link image media table code preview fullscreen autolink',
+    toolbar: 'undo redo | blocks | bold italic | bullist numlist | link image | code',
+    images_upload_url: '/api/upload-image',
+    images_upload_handler: function (blobInfo) {
+      return new Promise((resolve, reject) => {
+        const fd = new FormData();
+        fd.append('file', blobInfo.blob(), blobInfo.filename());
+        fetch('/api/upload-image', { method: 'POST', body: fd })
+          .then(r => r.json()).then(d => d.location ? resolve(d.location) : reject('Upload failed'))
+          .catch(() => reject('Upload failed'));
+      });
+    }
+  });
+</script>

@@ -1,0 +1,157 @@
+<div class="page-header">
+  <div>
+    <h2>
+      <i class="fas fa-th-large"></i>
+      <%= isNew ? (adminLang === 'en' ? 'New Content Block' : 'เพิ่มบล็อก') : (adminLang === 'en' ? 'Edit Content Block' : 'แก้ไขบล็อก') %>
+    </h2>
+    <p class="text-muted"><%= adminLang === 'en' ? 'Block type:' : 'ประเภท:' %> <strong><%= block.block_type %></strong></p>
+  </div>
+  <div class="page-header-actions">
+    <a href="/<%= adminSlug %>/blocks/<%= parentType %>/<%= parentId %>" class="btn btn-outline">
+      <i class="fas fa-arrow-left"></i> <%= adminLang === 'en' ? 'Back to blocks' : 'กลับ' %>
+    </a>
+  </div>
+</div>
+
+<form method="POST" action="<%= isNew ? '/' + adminSlug + '/blocks/' + parentType + '/' + parentId + '/new' : '/' + adminSlug + '/blocks/' + parentType + '/' + parentId + '/' + block.id + '/edit' %>" enctype="multipart/form-data" class="card">
+  <div class="card-body">
+
+    <div class="form-group">
+      <label><%= adminLang === 'en' ? 'Block Type' : 'ประเภทบล็อก' %></label>
+      <select name="block_type" id="block_type" class="form-control" onchange="updateBlockFields()">
+        <% validBlockTypes.forEach(t => { %>
+          <option value="<%= t %>" <%= block.block_type === t ? 'selected' : '' %>><%= t %></option>
+        <% }); %>
+      </select>
+    </div>
+
+    <div class="bf-fields bf-heading" data-types="heading">
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Heading Text' : 'ข้อความหัวข้อ' %></label>
+        <input type="text" name="heading" value="<%= block.heading || '' %>" class="form-control">
+      </div>
+    </div>
+
+    <div class="bf-fields bf-text" data-types="text,quote">
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Body / Content' : 'เนื้อหา' %></label>
+        <textarea name="body" rows="8" class="form-control rich-editor"><%= block.body || '' %></textarea>
+        <small class="text-muted"><%= adminLang === 'en' ? 'You can use HTML tags like <strong>, <em>, <a href="">, <ul><li>' : 'รองรับ HTML' %></small>
+      </div>
+    </div>
+
+    <div class="bf-fields bf-image" data-types="image,gallery">
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Upload Image' : 'อัปโหลดรูปภาพ' %></label>
+        <input type="file" name="image_file" accept="image/*" class="form-control">
+        <% if (block.image_url) { %>
+          <div style="margin-top: 10px;">
+            <img src="<%= block.image_url %>" alt="" style="max-width: 200px; border-radius: 6px;">
+          </div>
+        <% } %>
+      </div>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Or paste Image URL' : 'หรือใส่ URL รูปภาพ' %></label>
+        <input type="text" name="image_url" value="<%= block.image_url || '' %>" class="form-control" placeholder="https://...">
+      </div>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Alt text (for accessibility/SEO)' : 'ข้อความ Alt' %></label>
+        <input type="text" name="image_alt" value="<%= block.image_alt || '' %>" class="form-control">
+      </div>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Optional caption (uses Body field)' : 'คำบรรยาย (ใช้ช่อง Body)' %></label>
+        <textarea name="body" rows="2" class="form-control"><%= block.body || '' %></textarea>
+      </div>
+    </div>
+
+    <div class="bf-fields bf-video" data-types="video">
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Video URL (YouTube, Vimeo, MP4)' : 'URL วิดีโอ' %></label>
+        <input type="text" name="video_url" value="<%= block.video_url || '' %>" class="form-control" placeholder="https://www.youtube.com/watch?v=...">
+        <small class="text-muted"><%= adminLang === 'en' ? 'YouTube/Vimeo links auto-embed. MP4/WebM links play directly.' : 'YouTube/Vimeo จะฝังอัตโนมัติ' %></small>
+      </div>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Or upload video file (MP4, WebM)' : 'หรืออัปโหลดไฟล์ MP4/WebM' %></label>
+        <input type="file" name="video_file" accept="video/mp4,video/webm" class="form-control">
+      </div>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Optional poster image' : 'รูปภาพ Poster' %></label>
+        <input type="text" name="image_url" value="<%= block.image_url || '' %>" class="form-control">
+      </div>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Optional caption' : 'คำบรรยาย' %></label>
+        <textarea name="body" rows="2" class="form-control"><%= block.body || '' %></textarea>
+      </div>
+    </div>
+
+    <div class="bf-fields bf-cta" data-types="cta">
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'CTA Heading' : 'หัวข้อ CTA' %></label>
+        <input type="text" name="heading" value="<%= block.heading || '' %>" class="form-control">
+      </div>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Description' : 'คำอธิบาย' %></label>
+        <textarea name="body" rows="3" class="form-control"><%= block.body || '' %></textarea>
+      </div>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Button Text' : 'ข้อความปุ่ม' %></label>
+        <input type="text" name="cta_text" value="<%= block.cta_text || '' %>" class="form-control">
+      </div>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Button URL' : 'URL ปุ่ม' %></label>
+        <input type="text" name="cta_url" value="<%= block.cta_url || '' %>" class="form-control">
+      </div>
+    </div>
+
+    <div class="bf-fields bf-embed" data-types="embed">
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Embed code (iframe HTML)' : 'โค้ดฝัง (iframe HTML)' %></label>
+        <textarea name="embed_code" rows="6" class="form-control" placeholder='<iframe src="..."></iframe>'><%= block.embed_code || '' %></textarea>
+      </div>
+    </div>
+
+    <div class="bf-fields bf-divider" data-types="divider">
+      <p class="text-muted"><%= adminLang === 'en' ? 'A divider has no fields - it just renders a horizontal line.' : 'เส้นคั่นไม่มีฟิลด์ - แสดงเส้นแนวนอน' %></p>
+    </div>
+
+    <hr style="margin: 24px 0;">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Sort Order' : 'ลำดับ' %></label>
+        <input type="number" name="sort_order" value="<%= block.sort_order || 0 %>" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" name="active" value="1" <%= block.active ? 'checked' : '' %>>
+          <%= adminLang === 'en' ? 'Active (show on website)' : 'แสดง' %>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> <%= adminLang === 'en' ? 'Save Block' : 'บันทึก' %>
+      </button>
+      <% if (isNew) { %>
+      <button type="submit" name="save_and_add_another" value="1" class="btn btn-outline" style="background:#1a2540;color:#fff;border-color:#1a2540;">
+        <i class="fas fa-plus"></i> <%= adminLang === 'en' ? 'Save and add another' : 'บันทึกและเพิ่มอีก' %>
+      </button>
+      <% } %>
+      <a href="/<%= adminSlug %>/blocks/<%= parentType %>/<%= parentId %>" class="btn btn-outline">
+        <%= adminLang === 'en' ? 'Cancel' : 'ยกเลิก' %>
+      </a>
+    </div>
+  </div>
+</form>
+
+<script>
+function updateBlockFields() {
+  const type = document.getElementById('block_type').value;
+  document.querySelectorAll('.bf-fields').forEach(div => {
+    const allowed = (div.dataset.types || '').split(',');
+    div.style.display = allowed.includes(type) ? 'block' : 'none';
+  });
+}
+updateBlockFields();
+</script>

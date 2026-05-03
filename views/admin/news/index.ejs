@@ -1,0 +1,62 @@
+<div class="page-header">
+  <div>
+    <h2><%= t('news.title') %></h2>
+    <p class="text-muted"><%= adminLang === 'en' ? 'Articles and news' : 'บทความและข่าวประชาสัมพันธ์' %></p>
+  </div>
+  <div class="header-actions">
+    <a href="/<%= adminSlug %>/news-categories" class="btn btn-outline"><i class="fas fa-folder"></i> <%= t('nav.news_categories') %></a>
+    <a href="/<%= adminSlug %>/news/new" class="btn btn-primary"><i class="fas fa-plus"></i> <%= t('news.add') %></a>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <% if (news && news.length > 0) { %>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th width="80"><%= adminLang === "en" ? "Image" : "รูป" %></th>
+            <th><%= adminLang === "en" ? "Title" : "หัวข้อ" %></th>
+            <th width="140"><%= adminLang === "en" ? "Category" : "หมวดหมู่" %></th>
+            <th width="100"><%= adminLang === "en" ? "Views" : "ดู" %></th>
+            <th width="120"><%= adminLang === "en" ? "Date" : "วันที่" %></th>
+            <th width="100"><%= adminLang === "en" ? "Status" : "สถานะ" %></th>
+            <th width="160"><%= adminLang === "en" ? "Actions" : "การจัดการ" %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% news.forEach(n => { %>
+            <tr>
+              <td><img src="<%= n.thumbnail || '/images/news-placeholder.jpg' %>" alt="" class="thumb"></td>
+              <td>
+                <strong><%= n.title %></strong>
+                <% if (n.featured) { %><span class="badge badge-yellow">แนะนำ</span><% } %>
+              </td>
+              <td><%= n.category_name || '-' %></td>
+              <td><i class="far fa-eye"></i> <%= n.views %></td>
+              <td><%= new Date(n.published_at).toLocaleDateString('th-TH') %></td>
+              <td>
+                <button class="status-toggle <%= n.published ? 'active' : '' %>" data-table="news" data-id="<%= n.id %>">
+                  <%= n.published ? 'เผยแพร่' : 'แบบร่าง' %>
+                </button>
+              </td>
+              <td>
+                <a href="/news/<%= n.slug %>" target="_blank" class="btn-icon" title="<%= adminLang === 'en' ? 'View' : 'ดู' %>"><i class="fas fa-eye"></i></a>
+                <a href="/<%= adminSlug %>/news/<%= n.id %>/edit" class="btn-icon" title="<%= adminLang === 'en' ? 'Edit' : 'แก้ไข' %>"><i class="fas fa-edit"></i></a>
+                <form method="POST" action="/<%= adminSlug %>/news/<%= n.id %>/delete" class="d-inline" onsubmit="return confirm('ยืนยันลบข่าวนี้?')">
+                  <button type="submit" class="btn-icon btn-icon-danger"><i class="fas fa-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty-state">
+        <i class="fas fa-newspaper"></i>
+        <p><%= adminLang === 'en' ? 'No news yet' : 'ยังไม่มีข่าว' %></p>
+        <a href="/<%= adminSlug %>/news/new" class="btn btn-primary">เพิ่มข่าวแรก</a>
+      </div>
+    <% } %>
+  </div>
+</div>

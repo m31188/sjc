@@ -1,0 +1,58 @@
+<header class="site-header header-v3" id="siteHeader">
+  <div class="container">
+    <div class="header-inner-v3">
+      <a href="/" class="logo">
+        <img src="<%= settings.site_logo || '/images/logo-placeholder.png' %>" alt="<%= settings.site_name || 'SJC' %>" class="logo-default">
+      </a>
+
+      <!-- Desktop nav links inline -->
+      <nav class="desktop-nav main-nav-v3-desktop" id="desktopNav">
+        <ul class="nav-list">
+          <% headerMenu.filter(m => !m.parent_id).forEach(item => { %>
+            <li class="nav-item">
+              <a href="<%= item.url %>" class="nav-link <%= currentPath === item.url || (item.url !== '/' && currentPath.startsWith(item.url)) ? 'active' : '' %>" <%= item.open_new_tab ? 'target="_blank"' : '' %>>
+                <%= item.label %>
+              </a>
+            </li>
+          <% }); %>
+        </ul>
+      </nav>
+
+      <div class="header-actions">
+        <button class="search-toggle" id="searchToggle" aria-label="ค้นหา">
+          <i class="fas fa-search"></i>
+        </button>
+        <button class="nav-toggle" id="navToggle" aria-label="เปิดเมนู">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search overlay -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="container">
+      <button class="search-close" id="searchClose" aria-label="ปิด"><i class="fas fa-times"></i></button>
+      <form action="/news" method="GET" class="search-form">
+        <input type="text" name="q" placeholder="ค้นหาข่าวสาร..." class="search-input" autofocus>
+        <button type="submit" class="search-submit"><i class="fas fa-search"></i></button>
+      </form>
+    </div>
+  </div>
+</header>
+
+<!-- MOBILE MENU - OUTSIDE the header to escape its stacking context -->
+<nav class="main-nav main-nav-v3" id="mainNav">
+  <button class="nav-close" id="navClose" aria-label="ปิดเมนู"><i class="fas fa-times"></i></button>
+  <ul class="nav-list">
+    <% headerMenu.filter(m => !m.parent_id).forEach(item => { %>
+      <li class="nav-item">
+        <a href="<%= item.url %>" class="nav-link <%= currentPath === item.url || (item.url !== '/' && currentPath.startsWith(item.url)) ? 'active' : '' %>" <%= item.open_new_tab ? 'target="_blank"' : '' %>>
+          <%= item.label %>
+        </a>
+      </li>
+    <% }); %>
+  </ul>
+</nav>
+
+<div class="nav-backdrop" id="navBackdrop"></div>

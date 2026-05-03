@@ -1,0 +1,68 @@
+<footer class="site-footer footer-v3">
+  <div class="footer-v3-main">
+    <div class="container">
+      <div class="footer-v3-grid">
+        <div class="footer-v3-col footer-v3-about">
+          <h4 class="footer-v3-company"><%= settings.footer_company_name || 'บริษัท เอสเจซี จำกัด (มหาชน) สำนักงานใหญ่' %></h4>
+          <p class="footer-v3-address"><%= settings.contact_address || '' %></p>
+
+          <% if (settings.contact_phone) { %>
+            <div class="footer-v3-phone-block">
+              <span class="footer-v3-phone-label"><%= currentLang === 'en' ? 'Customer Service' : currentLang === 'zh' ? '客户服务' : currentLang === 'ja' ? 'カスタマーサービス' : 'ศูนย์บริการลูกค้า' %></span>
+              <a href="tel:<%= settings.contact_phone.replace(/\s/g, '') %>" class="footer-v3-phone"><%= settings.contact_phone %></a>
+            </div>
+          <% } %>
+
+          <div class="footer-v3-follow">
+            <span><%= currentLang === 'en' ? 'Follow us' : currentLang === 'zh' ? '关注我们' : currentLang === 'ja' ? 'フォローする' : 'ติดตามเราได้ที่' %></span>
+            <div class="footer-v3-social">
+              <% if (settings.social_facebook) { %><a href="<%= settings.social_facebook %>" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a><% } %>
+              <% if (settings.social_youtube) { %><a href="<%= settings.social_youtube %>" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a><% } %>
+              <% if (settings.social_linkedin) { %><a href="<%= settings.social_linkedin %>" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a><% } %>
+              <% if (settings.social_line) { %><a href="<%= settings.social_line %>" target="_blank" rel="noopener" aria-label="LINE"><i class="fab fa-line"></i></a><% } %>
+              <% if (settings.social_instagram) { %><a href="<%= settings.social_instagram %>" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a><% } %>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-v3-col">
+          <ul class="footer-v3-list">
+            <% footerMenu.forEach(m => { %>
+              <li><a href="<%= m.url %>"><%= m.label %></a></li>
+            <% }); %>
+          </ul>
+        </div>
+
+        <div class="footer-v3-col">
+          <ul class="footer-v3-list">
+            <% footerMenu2.forEach(m => { %>
+              <li><a href="<%= m.url %>"><%= m.label %></a></li>
+            <% }); %>
+          </ul>
+        </div>
+
+        <div class="footer-v3-col footer-v3-discover">
+          <h4 class="footer-v3-discover-title"><%= currentLang === 'th' ? 'สำรวจเพิ่มเติม' : currentLang === 'zh' ? '探索更多' : currentLang === 'ja' ? 'さらに見る' : 'Discover More' %></h4>
+          <ul class="footer-v3-list">
+            <% footerMenu3.forEach(m => { %>
+              <li><a href="<%= m.url %>"><%= m.label %></a></li>
+            <% }); %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-v3-bottom">
+    <div class="container">
+      <div class="footer-v3-bottom-inner">
+        <p class="footer-v3-copyright"><%= settings.footer_copyright || '© 2026 SJC | All Rights Reserved' %></p>
+        <ul class="footer-v3-legal">
+          <li><a href="/page/privacy"><%= currentLang === 'th' ? 'นโยบายความเป็นส่วนตัว' : currentLang === 'zh' ? '隐私政策' : currentLang === 'ja' ? 'プライバシーポリシー' : 'Privacy Notice' %></a></li>
+          <li><a href="/page/cookies"><%= currentLang === 'th' ? 'นโยบายคุกกี้' : currentLang === 'zh' ? 'Cookies 政策' : currentLang === 'ja' ? 'Cookies ポリシー' : 'Cookies Policy' %></a></li>
+          <li><a href="/page/terms"><%= currentLang === 'th' ? 'ข้อกำหนดการใช้งาน' : currentLang === 'zh' ? '使用条款' : currentLang === 'ja' ? '利用規約' : 'Term of use' %></a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>

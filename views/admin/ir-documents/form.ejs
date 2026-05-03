@@ -1,0 +1,81 @@
+<div class="page-header">
+  <div>
+    <h2><%= isNew ? (adminLang === 'en' ? 'New Investor Document' : 'เอกสารนักลงทุนใหม่') : (adminLang === 'en' ? 'Edit Document' : 'แก้ไขเอกสาร') %></h2>
+  </div>
+  <a href="/<%= adminSlug %>/ir-documents" class="btn btn-outline"><i class="fas fa-arrow-left"></i> <%= adminLang === 'en' ? 'Back' : 'กลับ' %></a>
+</div>
+
+<form method="POST" action="<%= isNew ? '/' + adminSlug + '/ir-documents/new' : '/' + adminSlug + '/ir-documents/' + doc.id + '/edit' %>" enctype="multipart/form-data" class="card">
+  <div class="card-body">
+    <div class="form-group">
+      <label><%= adminLang === 'en' ? 'Title' : 'หัวข้อ' %> <span class="required">*</span></label>
+      <input type="text" name="title" value="<%= doc.title || '' %>" class="form-control" required placeholder="<%= adminLang === 'en' ? 'e.g. Annual Report 2025' : 'เช่น รายงานประจำปี 2568' %>">
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Category' : 'หมวดหมู่' %></label>
+        <select name="category" class="form-control">
+          <% if (typeof categories !== 'undefined' && categories && categories.length > 0) { %>
+            <% categories.forEach(c => { %>
+              <option value="<%= c.slug %>" <%= doc.category === c.slug ? 'selected' : '' %>>
+                <%= adminLang === 'en' && c.name_en ? c.name_en : c.name %>
+              </option>
+            <% }); %>
+          <% } else { %>
+            <option value="other"><%= adminLang === 'en' ? 'Other' : 'อื่นๆ' %></option>
+          <% } %>
+        </select>
+        <small class="text-muted" style="display:block;margin-top:4px;">
+          <a href="/<%= adminSlug %>/ir-documents"><%= adminLang === 'en' ? 'Manage categories' : 'จัดการหมวดหมู่' %> →</a>
+        </small>
+      </div>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Year' : 'ปี' %></label>
+        <input type="number" name="year" value="<%= doc.year || new Date().getFullYear() %>" class="form-control">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label><%= adminLang === 'en' ? 'Upload File (PDF, DOCX, XLSX)' : 'อัปโหลดไฟล์' %></label>
+      <input type="file" name="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx" class="form-control">
+      <% if (doc.file_path) { %>
+        <small class="text-muted" style="margin-top:6px;display:block;">
+          <%= adminLang === 'en' ? 'Current file:' : 'ไฟล์ปัจจุบัน:' %>
+          <a href="<%= doc.file_path %>" target="_blank"><%= doc.file_path %></a>
+          <%= doc.file_size ? '(' + Math.round(doc.file_size/1024) + ' KB)' : '' %>
+        </small>
+      <% } %>
+    </div>
+
+    <div class="form-group">
+      <label><%= adminLang === 'en' ? 'Or external URL' : 'หรือ URL ภายนอก' %></label>
+      <input type="text" name="file_url" value="<%= doc.file_path && doc.file_path.startsWith('http') ? doc.file_path : '' %>" class="form-control" placeholder="https://...">
+    </div>
+
+    <div class="form-group">
+      <label><%= adminLang === 'en' ? 'Description (optional)' : 'คำอธิบาย (ไม่บังคับ)' %></label>
+      <textarea name="description" rows="3" class="form-control"><%= doc.description || '' %></textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Sort Order' : 'ลำดับ' %></label>
+        <input type="number" name="sort_order" value="<%= doc.sort_order || 0 %>" class="form-control">
+      </div>
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" name="active" value="1" <%= doc.active ? 'checked' : '' %>>
+          <%= adminLang === 'en' ? 'Active (show on website)' : 'แสดง' %>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> <%= adminLang === 'en' ? 'Save Document' : 'บันทึกเอกสาร' %>
+      </button>
+      <a href="/<%= adminSlug %>/ir-documents" class="btn btn-outline"><%= adminLang === 'en' ? 'Cancel' : 'ยกเลิก' %></a>
+    </div>
+  </div>
+</form>

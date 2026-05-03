@@ -1,0 +1,55 @@
+<div class="topbar topbar-v3">
+  <div class="container">
+    <div class="topbar-inner">
+      <div class="topbar-left">
+        <% if (settings.country_label) { %>
+          <span class="country-tag"><%= settings.country_label %></span>
+        <% } else { %>
+          <span class="country-tag">Thailand</span>
+        <% } %>
+      </div>
+
+      <div class="topbar-center">
+        <% if (settings.stock_symbol) { %>
+          <div class="stock-ticker">
+            <span class="stock-symbol"><%= settings.stock_symbol %></span>
+            <span class="stock-price"><%= settings.stock_price || '0.00' %></span>
+            <% if (settings.stock_change) { %>
+              <span class="stock-change <%= settings.stock_change.startsWith('-') ? 'down' : 'up' %>">
+                <%= settings.stock_change %>
+              </span>
+            <% } %>
+          </div>
+        <% } %>
+      </div>
+
+      <div class="topbar-right">
+        <a href="/careers" class="topbar-link">ร่วมงานกับเรา</a>
+        <a href="/contact" class="topbar-link">ติดต่อเรา</a>
+
+        <div class="social-links">
+          <% if (settings.social_facebook) { %><a href="<%= settings.social_facebook %>" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a><% } %>
+          <% if (settings.social_line) { %><a href="<%= settings.social_line %>" target="_blank" rel="noopener" aria-label="LINE"><i class="fab fa-line"></i></a><% } %>
+          <% if (settings.social_youtube) { %><a href="<%= settings.social_youtube %>" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a><% } %>
+          <% if (settings.social_linkedin) { %><a href="<%= settings.social_linkedin %>" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a><% } %>
+        </div>
+
+        <% if (settings.enable_translate === '1') { %>
+        <div class="topbar-lang" id="topbarLang">
+          <button type="button" class="topbar-lang-toggle" aria-label="Language">
+            <span class="topbar-lang-code" id="topbarLangCode">TH</span>
+            <i class="fas fa-chevron-down topbar-lang-chev"></i>
+          </button>
+          <div class="topbar-lang-dropdown">
+            <a href="#" data-lang="th" class="topbar-lang-option active"><span>ไทย</span></a>
+            <a href="#" data-lang="en" class="topbar-lang-option"><span>English</span></a>
+            <a href="#" data-lang="zh-CN" class="topbar-lang-option"><span>中文</span></a>
+            <a href="#" data-lang="ja" class="topbar-lang-option"><span>日本語</span></a>
+          </div>
+        </div>
+        <% } %>
+
+      </div>
+    </div>
+  </div>
+</div>

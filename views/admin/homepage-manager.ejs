@@ -1,0 +1,365 @@
+<div class="page-header">
+  <div>
+    <h2><%= adminLang === 'en' ? 'Homepage Manager' : 'จัดการหน้าแรก' %></h2>
+    <p class="text-muted"><%= adminLang === 'en' ? 'All homepage sections, content, backgrounds, and opacity in one place' : 'ส่วนต่างๆ ของหน้าแรก เนื้อหา พื้นหลัง และความโปร่งใส ในที่เดียว' %></p>
+  </div>
+</div>
+
+<form method="POST" action="/<%= adminSlug %>/homepage-manager" enctype="multipart/form-data" class="hpm-form">
+
+  <!-- ===== Section: Visibility Toggles ===== -->
+  <div class="card hpm-card">
+    <div class="card-header">
+      <h3><i class="fas fa-eye"></i> <%= adminLang === 'en' ? 'Section Visibility' : 'การแสดงผลของแต่ละส่วน' %></h3>
+    </div>
+    <div class="card-body">
+      <p class="text-muted hpm-help"><%= adminLang === 'en' ? 'Toggle which sections appear on the homepage' : 'เปิด/ปิดการแสดงผลของแต่ละส่วนในหน้าแรก' %></p>
+      <div class="hpm-toggles">
+        <% const toggleKeys = ['home_show_about','home_show_businesses','home_show_news','home_show_sustainability','home_show_stats']; %>
+        <% toggleKeys.forEach(key => { if (settings[key]) { %>
+          <label class="hpm-toggle">
+            <input type="checkbox" name="<%= key %>" value="1" <%= settings[key].setting_value === '1' ? 'checked' : '' %>>
+            <span class="hpm-toggle-track"></span>
+            <span class="hpm-toggle-label"><%= settings[key].label %></span>
+          </label>
+        <% } }); %>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Section: About Block ===== -->
+  <% if (settings.home_about_title) { %>
+  <div class="card hpm-card hpm-section">
+    <div class="card-header hpm-card-header">
+      <h3><i class="fas fa-info-circle"></i> <%= adminLang === 'en' ? 'About Block' : 'ส่วน About' %></h3>
+      <span class="hpm-section-tag">Content</span>
+    </div>
+    <div class="card-body">
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Title' : 'หัวข้อ' %></label>
+        <input type="text" name="home_about_title" value="<%= settings.home_about_title.setting_value %>">
+      </div>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Text' : 'ข้อความ' %></label>
+        <textarea name="home_about_text" rows="3"><%= settings.home_about_text ? settings.home_about_text.setting_value : '' %></textarea>
+      </div>
+      <% if (settings.home_about_image) { %>
+        <%- include('partials/hpm-image-field', { setting: settings.home_about_image, adminSlug }) %>
+      <% } %>
+
+      <% if (settings.about_bg_image) { %>
+        <h4 class="hpm-bg-title"><%= adminLang === 'en' ? 'Section Background' : 'พื้นหลังของส่วนนี้' %></h4>
+        <%- include('partials/hpm-bg-field', { settingImg: settings.about_bg_image, settingOpacity: settings.about_bg_opacity, adminSlug, adminLang }) %>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- ===== Section: Highlights / News ===== -->
+  <div class="card hpm-card hpm-section">
+    <div class="card-header hpm-card-header">
+      <h3><i class="fas fa-newspaper"></i> <%= adminLang === 'en' ? 'SJC Highlights / News Section' : 'ส่วน SJC Highlights / ข่าวสาร' %></h3>
+      <span class="hpm-section-tag">News</span>
+    </div>
+    <div class="card-body">
+      <% if (settings.highlights_title) { %>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Highlights Title' : 'หัวข้อส่วน Highlights' %></label>
+        <input type="text" name="highlights_title" value="<%= settings.highlights_title.setting_value %>">
+      </div>
+      <% } %>
+      <% if (settings.feature_stories_lead) { %>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Feature Stories Lead Text' : 'คำนำของ Feature Stories' %></label>
+        <textarea name="feature_stories_lead" rows="2"><%= settings.feature_stories_lead.setting_value %></textarea>
+      </div>
+      <% } %>
+
+      <h4 class="hpm-bg-title"><%= adminLang === 'en' ? 'Section Background' : 'พื้นหลังของส่วนนี้' %></h4>
+      <% if (settings.highlights_bg_image) { %>
+        <%- include('partials/hpm-bg-field', { settingImg: settings.highlights_bg_image, settingOpacity: settings.highlights_bg_opacity, adminSlug, adminLang }) %>
+      <% } %>
+      <% if (settings.latest_news_bg_image) { %>
+        <h5 class="hpm-bg-subtitle"><%= adminLang === 'en' ? 'Latest News Background' : 'พื้นหลัง Latest News' %></h5>
+        <%- include('partials/hpm-bg-field', { settingImg: settings.latest_news_bg_image, settingOpacity: settings.latest_news_bg_opacity, adminSlug, adminLang }) %>
+      <% } %>
+      <% if (settings.feature_stories_bg_image) { %>
+        <h5 class="hpm-bg-subtitle"><%= adminLang === 'en' ? 'Feature Stories Background' : 'พื้นหลัง Feature Stories' %></h5>
+        <%- include('partials/hpm-bg-field', { settingImg: settings.feature_stories_bg_image, settingOpacity: settings.feature_stories_bg_opacity, adminSlug, adminLang }) %>
+      <% } %>
+    </div>
+  </div>
+
+  <!-- ===== Section: Business Panel / What We Do ===== -->
+  <div class="card hpm-card hpm-section">
+    <div class="card-header hpm-card-header">
+      <h3><i class="fas fa-briefcase"></i> <%= adminLang === 'en' ? 'What We Do / Business Panel' : 'ส่วน What We Do / ธุรกิจ' %></h3>
+      <span class="hpm-section-tag">Businesses</span>
+    </div>
+    <div class="card-body">
+
+      <!-- v46: Bilingual content fields -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-group">
+          <label><%= adminLang === 'en' ? 'Eyebrow (Thai)' : 'หัวข้อย่อย (ไทย)' %></label>
+          <input type="text" name="wwd_eyebrow_th" value="<%= settings.wwd_eyebrow_th ? settings.wwd_eyebrow_th.setting_value : 'ธุรกิจของเรา' %>">
+        </div>
+        <div class="form-group">
+          <label><%= adminLang === 'en' ? 'Eyebrow (English)' : 'หัวข้อย่อย (อังกฤษ)' %></label>
+          <input type="text" name="wwd_eyebrow_en" value="<%= settings.wwd_eyebrow_en ? settings.wwd_eyebrow_en.setting_value : 'OUR BUSINESSES' %>">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-group">
+          <label><%= adminLang === 'en' ? 'Title (Thai)' : 'หัวข้อหลัก (ไทย)' %></label>
+          <input type="text" name="wwd_title_th" value="<%= settings.wwd_title_th ? settings.wwd_title_th.setting_value : 'สิ่งที่เราทำ' %>">
+        </div>
+        <div class="form-group">
+          <label><%= adminLang === 'en' ? 'Title (English)' : 'หัวข้อหลัก (อังกฤษ)' %></label>
+          <input type="text" name="wwd_title_en" value="<%= settings.wwd_title_en ? settings.wwd_title_en.setting_value : 'What we do' %>">
+        </div>
+      </div>
+
+      <% if (settings.business_panel_desc) { %>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Description Text' : 'คำอธิบาย' %></label>
+        <textarea name="business_panel_desc" rows="2"><%= settings.business_panel_desc.setting_value %></textarea>
+      </div>
+      <% } %>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-group">
+          <label><%= adminLang === 'en' ? 'CTA Link Text (Thai)' : 'ข้อความปุ่ม CTA (ไทย)' %></label>
+          <input type="text" name="wwd_cta_th" value="<%= settings.wwd_cta_th ? settings.wwd_cta_th.setting_value : 'ดูธุรกิจทั้งหมด' %>">
+        </div>
+        <div class="form-group">
+          <label><%= adminLang === 'en' ? 'CTA Link Text (English)' : 'ข้อความปุ่ม CTA (อังกฤษ)' %></label>
+          <input type="text" name="wwd_cta_en" value="<%= settings.wwd_cta_en ? settings.wwd_cta_en.setting_value : 'Explore all businesses' %>">
+        </div>
+      </div>
+
+      <h4 style="margin:18px 0 10px;font-size:13px;color:#1a2540;border-top:1px solid #eee;padding-top:14px;"><%= adminLang === 'en' ? 'Stats Display' : 'สถิติที่แสดง' %></h4>
+      <p class="hpm-help" style="font-size:12px;color:#6b7280;"><%= adminLang === 'en' ? 'Stat 1 number is auto-counted from your businesses list. Edit only the labels.' : 'ตัวเลขสถิติที่ 1 นับอัตโนมัติจากจำนวนธุรกิจ แก้ไขเฉพาะ Label ได้' %></p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div class="form-group">
+          <label><%= adminLang === 'en' ? 'Stat 1 Label (Thai)' : 'Stat 1 Label (ไทย)' %></label>
+          <input type="text" name="wwd_stat1_label_th" value="<%= settings.wwd_stat1_label_th ? settings.wwd_stat1_label_th.setting_value : 'หน่วยธุรกิจ' %>">
+        </div>
+        <div class="form-group">
+          <label><%= adminLang === 'en' ? 'Stat 1 Label (English)' : 'Stat 1 Label (อังกฤษ)' %></label>
+          <input type="text" name="wwd_stat1_label_en" value="<%= settings.wwd_stat1_label_en ? settings.wwd_stat1_label_en.setting_value : 'Business Units' %>">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:auto 1fr 1fr;gap:14px;">
+        <div class="form-group">
+          <label><%= adminLang === 'en' ? 'Stat 2 Value' : 'Stat 2 ตัวเลข' %></label>
+          <input type="text" name="wwd_stat2_value" style="width:90px;" value="<%= settings.wwd_stat2_value ? settings.wwd_stat2_value.setting_value : '50+' %>">
+        </div>
+        <div class="form-group">
+          <label><%= adminLang === 'en' ? 'Stat 2 Label (Thai)' : 'Stat 2 Label (ไทย)' %></label>
+          <input type="text" name="wwd_stat2_label_th" value="<%= settings.wwd_stat2_label_th ? settings.wwd_stat2_label_th.setting_value : 'ปีประสบการณ์' %>">
+        </div>
+        <div class="form-group">
+          <label><%= adminLang === 'en' ? 'Stat 2 Label (English)' : 'Stat 2 Label (อังกฤษ)' %></label>
+          <input type="text" name="wwd_stat2_label_en" value="<%= settings.wwd_stat2_label_en ? settings.wwd_stat2_label_en.setting_value : 'Years Experience' %>">
+        </div>
+      </div>
+
+      <h4 class="hpm-bg-title" style="margin-top:18px;border-top:1px solid #eee;padding-top:14px;"><%= adminLang === 'en' ? 'Section Background' : 'พื้นหลัง' %></h4>
+      <% if (settings.whatwedo_bg_image) { %>
+        <%- include('partials/hpm-bg-field', { settingImg: settings.whatwedo_bg_image, settingOpacity: settings.whatwedo_bg_opacity, adminSlug, adminLang }) %>
+      <% } %>
+      <p class="hpm-help-note"><%= adminLang === 'en' ? 'To add/edit/reorder business cards, go to' : 'แก้ไขรายการธุรกิจที่หน้า' %> <a href="/<%= adminSlug %>/businesses"><%= adminLang === 'en' ? 'Businesses page' : 'จัดการธุรกิจ' %> →</a></p>
+    </div>
+  </div>
+
+  <!-- ===== Section: Stats / Metrics ===== -->
+  <% if (settings.home_stats_1_number) { %>
+  <div class="card hpm-card hpm-section">
+    <div class="card-header hpm-card-header">
+      <h3><i class="fas fa-chart-bar"></i> <%= adminLang === 'en' ? 'Stats / Numbers Section' : 'ส่วน Stats / ตัวเลข' %></h3>
+      <span class="hpm-section-tag">Numbers</span>
+    </div>
+    <div class="card-body">
+      <div class="hpm-stats-grid">
+        <% [1,2,3,4,5].forEach(idx => { %>
+          <% if (settings['home_stats_' + idx + '_number']) { %>
+          <div class="hpm-stat-block">
+            <h5>Stat <%= idx %></h5>
+            <div class="form-row">
+              <div class="form-group">
+                <label><%= adminLang === 'en' ? 'Number' : 'ตัวเลข' %></label>
+                <input type="text" name="home_stats_<%= idx %>_number" value="<%= settings['home_stats_' + idx + '_number'].setting_value %>">
+              </div>
+              <% if (settings['home_stats_' + idx + '_unit']) { %>
+              <div class="form-group">
+                <label><%= adminLang === 'en' ? 'Unit' : 'หน่วย' %></label>
+                <input type="text" name="home_stats_<%= idx %>_unit" value="<%= settings['home_stats_' + idx + '_unit'].setting_value %>">
+              </div>
+              <% } %>
+            </div>
+            <div class="form-group">
+              <label><%= adminLang === 'en' ? 'Label' : 'คำอธิบาย' %></label>
+              <input type="text" name="home_stats_<%= idx %>_label" value="<%= settings['home_stats_' + idx + '_label'].setting_value %>">
+            </div>
+          </div>
+          <% } %>
+        <% }); %>
+      </div>
+
+      <h4 class="hpm-bg-title"><%= adminLang === 'en' ? 'Section Background' : 'พื้นหลัง' %></h4>
+      <% if (settings.metrics_bg_image) { %>
+        <%- include('partials/hpm-bg-field', { settingImg: settings.metrics_bg_image, settingOpacity: settings.metrics_bg_opacity, adminSlug, adminLang }) %>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- ===== Section: IR Panel ===== -->
+  <% if (settings.ir_bg_image) { %>
+  <div class="card hpm-card hpm-section">
+    <div class="card-header hpm-card-header">
+      <h3><i class="fas fa-chart-line"></i> <%= adminLang === 'en' ? 'Investor Relations Panel' : 'ส่วน IR / Investor Relations' %></h3>
+      <span class="hpm-section-tag">IR</span>
+    </div>
+    <div class="card-body">
+      <h4 class="hpm-bg-title"><%= adminLang === 'en' ? 'Section Background' : 'พื้นหลัง' %></h4>
+      <%- include('partials/hpm-bg-field', { settingImg: settings.ir_bg_image, settingOpacity: settings.ir_bg_opacity, adminSlug, adminLang }) %>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- ===== Section: Big Banner ===== -->
+  <% if (settings.big_banner_image) { %>
+  <div class="card hpm-card hpm-section">
+    <div class="card-header hpm-card-header">
+      <h3><i class="fas fa-image"></i> <%= adminLang === 'en' ? 'Single Image Banner' : 'แบนเนอร์รูปเดียว' %></h3>
+      <span class="hpm-section-tag">Banner</span>
+    </div>
+    <div class="card-body">
+      <p class="text-muted hpm-help"><%= adminLang === 'en' ? 'A simple full-width image banner that shows on the homepage. Just upload an image — no text/buttons.' : 'แบนเนอร์รูปเดียวขนาดเต็มความกว้างที่แสดงในหน้าแรก เพียงแค่อัปโหลดภาพ' %></p>
+
+      <% if (settings.big_banner_image) { %>
+        <div style="margin-bottom:6px;font-weight:600;font-size:13px;color:#1a2540;">
+          <i class="fas fa-desktop"></i> <%= adminLang === 'en' ? 'Desktop banner image' : 'ภาพแบนเนอร์เดสก์ท็อป' %>
+        </div>
+        <%- include('partials/hpm-image-field', { setting: settings.big_banner_image, adminSlug }) %>
+      <% } %>
+
+      <% if (settings.big_banner_image_mobile) { %>
+        <hr style="margin:18px 0;border:0;border-top:1px solid #e5e7eb;">
+        <div style="margin-bottom:6px;font-weight:600;font-size:13px;color:#1a2540;">
+          <i class="fas fa-mobile-alt"></i> <%= adminLang === 'en' ? 'Mobile banner image (optional)' : 'ภาพแบนเนอร์มือถือ (ไม่บังคับ)' %>
+        </div>
+        <p class="text-muted" style="font-size:12px;margin-bottom:10px;">
+          <%= adminLang === 'en' ? 'Recommended: 750x900px portrait. If empty, desktop image is shown on mobile too.' : 'แนะนำ 750x900px แนวตั้ง ถ้าเว้นว่างจะใช้ภาพเดสก์ท็อปบนมือถือด้วย' %>
+        </p>
+        <%- include('partials/hpm-image-field', { setting: settings.big_banner_image_mobile, adminSlug }) %>
+      <% } %>
+
+      <% if (settings.big_banner_url) { %>
+      <div class="form-group">
+        <label><%= adminLang === 'en' ? 'Click URL (optional)' : 'ลิงก์เมื่อกด (ไม่บังคับ)' %></label>
+        <input type="text" name="big_banner_url" value="<%= settings.big_banner_url.setting_value %>" placeholder="/about <%= adminLang === 'en' ? 'or' : 'หรือ' %> https://...">
+        <small><%= adminLang === 'en' ? 'If filled, the banner becomes a clickable link' : 'ถ้ากรอก แบนเนอร์จะคลิกได้' %></small>
+      </div>
+      <% } %>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- ===== Section: Default Banners (fallback for posts without their own banner) ===== -->
+  <% if (settings.default_news_banner) { %>
+  <div class="card hpm-card hpm-section">
+    <div class="card-header hpm-card-header">
+      <h3><i class="fas fa-images"></i> <%= adminLang === 'en' ? 'Default Banners & Thumbnails' : 'แบนเนอร์เริ่มต้น' %></h3>
+      <span class="hpm-section-tag">Defaults</span>
+    </div>
+    <div class="card-body">
+      <p class="text-muted hpm-help">
+        <%= adminLang === 'en' ? 'These images are shown when a post has no banner/thumbnail of its own. Recommended sizes: Banners 1920×600px, Thumbnails 800×600px.' : 'ภาพเหล่านี้จะแสดงเมื่อโพสต์ไม่มีแบนเนอร์/ภาพย่อของตัวเอง ขนาดแนะนำ: แบนเนอร์ 1920×600px ภาพย่อ 800×600px' %>
+      </p>
+
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;">
+        <% if (settings.default_news_banner) { %>
+          <div>
+            <div style="font-weight:600;margin-bottom:6px;"><i class="fas fa-newspaper"></i> <%= adminLang === 'en' ? 'News Banner' : 'แบนเนอร์ข่าว' %></div>
+            <%- include('partials/hpm-image-field', { setting: settings.default_news_banner, adminSlug }) %>
+          </div>
+        <% } %>
+        <% if (settings.default_news_thumb) { %>
+          <div>
+            <div style="font-weight:600;margin-bottom:6px;"><i class="fas fa-image"></i> <%= adminLang === 'en' ? 'News Thumbnail' : 'ภาพย่อข่าว' %></div>
+            <%- include('partials/hpm-image-field', { setting: settings.default_news_thumb, adminSlug }) %>
+          </div>
+        <% } %>
+        <% if (settings.default_business_banner) { %>
+          <div>
+            <div style="font-weight:600;margin-bottom:6px;"><i class="fas fa-briefcase"></i> <%= adminLang === 'en' ? 'Business Banner' : 'แบนเนอร์ธุรกิจ' %></div>
+            <%- include('partials/hpm-image-field', { setting: settings.default_business_banner, adminSlug }) %>
+          </div>
+        <% } %>
+        <% if (settings.default_business_thumb) { %>
+          <div>
+            <div style="font-weight:600;margin-bottom:6px;"><i class="fas fa-image"></i> <%= adminLang === 'en' ? 'Business Thumbnail' : 'ภาพย่อธุรกิจ' %></div>
+            <%- include('partials/hpm-image-field', { setting: settings.default_business_thumb, adminSlug }) %>
+          </div>
+        <% } %>
+        <% if (settings.default_career_banner) { %>
+          <div>
+            <div style="font-weight:600;margin-bottom:6px;"><i class="fas fa-user-tie"></i> <%= adminLang === 'en' ? 'Career Banner' : 'แบนเนอร์งาน' %></div>
+            <%- include('partials/hpm-image-field', { setting: settings.default_career_banner, adminSlug }) %>
+          </div>
+        <% } %>
+        <% if (settings.default_sustainability_banner) { %>
+          <div>
+            <div style="font-weight:600;margin-bottom:6px;"><i class="fas fa-leaf"></i> <%= adminLang === 'en' ? 'Sustainability Banner' : 'แบนเนอร์ความยั่งยืน' %></div>
+            <%- include('partials/hpm-image-field', { setting: settings.default_sustainability_banner, adminSlug }) %>
+          </div>
+        <% } %>
+        <% if (settings.default_sustainability_thumb) { %>
+          <div>
+            <div style="font-weight:600;margin-bottom:6px;"><i class="fas fa-image"></i> <%= adminLang === 'en' ? 'Sustainability Thumbnail' : 'ภาพย่อความยั่งยืน' %></div>
+            <%- include('partials/hpm-image-field', { setting: settings.default_sustainability_thumb, adminSlug }) %>
+          </div>
+        <% } %>
+        <% if (settings.default_page_banner) { %>
+          <div style="grid-column: 1 / -1;">
+            <div style="font-weight:600;margin-bottom:6px;color:#c8102e;">
+              <i class="fas fa-star"></i> <%= adminLang === 'en' ? 'MASTER DEFAULT BANNER (all pages)' : 'แบนเนอร์เริ่มต้นหลัก (ทุกหน้า)' %>
+            </div>
+            <small style="display:block;color:#6b7280;margin-bottom:8px;">
+              <%= adminLang === 'en' ? 'This banner is used as a fallback on ANY page (about, contact, innovation, investor, etc.) that has no banner of its own. Recommended: 1920×600px.' : 'แบนเนอร์นี้ใช้เป็นค่าเริ่มต้นสำหรับทุกหน้า (about, contact, innovation, investor ฯลฯ) ที่ไม่มีแบนเนอร์ของตัวเอง แนะนำ 1920×600px' %>
+            </small>
+            <%- include('partials/hpm-image-field', { setting: settings.default_page_banner, adminSlug }) %>
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- ===== Section: Careers CTA ===== -->
+  <% if (settings.careers_bg_image) { %>
+  <div class="card hpm-card hpm-section">
+    <div class="card-header hpm-card-header">
+      <h3><i class="fas fa-user-tie"></i> <%= adminLang === 'en' ? 'Careers CTA' : 'แบนเนอร์ Careers' %></h3>
+      <span class="hpm-section-tag">Careers</span>
+    </div>
+    <div class="card-body">
+      <h4 class="hpm-bg-title"><%= adminLang === 'en' ? 'Background' : 'พื้นหลัง' %></h4>
+      <%- include('partials/hpm-bg-field', { settingImg: settings.careers_bg_image, settingOpacity: settings.careers_bg_opacity, adminSlug, adminLang }) %>
+    </div>
+  </div>
+  <% } %>
+
+  <!-- ===== Save Button (sticky bottom) ===== -->
+  <div class="hpm-save-bar">
+    <button type="submit" class="btn btn-primary btn-large">
+      <i class="fas fa-save"></i> <%= adminLang === 'en' ? 'Save All Changes' : 'บันทึกทั้งหมด' %>
+    </button>
+    <a href="/" target="_blank" class="btn btn-outline">
+      <i class="fas fa-external-link-alt"></i> <%= adminLang === 'en' ? 'Preview Homepage' : 'ดูหน้าแรก' %>
+    </a>
+  </div>
+</form>

@@ -1,0 +1,111 @@
+<div class="page-header">
+  <div>
+    <h2><%= item.id ? 'แก้ไขรายการ' : 'เพิ่มรายการใหม่' %></h2>
+  </div>
+  <a href="/<%= adminSlug %>/sustainability" class="btn btn-outline"><i class="fas fa-arrow-left"></i> <%= adminLang === 'en' ? 'Back' : 'กลับ' %></a>
+</div>
+
+<form method="POST" action="/<%= adminSlug %>/sustainability<%= item.id ? '/' + item.id : '' %>" enctype="multipart/form-data">
+  <div class="form-grid">
+    <div class="form-main">
+      <div class="card">
+        <div class="card-body">
+          <div class="form-group">
+            <label><%= adminLang === 'en' ? 'Title' : 'หัวข้อ' %> <span class="required">*</span></label>
+            <input type="text" name="title" value="<%= item.title || '' %>" required>
+          </div>
+
+          <div class="form-group">
+            <label><%= adminLang === "en" ? "Category" : "หมวดหมู่" %></label>
+            <input type="text" name="category" value="<%= item.category || '' %>" placeholder="เช่น สิ่งแวดล้อม, สังคม, ธรรมาภิบาล">
+          </div>
+
+          <div class="form-group">
+            <label>คำอธิบายสั้น</label>
+            <textarea name="short_description" rows="2"><%= item.short_description || '' %></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>คำอธิบายเต็ม</label>
+            <textarea name="full_description" class="rich-editor" rows="12"><%= item.full_description || '' %></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-side">
+      <div class="card">
+        <div class="card-body">
+          <h4><%= adminLang === 'en' ? 'Publishing' : 'การเผยแพร่' %></h4>
+          <div class="form-group">
+            <label class="check-label">
+              <input type="checkbox" name="active" value="1" <%= item.active === undefined || item.active ? 'checked' : '' %>>
+              <span>แสดงบนเว็บไซต์</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label>ลำดับการแสดง</label>
+            <input type="number" name="sort_order" value="<%= item.sort_order || 0 %>" min="0">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-save"></i> <%= adminLang === 'en' ? 'Save' : 'บันทึก' %>
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4>รูปย่อ</h4>
+          <div class="image-hint">
+            <i class="fas fa-info-circle"></i>
+            <strong><%= adminLang === 'en' ? 'Recommended size:' : 'ขนาดที่แนะนำ:' %></strong> 800×600px
+          </div>
+          <% if (item.thumbnail) { %>
+            <div class="current-image"><img src="<%= item.thumbnail %>" alt=""></div>
+          <% } %>
+          <label class="upload-area">
+            <input type="file" name="thumbnail" accept="image/*">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span><%= adminLang === 'en' ? 'Choose image' : 'เลือกรูป' %></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4><%= adminLang === 'en' ? 'Banner image' : 'รูปแบนเนอร์' %></h4>
+          <div class="image-hint">
+            <i class="fas fa-info-circle"></i>
+            <strong><%= adminLang === 'en' ? 'Recommended size:' : 'ขนาดที่แนะนำ:' %></strong> 1920×600px
+          </div>
+          <% if (item.banner) { %>
+            <div class="current-image"><img src="<%= item.banner %>" alt=""></div>
+          <% } %>
+          <label class="upload-area">
+            <input type="file" name="banner" accept="image/*">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span><%= adminLang === 'en' ? 'Choose image' : 'เลือกรูป' %></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  tinymce.init({
+    selector: '.rich-editor',
+    height: 400,
+    plugins: 'lists link image media table code preview',
+    toolbar: 'undo redo | blocks | bold italic | bullist numlist | link image | code',
+    images_upload_url: '/api/upload-image',
+    images_upload_handler: function (blobInfo) {
+      return new Promise((resolve, reject) => {
+        const fd = new FormData();
+        fd.append('file', blobInfo.blob(), blobInfo.filename());
+        fetch('/api/upload-image', { method: 'POST', body: fd })
+          .then(r => r.json()).then(d => d.location ? resolve(d.location) : reject('Upload failed'));
+      });
+    }
+  });
+</script>

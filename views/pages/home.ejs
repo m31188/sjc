@@ -1,0 +1,404 @@
+<!-- Helper: pick custom bg or fallback, also expose opacity as CSS var -->
+<%
+function bgStyle(imgKey, fallbackColor, opacityKey) {
+  var img = (settings && settings[imgKey]) ? String(settings[imgKey]) : '';
+  var op = 92;
+  if (opacityKey && settings && settings[opacityKey]) {
+    var v = parseInt(settings[opacityKey], 10);
+    if (!isNaN(v)) op = Math.max(0, Math.min(100, v));
+  }
+  if (img && img.trim()) {
+    return "background-image: url('" + img + "'); background-size: cover; background-position: center; --bg-opacity: " + (op / 100) + ";";
+  }
+  if (fallbackColor) return "background: " + fallbackColor + ";";
+  return '';
+}
+// Lang-aware field picker: returns *_en when site is in English mode, falls back to TH
+const _curLang = typeof currentLang !== 'undefined' ? currentLang : 'th';
+const _isEN = _curLang !== 'th';
+function _lf(obj, key) {
+  if (!obj) return '';
+  if (_curLang !== 'th') {
+    const lk = key + '_' + _curLang;
+    if (obj[lk] && String(obj[lk]).trim()) return obj[lk];
+  }
+  return obj[key] || '';
+}
+%>
+
+<!-- ===== HERO SLIDER V3 ===== -->
+<% if (sliders && sliders.length > 0) { %>
+<section class="hero-v3">
+  <div class="swiper hero-swiper">
+    <div class="swiper-wrapper">
+      <% sliders.forEach((s, i) => { %>
+        <div class="swiper-slide hero-slide-v3">
+          <% if (s.video_url && s.video_url.trim()) { %>
+            <video class="hero-bg-video" autoplay muted loop playsinline poster="<%= s.image %>">
+              <source src="<%= s.video_url %>" type="video/mp4">
+            </video>
+          <% } else { %>
+            <!-- Desktop: CSS background. Mobile: real img scales naturally -->
+            <div class="hero-bg-v3" style="background-image: url('<%= s.image %>')"></div>
+            <img src="<%= s.mobile_image || s.image %>" alt="" class="hero-img-mobile">
+          <% } %>
+          <div class="hero-gradient-v3"></div>
+          <div class="container">
+            <div class="hero-content-v3 text-<%= s.text_position %>" style="color: <%= s.text_color %>">
+              <% if (s.subtitle) { %>
+                <div class="hero-eyebrow-v3" data-aos="fade-up"><%= s.subtitle %></div>
+              <% } %>
+              <% if (s.title) { %>
+                <h1 class="hero-title-v3" data-aos="fade-up" data-aos-delay="100"><%= s.title %></h1>
+              <% } %>
+              <% if (s.description) { %>
+                <p class="hero-desc-v3" data-aos="fade-up" data-aos-delay="200"><%= s.description %></p>
+              <% } %>
+              <% if (s.button_text && s.button_url) { %>
+                <a href="<%= s.button_url %>" class="btn-hero-v3" data-aos="fade-up" data-aos-delay="300">
+                  <span><%= s.button_text %></span>
+                  <i class="fas fa-arrow-right"></i>
+                </a>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+
+    <div class="hero-controls-v3">
+      <div class="container">
+        <div class="hero-controls-inner">
+          <button type="button" class="hero-prev-v3" aria-label="ก่อนหน้า"><i class="fas fa-chevron-left"></i></button>
+          <button type="button" class="hero-next-v3" aria-label="ถัดไป"><i class="fas fa-chevron-right"></i></button>
+          <div class="hero-counter">
+            <span class="hero-current">01</span> / <span class="hero-total">0<%= sliders.length %></span>
+          </div>
+          <div class="hero-progress">
+            <div class="hero-progress-bar"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- ===== SCG HIGHLIGHTS V8 - Horizontal Cards (matches screenshot) ===== -->
+<% if (featuredNews && featuredNews.length > 0) { %>
+<section class="hl8-section has-custom-bg" style="<%- bgStyle('highlights_bg_image', '', 'highlights_bg_opacity') %>">
+  <div class="hl8-bg-pattern"></div>
+  <div class="container">
+    <h2 class="hl8-title">SJC Highlights</h2>
+
+    <div class="hl8-list">
+      <% featuredNews.slice(0, 3).forEach((n, i) => { %>
+        <a href="/news/<%= n.slug %>" class="hl8-row" data-aos="fade-up" data-aos-delay="<%= i * 80 %>">
+          <div class="hl8-img">
+            <img src="<%= n.thumbnail || (settings.default_news_thumb || '/images/news-placeholder.jpg') %>" alt="<%= _lf(n, 'title') %>" loading="lazy">
+          </div>
+          <div class="hl8-body">
+            <h3 class="hl8-row-title"><%= _lf(n, 'title') %></h3>
+            <p class="hl8-row-excerpt"><%= truncate(_lf(n, 'excerpt') || _lf(n, 'content'), 130) %></p>
+          </div>
+          <span class="hl8-arrow <%= i === 0 ? 'hl8-arrow-active' : '' %>" aria-label="อ่านต่อ">
+            <i class="fas fa-chevron-right"></i>
+          </span>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- ===== LATEST NEWS V3.3 (LIST VIEW like screenshot) ===== -->
+<% if (settings.home_show_news === '1' && recentNews && recentNews.length > 0) { %>
+<section class="latest-news-v3 has-custom-bg" style="<%- bgStyle('latest_news_bg_image', '', 'latest_news_bg_opacity') %>">
+  <div class="section-bg-overlay"></div>
+  <div class="container">
+    <div class="latest-news-header">
+      <div>
+        <div class="block-eyebrow">LATEST UPDATES</div>
+        <h2 class="block-title">Latest News</h2>
+      </div>
+      <a href="/news" class="btn-pill"><%= tUI('btn.view_all') %> <i class="fas fa-chevron-right"></i></a>
+    </div>
+
+    <div class="news-list-view">
+      <% recentNews.slice(0, 3).forEach((n, i) => { %>
+        <a href="/news/<%= n.slug %>" class="news-list-row" data-aos="fade-up" data-aos-delay="<%= i * 80 %>">
+          <div class="news-list-img">
+            <img src="<%= n.thumbnail || (settings.default_news_thumb || '/images/news-placeholder.jpg') %>" alt="<%= _lf(n, 'title') %>" loading="lazy">
+          </div>
+          <div class="news-list-body">
+            <div class="news-list-meta">
+              <% if (n.category_name) { %>
+                <span class="news-list-cat"><%= n.category_name %></span>
+              <% } %>
+              <span class="news-list-date"><i class="far fa-calendar"></i> <%= formatThaiDate(n.published_at, { short: true }) %></span>
+            </div>
+            <h3 class="news-list-title"><%= _lf(n, 'title') %></h3>
+            <p class="news-list-excerpt"><%= truncate(_lf(n, 'excerpt') || _lf(n, 'content'), 180) %></p>
+          </div>
+          <div class="news-list-arrow">
+            <i class="fas fa-chevron-right"></i>
+          </div>
+        </a>
+      <% }); %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- ===== SINGLE IMAGE BANNER (no text/buttons) - moved before WWD per request ===== -->
+<% if (settings.big_banner_image) { %>
+<section class="single-banner">
+  <% if (settings.big_banner_url) { %>
+    <a href="<%= settings.big_banner_url %>" class="single-banner-link">
+      <picture>
+        <% if (settings.big_banner_image_mobile) { %>
+          <source media="(max-width: 768px)" srcset="<%= settings.big_banner_image_mobile %>">
+        <% } %>
+        <img src="<%= settings.big_banner_image %>" alt="" class="single-banner-img">
+      </picture>
+    </a>
+  <% } else { %>
+    <picture>
+      <% if (settings.big_banner_image_mobile) { %>
+        <source media="(max-width: 768px)" srcset="<%= settings.big_banner_image_mobile %>">
+      <% } %>
+      <img src="<%= settings.big_banner_image %>" alt="" class="single-banner-img">
+    </picture>
+  <% } %>
+</section>
+<% } %>
+
+<!-- ===== WHAT WE DO V11 - Static Left Panel + 3-Card Carousel Right (desktop) ===== -->
+<% if (settings.home_show_businesses === '1' && businesses && businesses.length > 0) { %>
+<section class="wwd11-section has-custom-bg" style="<%- bgStyle('whatwedo_bg_image', '', 'whatwedo_bg_opacity') %>">
+  <div class="container">
+    <div class="wwd11-grid">
+
+      <!-- LEFT: Static info panel (desktop only - moves above carousel on mobile) -->
+      <aside class="wwd11-info">
+        <%
+          const _isEn = adminLang === 'en';
+          const _wwdEyebrow = (_isEn ? settings.wwd_eyebrow_en : settings.wwd_eyebrow_th) ||
+                              settings.wwd_eyebrow_th || (_isEn ? 'OUR BUSINESSES' : 'ธุรกิจของเรา');
+          const _wwdTitle = (_isEn ? settings.wwd_title_en : settings.wwd_title_th) ||
+                            settings.wwd_title_th || (_isEn ? 'What we do' : 'สิ่งที่เราทำ');
+          const _wwdCta = (_isEn ? settings.wwd_cta_en : settings.wwd_cta_th) ||
+                          settings.wwd_cta_th || (_isEn ? 'Explore all businesses' : 'ดูธุรกิจทั้งหมด');
+          const _wwdStat1Label = (_isEn ? settings.wwd_stat1_label_en : settings.wwd_stat1_label_th) ||
+                                  settings.wwd_stat1_label_th || (_isEn ? 'Business Units' : 'หน่วยธุรกิจ');
+          const _wwdStat2Value = settings.wwd_stat2_value || '50+';
+          const _wwdStat2Label = (_isEn ? settings.wwd_stat2_label_en : settings.wwd_stat2_label_th) ||
+                                  settings.wwd_stat2_label_th || (_isEn ? 'Years Experience' : 'ปีประสบการณ์');
+        %>
+        <span class="wwd11-eyebrow"><%= _wwdEyebrow %></span>
+        <h2 class="wwd11-title"><%= _wwdTitle %></h2>
+        <p class="wwd11-desc">
+          <%= settings.business_panel_desc || (_isEn
+              ? 'A diversified group driven by innovation and sustainability, delivering quality and value across multiple industries.'
+              : 'กลุ่มธุรกิจหลากหลายที่ขับเคลื่อนด้วยนวัตกรรมและความยั่งยืน ส่งมอบคุณภาพและคุณค่าครอบคลุมหลายอุตสาหกรรม') %>
+        </p>
+
+        <div class="wwd11-stats">
+          <div class="wwd11-stat">
+            <div class="wwd11-stat-num"><%= businesses.length %>+</div>
+            <div class="wwd11-stat-label"><%= _wwdStat1Label %></div>
+          </div>
+          <div class="wwd11-stat">
+            <div class="wwd11-stat-num"><%= _wwdStat2Value %></div>
+            <div class="wwd11-stat-label"><%= _wwdStat2Label %></div>
+          </div>
+        </div>
+
+        <a href="/businesses" class="wwd11-cta-link">
+          <%= _wwdCta %>
+          <i class="fas fa-arrow-right"></i>
+        </a>
+
+        <!-- Nav arrows shown on desktop in the info panel -->
+        <div class="wwd11-nav">
+          <button type="button" class="wwd11-nav-prev" aria-label="Previous"><i class="fas fa-chevron-left"></i></button>
+          <button type="button" class="wwd11-nav-next" aria-label="Next"><i class="fas fa-chevron-right"></i></button>
+        </div>
+      </aside>
+
+      <!-- RIGHT: 3-card carousel -->
+      <div class="wwd11-carousel">
+        <div class="swiper wwd11-swiper">
+          <div class="swiper-wrapper">
+            <% businesses.forEach((b, idx) => { %>
+              <div class="swiper-slide">
+                <a href="/businesses/<%= b.slug %>" class="wwd11-card">
+                  <div class="wwd11-card-img">
+                    <img src="<%= b.thumbnail || (settings.default_business_thumb || '/images/business-placeholder.jpg') %>"
+                         alt="<%= _lf(b, 'name') %>" loading="lazy">
+                    <span class="wwd11-card-num"><%= String(idx + 1).padStart(2, '0') %></span>
+                  </div>
+                  <div class="wwd11-card-body">
+                    <h3 class="wwd11-card-title"><%= _lf(b, 'name') %></h3>
+                    <% if (b.short_description) { %>
+                      <p class="wwd11-card-desc"><%= _lf(b, 'short_description') %></p>
+                    <% } %>
+                    <span class="wwd11-card-cta">
+                      <%= tUI('btn.learn_more') %>
+                      <i class="fas fa-arrow-right"></i>
+                    </span>
+                  </div>
+                </a>
+              </div>
+            <% }); %>
+          </div>
+        </div>
+        <div class="wwd11-pagination"></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+<script>
+(function() {
+  function initWwd11() {
+    if (typeof Swiper === 'undefined') return false;
+    if (window.__wwd11Inited) return true;
+    var container = document.querySelector('.wwd11-swiper');
+    var prev = document.querySelector('.wwd11-nav-prev');
+    var next = document.querySelector('.wwd11-nav-next');
+    var pag = document.querySelector('.wwd11-pagination');
+    if (!container) return false;
+    window.__wwd11Inited = true;
+    var slideCount = container.querySelectorAll('.swiper-slide').length;
+    var canLoop = slideCount > 6;
+    try {
+      new Swiper(container, {
+        slidesPerView: 1,
+        spaceBetween: 16,
+        grabCursor: true,
+        loop: canLoop,
+        loopAdditionalSlides: canLoop ? 3 : 0,
+        speed: 600,
+        autoplay: canLoop ? { delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true } : false,
+        observer: true,
+        observeParents: true,
+        watchOverflow: true,
+        pagination: pag ? { el: pag, clickable: true } : false,
+        navigation: (prev && next) ? { prevEl: prev, nextEl: next } : false,
+        breakpoints: {
+          576:  { slidesPerView: 2, spaceBetween: 18 },
+          900:  { slidesPerView: 3, spaceBetween: 20 }
+        }
+      });
+    } catch(e) {
+      console.error('WWD11 Swiper init failed:', e);
+      window.__wwd11Inited = false;
+      return false;
+    }
+    return true;
+  }
+  if (!initWwd11()) {
+    window.addEventListener('load', initWwd11);
+    var tries = 0;
+    var iv = setInterval(function() {
+      tries++;
+      if (initWwd11() || tries > 50) clearInterval(iv);
+    }, 100);
+  }
+})();
+</script>
+<% } %>
+
+<!-- ===== METRICS V4 (Modern stat cards) ===== -->
+<% if (settings.home_show_stats === '1') { %>
+<section class="metrics-v4 has-custom-bg" style="<%- bgStyle('metrics_bg_image', '', 'metrics_bg_opacity') %>">
+  <div class="metrics-v4-bg"></div>
+  <div class="container">
+    <div class="metrics-v4-header" data-aos="fade-up">
+      <div class="block-eyebrow eyebrow-light">BY THE NUMBERS</div>
+      <h2 class="metrics-v4-title">SJC by the Numbers</h2>
+      <p class="metrics-v4-intro">ผลงานและความก้าวหน้าในการดำเนินธุรกิจอย่างยั่งยืน</p>
+    </div>
+
+    <div class="metrics-v4-grid">
+      <div class="metric-v4 metric-v4-large" data-aos="fade-up">
+        <div class="metric-v4-icon"><i class="fas fa-leaf"></i></div>
+        <div class="metric-v4-content">
+          <div class="metric-v4-num"><%= settings.home_stats_1_number %></div>
+          <div class="metric-v4-label"><%= settings.home_stats_1_label %></div>
+        </div>
+      </div>
+
+      <div class="metric-v4" data-aos="fade-up" data-aos-delay="80">
+        <div class="metric-v4-icon"><i class="fas fa-globe-asia"></i></div>
+        <div class="metric-v4-content">
+          <div class="metric-v4-num"><%= settings.home_stats_2_number %></div>
+          <div class="metric-v4-label"><%= settings.home_stats_2_label %></div>
+        </div>
+      </div>
+
+      <div class="metric-v4" data-aos="fade-up" data-aos-delay="160">
+        <div class="metric-v4-icon"><i class="fas fa-building"></i></div>
+        <div class="metric-v4-content">
+          <div class="metric-v4-num"><%= settings.home_stats_3_number %></div>
+          <div class="metric-v4-label"><%= settings.home_stats_3_label %></div>
+        </div>
+      </div>
+
+      <div class="metric-v4" data-aos="fade-up" data-aos-delay="240">
+        <div class="metric-v4-icon"><i class="fas fa-flask"></i></div>
+        <div class="metric-v4-content">
+          <div class="metric-v4-num"><%= settings.home_stats_4_number %></div>
+          <div class="metric-v4-label"><%= settings.home_stats_4_label %></div>
+        </div>
+      </div>
+
+      <div class="metric-v4 metric-v4-feature" data-aos="fade-up" data-aos-delay="320">
+        <div class="metric-v4-feature-bg"></div>
+        <div class="metric-v4-feature-content">
+          <i class="fas fa-trophy metric-v4-feature-icon"></i>
+          <div class="metric-v4-num">TOP <span class="metric-v4-pct">1%</span></div>
+          <div class="metric-v4-label">Sustainability Index<br>S&P Global ESG</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<!-- ===== INVESTOR RELATIONS PANEL ===== -->
+<section class="ir-panel-v3 has-custom-bg" style="<%- bgStyle('ir_bg_image', '', 'ir_bg_opacity') %>">
+  <div class="section-bg-overlay"></div>
+  <div class="container">
+    <h2 class="ir-panel-title"><span class="ir-red">SJC</span> Investor Relations</h2>
+
+    <div class="ir-panel-card">
+      <div class="ir-panel-head"><%= adminLang === 'en' ? 'Investor Documents' : 'เอกสารเผยแพร่' %></div>
+      <div class="ir-panel-list">
+        <% if (typeof investorDocs !== 'undefined' && investorDocs && investorDocs.length > 0) { %>
+          <% investorDocs.slice(0, 4).forEach(doc => { %>
+            <a href="<%= doc.file_path || '/investor-relations' %>" class="ir-doc-row" <%= doc.file_path ? 'target="_blank"' : '' %>>
+              <div class="ir-doc-title"><%= doc.title %></div>
+              <div class="ir-doc-meta">
+                <% if (doc.created_at) { %>
+                  <%= new Date(doc.created_at).toLocaleDateString(typeof currentLang !== 'undefined' && currentLang === 'en' ? 'en-US' : 'th-TH', { day: '2-digit', month: 'short', year: 'numeric' }) %>
+                <% } %>
+                <% if (doc.file_size) { %>
+                  | PDF <%= (doc.file_size / 1024 / 1024).toFixed(1) %> MB
+                <% } %>
+              </div>
+              <span class="ir-doc-btn" aria-label="<%= adminLang === 'en' ? 'Download' : 'ดาวน์โหลด' %>"><i class="fas fa-arrow-down"></i></span>
+            </a>
+          <% }); %>
+        <% } else { %>
+          <a href="/investor-relations" class="ir-doc-row">
+            <div class="ir-doc-title"><%= adminLang === 'en' ? 'View all investor documents' : 'ดูเอกสารทั้งหมด' %></div>
+            <span class="ir-doc-btn"><i class="fas fa-arrow-right"></i></span>
+          </a>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</section>
+

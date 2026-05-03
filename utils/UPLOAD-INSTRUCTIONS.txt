@@ -1,0 +1,218 @@
+================================================
+SJC v36 - 5 FILES
+================================================
+
+WHAT'S FIXED
+================================================
+
+1. ONE-CLICK SITE-WIDE TRANSLATION (with Claude AI support)
+   
+   New big "Translate Entire Website" panel at the top of
+   Translation Manager. Three buttons:
+     - Translate to English
+     - Translate to 中文 Chinese
+     - Translate to 日本語 Japanese
+   
+   Click ONE button -> server iterates through ALL news + 
+   ALL businesses in the database -> auto-translates each 
+   one's title, content, and all section fields -> stores
+   in the *_xx columns -> reloads with results.
+   
+   Already-translated posts are SKIPPED by default. Click
+   "Force re-translate" (under Advanced) to overwrite.
+   
+   PROVIDER OPTIONS (configure in Settings):
+   - mymemory (default) - free, no API key, basic quality
+   - anthropic - Claude AI, high quality, requires API key
+   - deepl - premium quality, requires API key
+   
+   To use Claude AI:
+     a) Get API key from https://console.anthropic.com
+     b) Admin -> Settings -> find "Translation Provider" 
+        select "anthropic"
+     c) Admin -> Settings -> "Anthropic API Key" -> paste key
+     d) Save
+     e) Translation Manager status card now shows green
+        "Claude AI - Ready"
+     f) Click any "Translate to X" button in the big panel
+   
+   To use DeepL:
+     Same flow but with DeepL provider + DeepL API key
+   
+   The Translation Manager page shows:
+   - Provider status card (which API, ready or missing key)
+   - Big colorful translate-everything panel (3 buttons)
+   - Per-language progress: shows X/Y posts translated (with
+     % bar) for News and Businesses separately
+   - Per-post detail tables (tabs for News / Businesses)
+
+2. NO MORE FLAG EMOJIS
+   The dropdown now shows native language names only:
+     ไทย
+     English
+     中文
+     日本語
+   No flag emojis anywhere.
+
+3. MOBILE: ONLY TOPBAR HIDES ON SCROLL (header stays)
+   Was: entire header (logo+menu+topbar) hid on scroll
+   Now: only the top utility bar hides; the main header
+        with logo, NEW badge, and hamburger STAYS VISIBLE
+        as you scroll. So you always have access to the 
+        navigation menu.
+   
+   Both topbar AND main header are now position:sticky.
+
+4. MOBILE TOPBAR - WHITE BACKGROUND
+   Was: dark navy (#1a2540)
+   Now: white background with subtle grey border bottom
+   Lang pill: light grey background, navy text
+   Stock prices: navy text, green for up, red for down
+   Dropdown: white card with grey border + checkmark on
+            active language
+
+5. MOBILE TOPBAR LAYOUT
+   - LEFT side: Language switcher pill (with globe icon
+     and current language name like "ไทย")
+   - RIGHT side: Stock ticker (symbol + price + change)
+     [shows only if you set stock_symbol in Settings]
+   - Country tag hidden on mobile (lang takes its space)
+   - Dropdown opens DOWN-LEFT from the lang button
+     (left:0, not right:0 anymore)
+
+================================================
+THE 5 FILES
+================================================
+
+  config/init-db.js                       (3 new translation
+                                           provider settings)
+  routes/admin.js                         (multi-provider 
+                                           translateText, 
+                                           translate-all 
+                                           endpoint)
+  views/layouts/public.ejs                (v36 marker, white
+                                           mobile topbar, 
+                                           sticky header on
+                                           scroll)
+  views/partials/topbar.ejs               (rebuilt: lang LEFT,
+                                           stock RIGHT, no flags,
+                                           native lang names)
+  views/admin/translation-manager.ejs     (rebuilt: big one-click
+                                           translate buttons,
+                                           progress bars,
+                                           provider status)
+
+================================================
+HOW TO UPLOAD
+================================================
+
+Upload all 5 files preserving structure.
+
+================================================
+AFTER UPLOAD
+================================================
+
+1. Plesk -> Node.js -> RESTART APP
+   Watch for these new settings to be auto-seeded:
+     ✓ translation_provider = mymemory
+     ✓ anthropic_api_key = (empty)
+     ✓ deepl_api_key = (empty)
+
+2. Hard refresh / Incognito
+
+3. VERIFY public.ejs landed:
+   View source on homepage -> search for: critical-overrides-v36
+   Found = success
+
+4. (RECOMMENDED) SET UP CLAUDE AI FOR HIGH-QUALITY TRANSLATION:
+   a) Go to https://console.anthropic.com
+   b) Sign up (free credits available)
+   c) Create API key (starts with sk-ant-...)
+   d) Admin -> Settings (or Settings page in your admin)
+   e) Find "Translation Provider" -> change to "anthropic"
+   f) Find "Anthropic API Key" -> paste your key
+   g) Save Settings
+
+5. TRANSLATE EVERYTHING IN ONE CLICK:
+   Admin sidebar -> Translation Manager
+   See big blue/teal "Translate Entire Website" panel
+   Click "Translate to English" 
+   Confirm dialog -> wait 30-60 seconds
+   Page reloads with success message
+   News + Businesses progress bars show how many were
+   translated
+   
+   Repeat for 中文 and 日本語 if needed.
+
+6. TEST FRONTEND:
+   Mobile:
+   - White topbar at top with "ไทย" pill on LEFT
+   - Stock ticker on RIGHT (if you've set stock symbol)
+   - Tap "ไทย" -> dropdown opens DOWN-LEFT
+   - Shows: ไทย / English / 中文 / 日本語 (no flags)
+   - Tap "English" -> page reloads in English
+   - Pill changes to "English"
+   - Scroll DOWN: only the top white bar slides up
+   - The main header with logo + NEW badge + hamburger
+     STAYS VISIBLE (it's sticky)
+
+================================================
+ABOUT THE TRANSLATION QUALITY
+================================================
+
+MyMemory (default, free):
+- Quality: Basic - good for short text, can be awkward for
+  long content. Sometimes mis-translates Thai idioms.
+- Limit: ~1000 words/day per IP
+- Best for: Quick prototyping, testing the system
+
+Claude AI (anthropic, paid - very affordable):
+- Quality: Excellent. Preserves HTML, tone, technical terms.
+  Handles Thai-to-English/Chinese/Japanese very well.
+- Cost: ~$0.001-0.005 per article (Haiku model is cheap)
+- Best for: Production-quality content
+- Get API key: console.anthropic.com (free $5 credit on signup)
+
+DeepL (paid):
+- Quality: Excellent for European languages, good for
+  Thai-English. Less polished for Asian languages.
+- Cost: Free tier 500K chars/month; Pro for more
+- Best for: If you already have a DeepL subscription
+
+================================================
+TROUBLESHOOTING
+================================================
+
+If "Translate Entire Website" button times out:
+  - The route processes all posts sequentially. With 50+
+    posts it may take 2-3 minutes. Wait or do smaller batches
+    by editing posts individually first.
+  - Plesk Node.js may have a request timeout - in Plesk 
+    Node.js settings, check the timeout (300s recommended)
+
+If Claude API gives 401 / 403:
+  - Your API key is wrong or expired
+  - Settings -> Anthropic API Key -> paste a fresh key
+  - Make sure no extra whitespace before/after the key
+
+If translations look weird with HTML showing:
+  - That's the MyMemory provider mishandling HTML
+  - Switch to Claude (much better at preserving HTML structure)
+
+If only the homepage works but post pages still show Thai:
+  - The post hasn't been translated yet - go to Translation
+    Manager and click "Translate to X" 
+  - Make sure VIEW source on the post page shows ?lang= in
+    URL or site_lang cookie
+
+If mobile topbar still dark blue:
+  - public.ejs upload didn't land
+  - View source: search "critical-overrides-v36" - if missing, 
+    re-upload and restart Node
+
+If main header ALSO hides on scroll (you only want topbar to hide):
+  - The CSS sets .site-header to position:sticky which keeps
+    it visible. If your old CSS overrides this, the new inline
+    CSS should win because of !important
+  - Check public.ejs uploaded fully
+

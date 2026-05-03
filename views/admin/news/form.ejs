@@ -1,0 +1,298 @@
+<div class="page-header">
+  <div>
+    <h2><%= news.id ? (adminLang === 'en' ? 'Edit News' : 'แก้ไขข่าว') : (adminLang === 'en' ? 'New News' : 'เพิ่มข่าวใหม่') %></h2>
+  </div>
+  <div class="page-header-actions">
+    <% if (news.id) { %>
+      <a href="/<%= adminSlug %>/blocks/news/<%= news.id %>" class="btn btn-primary">
+        <i class="fas fa-th-large"></i> <%= adminLang === 'en' ? 'Manage Content Blocks' : 'จัดการบล็อกเนื้อหา' %>
+      </a>
+    <% } %>
+    <a href="/<%= adminSlug %>/news" class="btn btn-outline"><i class="fas fa-arrow-left"></i> <%= adminLang === 'en' ? 'Back' : 'กลับ' %></a>
+  </div>
+</div>
+
+<div style="background:#eff6ff;border-left:4px solid #3b82f6;color:#1e3a8a;padding:14px 18px;border-radius:8px;margin-bottom:20px;font-size:13px;">
+  <i class="fas fa-lightbulb" style="color:#3b82f6;"></i>
+  <strong><%= adminLang === 'en' ? 'Tip:' : 'เคล็ดลับ:' %></strong>
+  <%= adminLang === 'en' ? 'Use the Content field below to write your full article. You can add headings, bold text, lists, images, and links using the rich-text toolbar. The content will be displayed on the article page automatically.' : 'ใช้ช่อง Content ด้านล่างเพื่อเขียนบทความ คุณสามารถเพิ่มหัวข้อ ตัวหนา รายการ รูปภาพ และลิงก์โดยใช้แถบเครื่องมือ Rich Text เนื้อหาจะแสดงในหน้าบทความโดยอัตโนมัติ' %>
+</div>
+
+<% if (news.id) { %>
+<div style="background:linear-gradient(135deg,#0ea5e9 0%,#0284c7 100%);color:#fff;padding:14px 20px;border-radius:10px;margin-bottom:20px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+  <i class="fas fa-language" style="font-size:24px;"></i>
+  <div style="flex:1;min-width:240px;">
+    <div style="font-weight:700;font-size:14px;"><%= adminLang === 'en' ? 'Auto-translate to English' : 'แปลเป็นภาษาอังกฤษอัตโนมัติ' %></div>
+    <div style="font-size:12.5px;color:rgba(255,255,255,0.9);margin-top:3px;"><%= adminLang === 'en' ? 'Click to auto-translate ALL Thai fields (title, content, sections) to English. You can review and edit the results below.' : 'คลิกเพื่อแปลทุกช่องภาษาไทย (หัวข้อ, เนื้อหา, ส่วนเพิ่มเติม) เป็นภาษาอังกฤษอัตโนมัติ คุณสามารถตรวจสอบและแก้ไขได้ด้านล่าง' %></div>
+  </div>
+  <form method="POST" action="/<%= adminSlug %>/news/<%= news.id %>/translate" style="margin:0;" onsubmit="return confirm('<%= adminLang === 'en' ? 'This will overwrite any existing English fields with auto-translated content. Continue?' : 'การกระทำนี้จะเขียนทับช่องภาษาอังกฤษที่มีอยู่ ดำเนินการต่อ?' %>');">
+    <button type="submit" style="background:#fff;color:#0284c7;padding:10px 18px;border:0;border-radius:6px;font-weight:600;font-size:13px;cursor:pointer;white-space:nowrap;">
+      <i class="fas fa-language"></i> <%= adminLang === 'en' ? 'Translate to English' : 'แปลเป็นอังกฤษ' %>
+    </button>
+  </form>
+</div>
+<% } %>
+
+<form method="POST" action="/<%= adminSlug %>/news<%= news.id ? '/' + news.id : '' %>" enctype="multipart/form-data">
+  <div class="form-grid">
+    <div class="form-main">
+      <div class="card">
+        <div class="card-body">
+          <div class="form-group">
+            <label><%= adminLang === 'en' ? 'News title' : 'หัวข้อข่าว' %> <span class="required">*</span></label>
+            <input type="text" name="title" value="<%= news.title || '' %>" required placeholder="<%= adminLang === 'en' ? 'News title' : 'หัวข้อข่าว' %>">
+          </div>
+
+          <% if (news.id) { %>
+            <div class="form-group">
+              <label>URL Slug</label>
+              <input type="text" name="slug" value="<%= news.slug || '' %>" placeholder="auto-generated-from-title">
+              <small>ส่วนหนึ่งของลิงก์ เช่น /news/<strong><%= news.slug %></strong></small>
+            </div>
+          <% } %>
+
+          <div class="form-group">
+            <label><%= adminLang === 'en' ? 'Short description (Excerpt)' : 'คำอธิบายสั้น (Excerpt)' %></label>
+            <textarea name="excerpt" rows="2" placeholder="<%= adminLang === 'en' ? 'Short text shown in news list' : 'ข้อความสั้นๆ แสดงในรายการข่าว' %>"><%= news.excerpt || '' %></textarea>
+          </div>
+
+          <div class="form-group">
+            <label><%= adminLang === 'en' ? 'Content' : 'เนื้อหา' %> <span class="required">*</span></label>
+            <textarea name="content" id="contentEditor" class="rich-editor" rows="15"><%= news.content || '' %></textarea>
+          </div>
+
+          <!-- ===== ENGLISH TRANSLATION FIELDS ===== -->
+          <details class="extra-section-block en-fields-block" <%= news.title_en ? 'open' : '' %>
+                   style="margin: 24px 0; border: 2px solid #0ea5e9; border-radius: 10px; overflow: hidden;">
+            <summary style="padding: 14px 18px; background: linear-gradient(135deg,#0ea5e9 0%,#0284c7 100%); cursor: pointer; font-weight: 700; font-size: 14px; color: #fff; display: flex; align-items: center; gap: 10px;">
+              <i class="fas fa-flag-usa"></i>
+              <span><%= adminLang === 'en' ? 'English Translation' : 'คำแปลภาษาอังกฤษ' %></span>
+              <% if (news.title_en) { %>
+                <span style="margin-left:auto;background:rgba(255,255,255,0.25);padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;">
+                  <i class="fas fa-check"></i> <%= adminLang === 'en' ? 'Filled' : 'มีข้อมูล' %>
+                </span>
+              <% } else { %>
+                <span style="margin-left:auto;font-size:12px;font-weight:400;opacity:0.85;">
+                  <%= adminLang === 'en' ? 'Click to add translations or use auto-translate above' : 'คลิกเพื่อเพิ่มคำแปลหรือใช้แปลอัตโนมัติด้านบน' %>
+                </span>
+              <% } %>
+            </summary>
+            <div style="padding: 18px; background: #f0f9ff;">
+              <div class="form-group">
+                <label>Title (English)</label>
+                <input type="text" name="title_en" value="<%= news.title_en || '' %>" placeholder="English title">
+              </div>
+              <div class="form-group">
+                <label>Excerpt (English)</label>
+                <textarea name="excerpt_en" rows="2" placeholder="Short English description"><%= news.excerpt_en || '' %></textarea>
+              </div>
+              <div class="form-group">
+                <label>Content (English)</label>
+                <textarea name="content_en" class="rich-editor section-rich-editor" rows="12"><%= news.content_en || '' %></textarea>
+              </div>
+            </div>
+          </details>
+
+          <!-- ===== Additional Content Sections (collapsible) ===== -->
+          <div style="margin: 32px 0 24px; padding: 18px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 10px;">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+              <i class="fas fa-layer-group" style="color:#3b82f6;font-size:18px;"></i>
+              <strong style="font-size:14px;color:#1e3a8a;">
+                <%= adminLang === 'en' ? 'Optional: Add up to 3 more content sections' : 'เพิ่มเติม: เพิ่มได้สูงสุด 3 ส่วนเนื้อหา' %>
+              </strong>
+            </div>
+            <p style="font-size:12.5px;color:#64748b;margin:0;">
+              <%= adminLang === 'en' ? 'Each section can have a heading, rich text, and an optional image. Empty sections are hidden on the frontend.' : 'แต่ละส่วนสามารถมีหัวข้อ ข้อความ และรูปภาพ (ไม่บังคับ) ส่วนที่ว่างจะไม่แสดงในเว็บไซต์' %>
+            </p>
+          </div>
+
+          <% [2, 3, 4].forEach(function(n) { %>
+            <details class="extra-section-block" <%= news['section' + n + '_heading'] || news['section' + n + '_body'] || news['section' + n + '_image'] ? 'open' : '' %>
+                     style="margin-bottom:16px;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;">
+              <summary style="padding:12px 16px;background:#f9fafb;cursor:pointer;font-weight:600;font-size:14px;color:#374151;">
+                <i class="fas fa-chevron-right" style="font-size:11px;margin-right:6px;color:#9ca3af;"></i>
+                <%= adminLang === 'en' ? `Section ${n - 1}` : `ส่วนที่ ${n - 1}` %>
+                <% if (news['section' + n + '_heading']) { %>
+                  <span style="color:#9ca3af;font-weight:400;font-size:13px;"> · <%= news['section' + n + '_heading'] %></span>
+                <% } %>
+              </summary>
+              <div style="padding:16px;background:#fff;">
+                <div class="form-group">
+                  <label><%= adminLang === 'en' ? 'Section heading' : 'หัวข้อส่วน' %></label>
+                  <input type="text" name="section<%= n %>_heading" value="<%= news['section' + n + '_heading'] || '' %>"
+                         placeholder="<%= adminLang === 'en' ? 'e.g. About this project' : 'เช่น เกี่ยวกับโครงการนี้' %>">
+                </div>
+                <div class="form-group">
+                  <label><%= adminLang === 'en' ? 'Section content' : 'เนื้อหาส่วน' %></label>
+                  <textarea name="section<%= n %>_body" class="rich-editor section-rich-editor" rows="8"><%= news['section' + n + '_body'] || '' %></textarea>
+                </div>
+                <div class="form-group">
+                  <label><%= adminLang === 'en' ? 'Section image (optional)' : 'รูปภาพประกอบ (ไม่บังคับ)' %></label>
+                  <% if (news['section' + n + '_image']) { %>
+                    <div style="margin-bottom:8px;">
+                      <img src="<%= news['section' + n + '_image'] %>" alt="" style="max-width:200px;border-radius:6px;border:1px solid #e5e7eb;">
+                      <label style="display:inline-flex;align-items:center;gap:6px;margin-left:14px;font-size:13px;color:#dc2626;cursor:pointer;">
+                        <input type="checkbox" name="section<%= n %>_image_remove" value="1">
+                        <%= adminLang === 'en' ? 'Remove this image' : 'ลบรูปภาพนี้' %>
+                      </label>
+                    </div>
+                  <% } %>
+                  <input type="file" name="section<%= n %>_image" accept="image/*">
+                  <small style="color:#6b7280;font-size:12px;display:block;margin-top:4px;">
+                    <%= adminLang === 'en' ? 'Max 5MB. Will be displayed alongside this section.' : 'สูงสุด 5MB จะแสดงข้างเนื้อหาส่วนนี้' %>
+                  </small>
+                </div>
+
+                <!-- EN translation for this section -->
+                <details style="margin-top:16px;border:1px solid #bae6fd;border-radius:6px;overflow:hidden;background:#f0f9ff;"
+                         <%= news['section' + n + '_heading_en'] || news['section' + n + '_body_en'] ? 'open' : '' %>>
+                  <summary style="padding:10px 14px;cursor:pointer;font-weight:600;font-size:13px;color:#0c4a6e;display:flex;align-items:center;gap:8px;">
+                    <i class="fas fa-flag-usa" style="color:#0284c7;"></i>
+                    English version
+                  </summary>
+                  <div style="padding:12px 14px;">
+                    <div class="form-group">
+                      <label>Heading (English)</label>
+                      <input type="text" name="section<%= n %>_heading_en" value="<%= news['section' + n + '_heading_en'] || '' %>" placeholder="English heading">
+                    </div>
+                    <div class="form-group">
+                      <label>Body (English)</label>
+                      <textarea name="section<%= n %>_body_en" class="rich-editor section-rich-editor" rows="6"><%= news['section' + n + '_body_en'] || '' %></textarea>
+                    </div>
+                  </div>
+                </details>
+              </div>
+            </details>
+          <% }); %>
+
+          <div class="card-section">
+            <h4><i class="fas fa-search"></i> SEO</h4>
+            <div class="form-group">
+              <label>Meta Title</label>
+              <input type="text" name="meta_title" value="<%= news.meta_title || '' %>" placeholder="<%= adminLang === 'en' ? 'Title for Google (defaults to article title)' : 'หัวข้อสำหรับ Google (ถ้าว่าง จะใช้หัวข้อข่าว)' %>">
+            </div>
+            <div class="form-group">
+              <label>Meta Description</label>
+              <textarea name="meta_description" rows="2" maxlength="160"><%= news.meta_description || '' %></textarea>
+              <small><%= adminLang === 'en' ? 'Description for Google (150-160 chars)' : 'คำอธิบายสำหรับ Google (150-160 ตัวอักษร)' %></small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-side">
+      <div class="card">
+        <div class="card-body">
+          <h4><%= adminLang === 'en' ? 'Publishing' : 'การเผยแพร่' %></h4>
+          <div class="form-group">
+            <label class="check-label">
+              <input type="checkbox" name="published" value="1" <%= news.published === undefined || news.published ? 'checked' : '' %>>
+              <span><%= adminLang === "en" ? "Published" : "เผยแพร่" %></span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="check-label">
+              <input type="checkbox" name="featured" value="1" <%= news.featured ? 'checked' : '' %>>
+              <span><%= adminLang === 'en' ? 'Featured news (show on homepage)' : 'ข่าวแนะนำ (แสดงในหน้าแรก)' %></span>
+            </label>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-save"></i> <%= adminLang === 'en' ? 'Save' : 'บันทึก' %>
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4><%= adminLang === "en" ? "Category" : "หมวดหมู่" %></h4>
+          <div class="form-group">
+            <select name="category_id">
+              <option value="">— เลือกหมวดหมู่ —</option>
+              <% categories.forEach(c => { %>
+                <option value="<%= c.id %>" <%= news.category_id == c.id ? 'selected' : '' %>><%= c.name %></option>
+              <% }); %>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label><%= adminLang === 'en' ? 'Author' : 'ผู้เขียน' %></label>
+            <input type="text" name="author" value="<%= news.author || '' %>" placeholder="<%= adminLang === 'en' ? 'Author name' : 'ชื่อผู้เขียน' %>">
+          </div>
+
+          <div class="form-group">
+            <label><%= adminLang === 'en' ? 'Tags' : 'แท็ก' %></label>
+            <input type="text" name="tags" value="<%= news.tags || '' %>" placeholder="<%= adminLang === 'en' ? 'Comma-separated, e.g. news,event' : 'คั่นด้วย , เช่น ข่าว,กิจกรรม' %>">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4><%= adminLang === 'en' ? 'Thumbnail' : 'รูปย่อ (Thumbnail)' %></h4>
+          <div class="image-hint">
+            <i class="fas fa-info-circle"></i>
+            <strong><%= adminLang === 'en' ? 'Recommended size:' : 'ขนาดที่แนะนำ:' %></strong> 800×600px<br>
+            <%= adminLang === 'en' ? 'Shown in news list and homepage' : 'แสดงในรายการข่าวและหน้าแรก' %>
+          </div>
+          <% if (news.thumbnail) { %>
+            <div class="current-image">
+              <img src="<%= news.thumbnail %>" alt="">
+            </div>
+          <% } %>
+          <label class="upload-area">
+            <input type="file" name="thumbnail" accept="image/*">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span><%= adminLang === 'en' ? 'Choose image' : 'เลือกรูป' %></span>
+          </label>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4><%= adminLang === 'en' ? 'Banner image' : 'รูปแบนเนอร์' %></h4>
+          <div class="image-hint">
+            <i class="fas fa-info-circle"></i>
+            <strong><%= adminLang === 'en' ? 'Recommended size:' : 'ขนาดที่แนะนำ:' %></strong> 1920×600px<br>
+            <%= adminLang === 'en' ? 'Shown on article detail page' : 'แสดงในหน้ารายละเอียดข่าว' %>
+          </div>
+          <% if (news.banner) { %>
+            <div class="current-image">
+              <img src="<%= news.banner %>" alt="">
+            </div>
+          <% } %>
+          <label class="upload-area">
+            <input type="file" name="banner" accept="image/*">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <span><%= adminLang === 'en' ? 'Choose image' : 'เลือกรูป' %></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  // Initialize TinyMCE
+  tinymce.init({
+    selector: '.rich-editor',
+    height: 500,
+    plugins: 'lists link image media table code preview fullscreen autolink wordcount',
+    toolbar: 'undo redo | blocks | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | link image media | code fullscreen',
+    images_upload_url: '/api/upload-image',
+    automatic_uploads: true,
+    relative_urls: false,
+    remove_script_host: false,
+    convert_urls: true,
+    images_upload_handler: function (blobInfo, progress) {
+      return new Promise((resolve, reject) => {
+        const fd = new FormData();
+        fd.append('file', blobInfo.blob(), blobInfo.filename());
+        fetch('/api/upload-image', { method: 'POST', body: fd })
+          .then(r => r.json())
+          .then(d => d.location ? resolve(d.location) : reject('Upload failed'))
+          .catch(() => reject('Upload failed'));
+      });
+    }
+  });
+</script>

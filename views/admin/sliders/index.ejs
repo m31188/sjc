@@ -1,0 +1,58 @@
+<div class="page-header">
+  <div>
+    <h2><%= t('sliders.title') %></h2>
+    <p class="text-muted"><%= adminLang === 'en' ? 'Slides shown on the homepage. Drag to reorder.' : 'สไลด์แสดงในหน้าแรก ลากเพื่อจัดเรียง' %></p>
+  </div>
+  <a href="/<%= adminSlug %>/sliders/new" class="btn btn-primary">
+    <i class="fas fa-plus"></i> <%= t('sliders.add') %>
+  </a>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <% if (sliders && sliders.length > 0) { %>
+      <table class="data-table sortable-table" data-table="sliders">
+        <thead>
+          <tr>
+            <th width="40"></th>
+            <th width="120"><%= adminLang === "en" ? "Image" : "รูป" %></th>
+            <th><%= adminLang === "en" ? "Title" : "หัวข้อ" %></th>
+            <th><%= adminLang === "en" ? "Position" : "ตำแหน่ง" %></th>
+            <th width="100"><%= adminLang === "en" ? "Status" : "สถานะ" %></th>
+            <th width="160"><%= adminLang === "en" ? "Actions" : "การจัดการ" %></th>
+          </tr>
+        </thead>
+        <tbody class="sortable" data-table-name="sliders">
+          <% sliders.forEach(s => { %>
+            <tr data-id="<%= s.id %>">
+              <td class="drag-handle"><i class="fas fa-grip-vertical"></i></td>
+              <td><img src="<%= s.image %>" alt="" class="thumb"></td>
+              <td>
+                <strong><%= s.title || '(ไม่มีหัวข้อ)' %></strong>
+                <% if (s.subtitle) { %><br><small class="text-muted"><%= s.subtitle %></small><% } %>
+              </td>
+              <td><%= s.text_position %></td>
+              <td>
+                <button class="status-toggle <%= s.active ? 'active' : '' %>" data-table="sliders" data-id="<%= s.id %>">
+                  <%= s.active ? 'เปิด' : 'ปิด' %>
+                </button>
+              </td>
+              <td>
+                <a href="/<%= adminSlug %>/sliders/<%= s.id %>/edit" class="btn-icon" title="<%= adminLang === 'en' ? 'Edit' : 'แก้ไข' %>"><i class="fas fa-edit"></i></a>
+                <form method="POST" action="/<%= adminSlug %>/sliders/<%= s.id %>/delete" class="d-inline" onsubmit="return confirm('ยืนยันลบสไลด์นี้?')">
+                  <button type="submit" class="btn-icon btn-icon-danger" title="<%= adminLang === 'en' ? 'Delete' : 'ลบ' %>"><i class="fas fa-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty-state">
+        <i class="fas fa-images"></i>
+        <p><%= adminLang === 'en' ? 'No sliders yet' : 'ยังไม่มีสไลด์' %></p>
+        <a href="/<%= adminSlug %>/sliders/new" class="btn btn-primary">เพิ่มสไลด์แรก</a>
+      </div>
+    <% } %>
+  </div>
+</div>

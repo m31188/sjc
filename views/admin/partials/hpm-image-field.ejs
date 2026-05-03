@@ -1,0 +1,19 @@
+<div class="form-group hpm-image-field">
+  <label><%= setting.label %></label>
+  <% if (setting.description) { %><small class="hpm-hint"><%= setting.description %></small><% } %>
+  <% if (setting.setting_value) { %>
+    <div class="hpm-image-preview" style="width:140px;height:90px;border-radius:6px;overflow:hidden;border:1px solid #d1d5db;background:#e5e7eb;margin:6px 0 10px;">
+      <img src="<%= setting.setting_value %>" alt="" style="width:100%;height:100%;object-fit:cover;display:block;">
+    </div>
+  <% } %>
+  <input type="hidden" name="<%= setting.setting_key %>_url" id="urlinput-<%= setting.setting_key %>" value="<%= setting.setting_value || '' %>">
+  <label class="hpm-upload-area">
+    <input type="file" name="<%= setting.setting_key %>" accept="image/*">
+    <i class="fas fa-cloud-upload-alt"></i>
+    <span><%= setting.setting_value ? 'Replace image' : 'Upload image' %></span>
+  </label>
+  <button type="button" class="media-picker-btn" onclick="openMediaPicker((function(url){ document.getElementById('urlinput-<%= setting.setting_key %>').value = url; var prev = this.parentElement.querySelector('.hpm-image-preview'); if (prev) { prev.innerHTML = '<img src=\u0022' + url + '\u0022 style=\u0022width:100%;height:100%;object-fit:cover;display:block;\u0022>'; } else { var d = document.createElement('div'); d.className='hpm-image-preview'; d.style.cssText='width:140px;height:90px;border-radius:6px;overflow:hidden;border:1px solid #d1d5db;background:#e5e7eb;margin:6px 0 10px;'; d.innerHTML='<img src=\u0022'+url+'\u0022 style=\u0022width:100%;height:100%;object-fit:cover;display:block;\u0022>'; this.parentElement.insertBefore(d, this.parentElement.querySelector('.hpm-upload-area')); } }).bind(this))">
+    <i class="fas fa-photo-film"></i> <%= adminLang === 'en' ? 'Choose from library' : 'เลือกจากคลังสื่อ' %>
+  </button>
+</div>
+

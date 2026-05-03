@@ -1,0 +1,125 @@
+<div class="page-header">
+  <div>
+    <h2><%= t('settings.title') %></h2>
+    <p class="text-muted"><%= adminLang === 'en' ? 'General site settings, contact info, and more' : 'ตั้งค่าทั่วไปของเว็บไซต์ ข้อมูลการติดต่อ และอื่นๆ' %></p>
+  </div>
+</div>
+
+<form method="POST" action="/<%= adminSlug %>/settings" enctype="multipart/form-data" class="settings-form">
+
+  <!-- Tabs -->
+  <!-- v46: Notice that homepage settings are now in Homepage Manager -->
+  <div style="padding:12px 18px;margin-bottom:16px;background:#eff6ff;border-left:4px solid #0ea5e9;border-radius:6px;font-size:13.5px;color:#0c4a6e;">
+    <i class="fas fa-info-circle"></i>
+    <strong><%= adminLang === 'en' ? 'Note:' : 'หมายเหตุ:' %></strong>
+    <%= adminLang === 'en' ? 'All homepage content (sections, backgrounds, opacity, What We Do) is now managed in' : 'เนื้อหาทั้งหมดของหน้าแรก (ส่วนต่างๆ, พื้นหลัง, ความโปร่งใส, What We Do) จัดการได้ที่' %>
+    <a href="/<%= adminSlug %>/homepage-manager" style="font-weight:700;color:#0c4a6e;text-decoration:underline;">
+      <%= adminLang === 'en' ? 'Homepage Manager' : 'จัดการหน้าแรก' %>
+    </a>.
+  </div>
+
+  <div class="settings-tabs">
+    <% const groupLabels = adminLang === 'en' ? {
+      general: '🏢 General',
+      contact: '📞 Contact',
+      social: '📱 Social',
+      seo: '🔍 SEO',
+      translation: '🌐 Translation',
+      homepage: '🏠 Homepage',
+      section_backgrounds: '🖼️ Section Backgrounds',
+      topbar: '⬆️ Top Bar',
+      footer: '👣 Footer',
+      security: '🔒 Security'
+    } : {
+      general: '🏢 ทั่วไป',
+      contact: '📞 ติดต่อ',
+      social: '📱 โซเชียล',
+      seo: '🔍 SEO',
+      translation: '🌐 ภาษา',
+      homepage: '🏠 หน้าแรก',
+      section_backgrounds: '🖼️ พื้นหลังส่วนต่างๆ',
+      topbar: '⬆️ แถบบน',
+      footer: '👣 Footer',
+      security: '🔒 ความปลอดภัย'
+    }; %>
+    <% Object.keys(grouped).forEach((g, i) => { %>
+      <% if (g === 'homepage' || g === 'section_backgrounds') return; %>
+      <button type="button" class="settings-tab <%= i === 0 ? 'active' : '' %>" data-tab="<%= g %>">
+        <%= groupLabels[g] || g %>
+      </button>
+    <% }); %>
+  </div>
+
+  <% Object.keys(grouped).forEach((g, i) => { %>
+    <% if (g === 'homepage' || g === 'section_backgrounds') return; %>
+    <div class="settings-panel <%= i === 0 ? 'active' : '' %>" data-panel="<%= g %>">
+      <div class="card">
+        <div class="card-body">
+          <% 
+            // v46: Hide settings managed elsewhere
+            // - AI translation: replaced by Google Translate (v39)
+            // - homepage / section_backgrounds: managed via Homepage Manager (v46)
+            const HIDDEN_KEYS = ['translation_provider', 'anthropic_api_key', 'deepl_api_key'];
+            const HIDDEN_GROUPS = ['homepage', 'section_backgrounds'];
+            grouped[g].filter(s => !HIDDEN_KEYS.includes(s.setting_key)).forEach(s => { 
+          %>
+            <div class="form-group">
+              <label><%= s.label || s.setting_key %></label>
+
+              <% if (s.setting_type === 'image') { %>
+                <div class="image-hint">
+                  <i class="fas fa-info-circle"></i>
+                  <%= s.description || 'อัปโหลดรูปภาพ' %>
+                </div>
+                <% if (s.setting_value) { %>
+                  <div class="current-image">
+                    <img src="<%= s.setting_value %>" alt="">
+                    <small>ปัจจุบัน: <%= s.setting_value %></small>
+                  </div>
+                <% } %>
+                <label class="upload-area">
+                  <input type="file" name="<%= s.setting_key %>" accept="image/*">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <span>เปลี่ยนรูป</span>
+                </label>
+
+              <% } else if (s.setting_type === 'bool') { %>
+                <label class="check-label">
+                  <input type="checkbox" name="<%= s.setting_key %>" value="1" <%= s.setting_value === '1' ? 'checked' : '' %>>
+                  <span><%= s.description || 'เปิดใช้งาน' %></span>
+                </label>
+
+              <% } else if (s.setting_value && s.setting_value.length > 100) { %>
+                <textarea name="<%= s.setting_key %>" rows="3"><%= s.setting_value %></textarea>
+                <% if (s.description) { %><small><%= s.description %></small><% } %>
+
+              <% } else { %>
+                <input type="text" name="<%= s.setting_key %>" value="<%= s.setting_value || '' %>">
+                <% if (s.description) { %><small><%= s.description %></small><% } %>
+              <% } %>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+
+  <div class="settings-save">
+    <button type="submit" class="btn btn-primary btn-lg">
+      <i class="fas fa-save"></i> <%= t('btn.save_changes') %>
+    </button>
+  </div>
+</form>
+
+<script>
+  // Tab switching
+  document.querySelectorAll('.settings-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.tab;
+      document.querySelectorAll('.settings-tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.settings-panel').forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      document.querySelector(`[data-panel="${target}"]`).classList.add('active');
+    });
+  });
+</script>

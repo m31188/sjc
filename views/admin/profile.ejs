@@ -1,0 +1,50 @@
+<div class="page-header">
+  <div>
+    <h2><%= adminLang === 'en' ? 'My Profile' : 'ข้อมูลของฉัน' %></h2>
+    <p class="text-muted"><%= adminLang === 'en' ? 'Edit your name and password' : 'แก้ไขชื่อและรหัสผ่านของคุณ' %></p>
+  </div>
+</div>
+
+<form method="POST" action="/<%= adminSlug %>/profile">
+  <div class="form-grid-narrow">
+    <div class="card">
+      <div class="card-body">
+        <div class="form-group">
+          <label><%= adminLang === "en" ? "Email" : "อีเมล" %></label>
+          <input type="email" value="<%= user.email %>" disabled>
+          <small><%= adminLang === 'en' ? 'Email cannot be changed. Contact admin.' : 'ไม่สามารถเปลี่ยนอีเมลได้ ติดต่อผู้ดูแลระบบ' %></small>
+        </div>
+
+        <div class="form-group">
+          <label><%= adminLang === 'en' ? 'Name' : 'ชื่อ-นามสกุล' %> <span class="required">*</span></label>
+          <input type="text" name="name" value="<%= user.name %>" required>
+        </div>
+
+        <div class="form-group">
+          <label><%= adminLang === 'en' ? 'Role' : 'บทบาท' %></label>
+          <input type="text" value="<%= user.role %>" disabled>
+        </div>
+
+        <div class="card-section">
+          <h4><i class="fas fa-lock"></i> <%= adminLang === 'en' ? 'Change Password' : 'เปลี่ยนรหัสผ่าน' %></h4>
+          <p class="text-muted">เว้นว่างทั้งสองช่องถ้าไม่ต้องการเปลี่ยน</p>
+
+          <div class="form-group">
+            <label>รหัสผ่านปัจจุบัน</label>
+            <input type="password" name="current_password" autocomplete="current-password">
+          </div>
+
+          <div class="form-group">
+            <label>รหัสผ่านใหม่</label>
+            <input type="password" name="new_password" autocomplete="new-password">
+            <small>อย่างน้อย 8 ตัวอักษร</small>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block">
+          <i class="fas fa-save"></i> <%= adminLang === 'en' ? 'Save' : 'บันทึก' %>
+        </button>
+      </div>
+    </div>
+  </div>
+</form>

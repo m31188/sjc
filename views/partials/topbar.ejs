@@ -1,0 +1,93 @@
+<%
+  const _cl = typeof currentLang !== 'undefined' ? currentLang : 'th';
+
+  // SVG flags for cross-platform support (Windows doesn't render emoji flags reliably)
+  function flagSvg(code) {
+    const flags = {
+      th: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" width="22" height="14" style="border-radius:2px;flex-shrink:0;"><rect width="24" height="16" fill="#A51931"/><rect y="3" width="24" height="10" fill="#F4F5F8"/><rect y="6" width="24" height="4" fill="#2D2A4A"/></svg>',
+      en: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" width="22" height="14" style="border-radius:2px;flex-shrink:0;"><rect width="24" height="16" fill="#012169"/><path d="M0 0L24 16M24 0L0 16" stroke="#fff" stroke-width="2.4"/><path d="M0 0L24 16M24 0L0 16" stroke="#C8102E" stroke-width="1.2"/><path d="M12 0V16M0 8H24" stroke="#fff" stroke-width="3"/><path d="M12 0V16M0 8H24" stroke="#C8102E" stroke-width="1.6"/></svg>',
+      'zh-CN': '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" width="22" height="14" style="border-radius:2px;flex-shrink:0;"><rect width="24" height="16" fill="#DE2910"/><g fill="#FFDE00"><polygon points="4,3 4.7,5 6.6,5 5.1,6.2 5.7,8.1 4,7 2.3,8.1 2.9,6.2 1.4,5 3.3,5"/><polygon points="9,2 9.3,2.6 9.9,2.7 9.4,3.1 9.6,3.7 9,3.4 8.4,3.7 8.6,3.1 8.1,2.7 8.7,2.6"/><polygon points="11,4 11.3,4.6 11.9,4.7 11.4,5.1 11.6,5.7 11,5.4 10.4,5.7 10.6,5.1 10.1,4.7 10.7,4.6"/><polygon points="11,7 11.3,7.6 11.9,7.7 11.4,8.1 11.6,8.7 11,8.4 10.4,8.7 10.6,8.1 10.1,7.7 10.7,7.6"/><polygon points="9,9 9.3,9.6 9.9,9.7 9.4,10.1 9.6,10.7 9,10.4 8.4,10.7 8.6,10.1 8.1,9.7 8.7,9.6"/></g></svg>',
+      ja: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" width="22" height="14" style="border-radius:2px;flex-shrink:0;"><rect width="24" height="16" fill="#fff" stroke="#e5e7eb" stroke-width="0.5"/><circle cx="12" cy="8" r="4.8" fill="#BC002D"/></svg>'
+    };
+    return flags[code] || flags.th;
+  }
+%>
+<div class="topbar topbar-v3 notranslate" translate="no">
+  <div class="container">
+    <div class="topbar-inner">
+
+      <!-- LEFT: Language switcher -->
+      <div class="topbar-left">
+        <% if (settings.enable_translate === '1') { %>
+        <div class="topbar-lang notranslate" id="topbarLang" translate="no">
+          <button type="button" class="topbar-lang-toggle" aria-label="Language" aria-expanded="false">
+            <span class="topbar-lang-flag" id="topbarLangFlag" aria-hidden="true"><%- flagSvg('th') %></span>
+            <span class="topbar-lang-code notranslate" id="topbarLangCode" translate="no">ไทย</span>
+            <i class="fas fa-chevron-down topbar-lang-chev"></i>
+          </button>
+          <div class="topbar-lang-dropdown notranslate" id="topbarLangDropdown" translate="no">
+            <a href="javascript:void(0)" data-lang="th" class="topbar-lang-option active notranslate" translate="no">
+              <span class="topbar-lang-opt-flag"><%- flagSvg('th') %></span>
+              <span class="topbar-lang-opt-name">ไทย</span>
+            </a>
+            <a href="javascript:void(0)" data-lang="en" class="topbar-lang-option notranslate" translate="no">
+              <span class="topbar-lang-opt-flag"><%- flagSvg('en') %></span>
+              <span class="topbar-lang-opt-name">English</span>
+            </a>
+            <a href="javascript:void(0)" data-lang="zh-CN" class="topbar-lang-option notranslate" translate="no">
+              <span class="topbar-lang-opt-flag"><%- flagSvg('zh-CN') %></span>
+              <span class="topbar-lang-opt-name">中文</span>
+            </a>
+            <a href="javascript:void(0)" data-lang="ja" class="topbar-lang-option notranslate" translate="no">
+              <span class="topbar-lang-opt-flag"><%- flagSvg('ja') %></span>
+              <span class="topbar-lang-opt-name">日本語</span>
+            </a>
+          </div>
+        </div>
+        <% } %>
+
+        <span class="country-tag"><i class="fas fa-map-marker-alt"></i> <%= settings.country_label || 'Thailand' %></span>
+      </div>
+
+      <!-- RIGHT: Stock ticker + utility links -->
+      <div class="topbar-right">
+        <% if (settings.stock_symbol) { %>
+          <div class="stock-ticker">
+            <span class="stock-symbol notranslate" translate="no"><%= settings.stock_symbol %></span>
+            <span class="stock-price notranslate" translate="no"><%= settings.stock_price || '0.00' %></span>
+            <% if (settings.stock_change) { %>
+              <span class="stock-change notranslate <%= settings.stock_change.startsWith('-') ? 'down' : 'up' %>" translate="no">
+                <i class="fas fa-caret-<%= settings.stock_change.startsWith('-') ? 'down' : 'up' %>"></i>
+                <%= settings.stock_change %>
+              </span>
+            <% } %>
+          </div>
+        <% } %>
+
+        <a href="/careers" class="topbar-link"><i class="fas fa-briefcase"></i> ร่วมงานกับเรา</a>
+        <a href="/contact" class="topbar-link"><i class="fas fa-envelope"></i> ติดต่อเรา</a>
+
+        <div class="social-links">
+          <% if (settings.social_facebook) { %><a href="<%= settings.social_facebook %>" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a><% } %>
+          <% if (settings.social_line) { %><a href="<%= settings.social_line %>" target="_blank" rel="noopener" aria-label="LINE"><i class="fab fa-line"></i></a><% } %>
+          <% if (settings.social_youtube) { %><a href="<%= settings.social_youtube %>" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a><% } %>
+          <% if (settings.social_linkedin) { %><a href="<%= settings.social_linkedin %>" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a><% } %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Hidden Google Translate element -->
+<div id="google_translate_element" style="display:none !important;visibility:hidden !important;height:0;overflow:hidden;"></div>
+
+<!-- v46: SVG flags for use by JS sync (cross-platform reliable) -->
+<script id="sjc-flag-svgs" type="application/json"><%- JSON.stringify({
+  th: flagSvg('th'),
+  en: flagSvg('en'),
+  'zh-CN': flagSvg('zh-CN'),
+  zh: flagSvg('zh-CN'),
+  'zh-TW': flagSvg('zh-CN'),
+  ja: flagSvg('ja')
+}) %></script>

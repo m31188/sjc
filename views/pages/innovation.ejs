@@ -1,0 +1,50 @@
+<%- include('../partials/page-banner', {
+  bannerImage: page.banner_image || settings.default_page_banner || '/images/banner-innovation.jpg',
+  bannerTitle: page.banner_title || 'นวัตกรรม',
+  bannerSubtitle: page.banner_subtitle
+}) %>
+
+<section class="section-content">
+  <div class="container">
+    <% if (page.content) { %>
+      <div class="content-narrow rich-content" data-aos="fade-up">
+        <%- page.content %>
+      </div>
+    <% } else { %>
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">นวัตกรรม</span>
+        <h2 class="section-title">ขับเคลื่อนด้วยความคิดสร้างสรรค์</h2>
+        <p class="section-desc">เราเชื่อมั่นในพลังของนวัตกรรมเพื่อสร้างสรรค์โซลูชันที่ตอบโจทย์อนาคต</p>
+      </div>
+
+      <div class="innovation-pillars">
+        <div class="innov-card" data-aos="fade-up">
+          <div class="innov-icon"><i class="fas fa-lightbulb"></i></div>
+          <h3>คิดค้น</h3>
+          <p>ค้นคว้าและพัฒนาเทคโนโลยีใหม่ที่ตอบโจทย์ความต้องการในอนาคต</p>
+        </div>
+        <div class="innov-card" data-aos="fade-up" data-aos-delay="100">
+          <div class="innov-icon"><i class="fas fa-cogs"></i></div>
+          <h3>พัฒนา</h3>
+          <p>นำองค์ความรู้และเทคโนโลยีมาประยุกต์ใช้กับธุรกิจให้เกิดประสิทธิภาพสูงสุด</p>
+        </div>
+        <div class="innov-card" data-aos="fade-up" data-aos-delay="200">
+          <div class="innov-icon"><i class="fas fa-rocket"></i></div>
+          <h3>ขับเคลื่อน</h3>
+          <p>สร้างผลกระทบเชิงบวกต่อสังคม สิ่งแวดล้อม และเศรษฐกิจอย่างยั่งยืน</p>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (sections && sections.length > 0) { %>
+      <% sections.forEach((sec, i) => { %>
+        <div class="page-section" data-aos="fade-up">
+          <% if (sec.title) { %><h2 class="section-title text-center"><%= sec.title %></h2><% } %>
+          <% if (sec.subtitle) { %><p class="section-desc text-center"><%= sec.subtitle %></p><% } %>
+          <% if (sec.image) { %><img src="<%= sec.image %>" alt="<%= sec.title %>" class="section-img"><% } %>
+          <div class="rich-content"><%- sec.content %></div>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+</section>

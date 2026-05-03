@@ -1,0 +1,13 @@
+<section class="error-page">
+  <div class="container">
+    <div class="error-content" data-aos="fade-up">
+      <div class="error-code">500</div>
+      <h1 class="error-title">เกิดข้อผิดพลาด</h1>
+      <p class="error-desc"><%= typeof message !== 'undefined' ? message : 'ขออภัย เกิดข้อผิดพลาดบางอย่าง กรุณาลองใหม่อีกครั้ง' %></p>
+      <div class="error-actions">
+        <a href="/" class="btn btn-primary"><i class="fas fa-home"></i> กลับหน้าแรก</a>
+        <a href="javascript:history.back()" class="btn btn-outline">ย้อนกลับ</a>
+      </div>
+    </div>
+  </div>
+</section>

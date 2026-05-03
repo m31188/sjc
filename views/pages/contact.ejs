@@ -1,0 +1,119 @@
+<%- include('../partials/page-banner', {
+  bannerImage: page.banner_image || settings.default_page_banner || '/images/banner-contact.jpg',
+  bannerTitle: page.banner_title || 'ติดต่อเรา',
+  bannerSubtitle: page.banner_subtitle
+}) %>
+
+<section class="section-content">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info" data-aos="fade-right">
+        <span class="section-tag">ช่องทางการติดต่อ</span>
+        <h2 class="section-title">เราพร้อมรับฟังคุณ</h2>
+        <p class="section-desc">หากมีข้อสงสัยหรือต้องการข้อมูลเพิ่มเติม สามารถติดต่อเราผ่านช่องทางด้านล่าง</p>
+
+        <ul class="contact-info-list">
+          <% if (settings.contact_address) { %>
+            <li>
+              <div class="contact-info-icon"><i class="fas fa-map-marker-alt"></i></div>
+              <div class="contact-info-text">
+                <h4>ที่อยู่</h4>
+                <p><%= settings.contact_address %></p>
+              </div>
+            </li>
+          <% } %>
+          <% if (settings.contact_phone) { %>
+            <li>
+              <div class="contact-info-icon"><i class="fas fa-phone"></i></div>
+              <div class="contact-info-text">
+                <h4>โทรศัพท์</h4>
+                <p><a href="tel:<%= settings.contact_phone.replace(/\s/g, '') %>"><%= settings.contact_phone %></a></p>
+              </div>
+            </li>
+          <% } %>
+          <% if (settings.contact_email) { %>
+            <li>
+              <div class="contact-info-icon"><i class="fas fa-envelope"></i></div>
+              <div class="contact-info-text">
+                <h4>อีเมล</h4>
+                <p><a href="mailto:<%= settings.contact_email %>"><%= settings.contact_email %></a></p>
+              </div>
+            </li>
+          <% } %>
+          <% if (settings.contact_hours) { %>
+            <li>
+              <div class="contact-info-icon"><i class="fas fa-clock"></i></div>
+              <div class="contact-info-text">
+                <h4>เวลาทำการ</h4>
+                <p><%= settings.contact_hours %></p>
+              </div>
+            </li>
+          <% } %>
+        </ul>
+
+        <div class="contact-social">
+          <span>ติดตามเรา:</span>
+          <% if (settings.social_facebook) { %><a href="<%= settings.social_facebook %>" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a><% } %>
+          <% if (settings.social_line) { %><a href="<%= settings.social_line %>" target="_blank" rel="noopener"><i class="fab fa-line"></i></a><% } %>
+          <% if (settings.social_youtube) { %><a href="<%= settings.social_youtube %>" target="_blank" rel="noopener"><i class="fab fa-youtube"></i></a><% } %>
+          <% if (settings.social_linkedin) { %><a href="<%= settings.social_linkedin %>" target="_blank" rel="noopener"><i class="fab fa-linkedin-in"></i></a><% } %>
+        </div>
+      </div>
+
+      <div class="contact-form-wrap" data-aos="fade-left">
+        <div class="contact-form-card">
+          <h3><%= tUI('contact.heading') %></h3>
+
+          <% if (flash.success && flash.success.length > 0) { %>
+            <div class="alert alert-success"><i class="fas fa-check-circle"></i> <%= flash.success[0] %></div>
+          <% } %>
+          <% if (flash.error && flash.error.length > 0) { %>
+            <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <%= flash.error[0] %></div>
+          <% } %>
+
+          <form action="/contact" method="POST" class="contact-form">
+            <!-- Honeypot -->
+            <input type="text" name="website" style="display:none" tabindex="-1" autocomplete="off">
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="name"><%= tUI('contact.name') %> <span class="required">*</span></label>
+                <input type="text" id="name" name="name" required placeholder="กรอกชื่อของคุณ">
+              </div>
+              <div class="form-group">
+                <label for="email"><%= tUI('contact.email') %> <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="example@email.com">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="phone"><%= tUI('contact.phone') %></label>
+                <input type="tel" id="phone" name="phone" placeholder="0XX-XXX-XXXX">
+              </div>
+              <div class="form-group">
+                <label for="subject"><%= tUI('contact.subject') %></label>
+                <input type="text" id="subject" name="subject" placeholder="เรื่องที่ต้องการติดต่อ">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="message"><%= tUI('contact.message') %> <span class="required">*</span></label>
+              <textarea id="message" name="message" rows="6" required placeholder="กรอกข้อความที่ต้องการสอบถาม..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block">
+              <i class="fas fa-paper-plane"></i> <%= tUI('btn.send') %>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <% if (settings.contact_map_embed) { %>
+      <div class="contact-map" data-aos="fade-up">
+        <%- settings.contact_map_embed %>
+      </div>
+    <% } %>
+  </div>
+</section>

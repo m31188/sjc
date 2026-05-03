@@ -1,0 +1,38 @@
+<%- include('../partials/page-banner', {
+  bannerImage: page.banner_image || settings.default_sustainability_banner || '/images/banner-sustainability.jpg',
+  bannerTitle: page.banner_title || 'ความยั่งยืน',
+  bannerSubtitle: page.banner_subtitle
+}) %>
+
+<section class="section-content">
+  <div class="container">
+    <div class="section-header" data-aos="fade-up">
+      <span class="section-tag">ความยั่งยืน</span>
+      <h2 class="section-title">มุ่งสู่อนาคตที่ยั่งยืน</h2>
+      <p class="section-desc">ขับเคลื่อนการเปลี่ยนแปลงเชิงบวกในด้านสิ่งแวดล้อม สังคม และธรรมาภิบาล</p>
+    </div>
+
+    <% if (items && items.length > 0) { %>
+      <div class="sustain-grid">
+        <% items.forEach((s, i) => { %>
+          <a href="/sustainability/<%= s.slug %>" class="sustain-card" data-aos="fade-up" data-aos-delay="<%= (i % 3) * 100 %>">
+            <div class="sustain-card-image">
+              <img src="<%= s.thumbnail || '/images/sustain-placeholder.jpg' %>" alt="<%= s.title %>" loading="lazy">
+            </div>
+            <div class="sustain-card-body">
+              <% if (s.category) { %><span class="sustain-card-cat"><%= s.category %></span><% } %>
+              <h3 class="sustain-card-title"><%= s.title %></h3>
+              <p class="sustain-card-desc"><%= truncate(s.short_description, 100) %></p>
+              <span class="sustain-card-link"><%= tUI('btn.learn_more') %> <i class="fas fa-arrow-right"></i></span>
+            </div>
+          </a>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <i class="fas fa-leaf"></i>
+        <p>ยังไม่มีข้อมูล</p>
+      </div>
+    <% } %>
+  </div>
+</section>

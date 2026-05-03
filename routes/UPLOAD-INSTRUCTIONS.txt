@@ -1,0 +1,100 @@
+================================================
+SJC v14 - HEADER FIXES + HPM SELF-HEALING
+================================================
+
+WHAT THIS UPDATE FIXES
+----------------------
+
+1. HOMEPAGE MANAGER 500 ERROR — FIXED
+   Root cause: production database was missing some of the
+   newer settings rows (about_bg_image, about_bg_opacity,
+   *_bg_opacity, etc). The HPM template referenced them
+   and crashed on undefined.
+
+   Solution: the HPM page is now SELF-HEALING. Every time
+   you load it, the route auto-creates any missing settings
+   in the database (using INSERT IGNORE, so existing values
+   are never touched). After uploading and reloading the page
+   ONCE, the database will be complete and never throw 500
+   on these fields again.
+
+2. HEADER LANGUAGE SWITCHER — REMOVED
+   The language switcher in the header (next to the search
+   icon) has been removed entirely. Only ONE language switcher
+   now exists, in the top utility bar.
+
+3. TOP BAR LANGUAGE SWITCHER — ADDED
+   The TH/EN/中文/日本語 dropdown now lives in the top utility
+   bar (right side, next to the social icons). Same Google
+   Translate cookie mechanism, same languages, just in a more
+   compact pill-style toggle.
+
+4. THE GLOBE ICON NEXT TO "THAILAND" — REMOVED
+   The little globe icon that appeared next to the country
+   label has been removed.
+
+5. HEADER BREAKING WHEN ZOOMED — FIXED
+   At zoom levels of 110-125%, the 9-item Thai navigation
+   was wrapping to 2 lines because Thai words can't be
+   broken across lines like English. Fix:
+   - At 1200-1280px width: navigation shrinks (smaller
+     padding, smaller font) but stays as full menu
+   - Below 1200px: switches to hamburger menu earlier
+     (was previously 992px). This prevents any wrapping
+     when users zoom in.
+
+================================================
+FILES (5 total)
+================================================
+
+  views/partials/topbar.ejs          Removed globe icon, added lang switcher
+  views/partials/header.ejs          Removed language switcher
+  public/css/style.css               Topbar lang styles, zoom fixes, GT hide
+  public/js/main.js                  Lang switcher works on both spots
+  routes/admin.js                    HPM self-healing route
+
+================================================
+HOW TO UPLOAD VIA FTP
+================================================
+
+Open FileZilla and navigate to:
+  /scg.cairoit.co.th/
+
+Upload each file to its EXACT path (replacing the existing one):
+
+  views/partials/topbar.ejs
+  views/partials/header.ejs
+  public/css/style.css
+  public/js/main.js
+  routes/admin.js
+
+================================================
+AFTER UPLOAD - RESTART
+================================================
+
+1. Plesk → Node.js → Restart App
+2. Hard refresh the website (Ctrl+F5)
+3. Go to /sjc-admin-mido-2026/homepage-manager — should
+   load cleanly now (no 500). The first page load may take
+   1-2 extra seconds because the route is creating any
+   missing settings rows. After that it's normal speed.
+
+================================================
+WHAT YOU SHOULD SEE
+================================================
+
+DESKTOP (1920px / normal):
+  Top bar:  [Thailand]      [Careers] [Contact] [social] [TH▾]
+  Header:   [LOGO]                  [9 menu items]      [🔍] [☰]
+
+DESKTOP (1100px / zoomed in):
+  Top bar:  [Thailand]      [Careers] [Contact] [TH▾]
+  Header:   [LOGO]                                      [☰]
+  (Menu now opens via hamburger because there's not enough
+  room for the full Thai nav at this width)
+
+MOBILE:
+  Top bar:  hidden
+  Header:   [LOGO]                                      [☰]
+  (Language switcher is inside the burger menu)
+

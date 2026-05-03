@@ -1,0 +1,70 @@
+<%- include('../partials/page-banner', {
+  bannerImage: page.banner_image || settings.default_page_banner || '/images/banner-investor.jpg',
+  bannerTitle: page.banner_title || 'นักลงทุนสัมพันธ์',
+  bannerSubtitle: page.banner_subtitle
+}) %>
+
+<section class="section-content">
+  <div class="container">
+    <% if (page.content) { %>
+      <div class="content-narrow rich-content" data-aos="fade-up">
+        <%- page.content %>
+      </div>
+    <% } else { %>
+      <div class="section-header" data-aos="fade-up">
+        <span class="section-tag">นักลงทุนสัมพันธ์</span>
+        <h2 class="section-title">ข้อมูลสำหรับผู้ถือหุ้น</h2>
+        <p class="section-desc">ข้อมูลทางการเงินและเอกสารสำคัญสำหรับนักลงทุน</p>
+      </div>
+    <% } %>
+
+    <% const categoryLabels = {
+      annual_report: 'รายงานประจำปี',
+      quarterly: 'รายงานรายไตรมาส',
+      financial: 'งบการเงิน',
+      presentation: 'เอกสารนำเสนอ',
+      announcement: 'แจ้งข่าวสำคัญ',
+      other: 'เอกสารอื่นๆ'
+    }; %>
+
+    <% const categoryIcons = {
+      annual_report: 'fa-book',
+      quarterly: 'fa-chart-line',
+      financial: 'fa-file-invoice-dollar',
+      presentation: 'fa-presentation',
+      announcement: 'fa-bullhorn',
+      other: 'fa-file'
+    }; %>
+
+    <% if (Object.keys(docsByCategory).length > 0) { %>
+      <div class="investor-tabs">
+        <% Object.keys(docsByCategory).forEach((cat, i) => { %>
+          <div class="investor-section" data-aos="fade-up">
+            <div class="investor-section-header">
+              <i class="fas <%= categoryIcons[cat] || 'fa-file' %>"></i>
+              <h3><%= categoryLabels[cat] || cat %></h3>
+            </div>
+            <div class="investor-docs">
+              <% docsByCategory[cat].forEach(doc => { %>
+                <a href="<%= doc.file_path %>" target="_blank" rel="noopener" class="doc-item">
+                  <div class="doc-icon"><i class="fas fa-file-pdf"></i></div>
+                  <div class="doc-info">
+                    <h4 class="doc-title"><%= doc.title %></h4>
+                    <% if (doc.year) { %><span class="doc-year">ปี <%= doc.year + 543 %></span><% } %>
+                    <% if (doc.description) { %><p class="doc-desc"><%= doc.description %></p><% } %>
+                  </div>
+                  <div class="doc-action"><i class="fas fa-download"></i></div>
+                </a>
+              <% }); %>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <div class="empty-state">
+        <i class="fas fa-file"></i>
+        <p>ยังไม่มีเอกสารในขณะนี้</p>
+      </div>
+    <% } %>
+  </div>
+</section>

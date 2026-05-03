@@ -1,0 +1,31 @@
+<%
+  // v46: Resolve banner image with proper fallback chain:
+  // 1. Page-specific bannerImage (passed from route)
+  // 2. settings.default_page_banner (admin-uploaded fallback)
+  // 3. Hardcoded /images/banner-default.jpg (last resort)
+  const _resolvedBanner = (typeof bannerImage !== 'undefined' && bannerImage) ? bannerImage
+    : (settings && settings.default_page_banner ? settings.default_page_banner : '/images/banner-default.jpg');
+%>
+<section class="page-banner" style="background-image: url('<%= _resolvedBanner %>')">
+  <div class="page-banner-overlay"></div>
+  <div class="container">
+    <div class="page-banner-content">
+      <h1 class="page-banner-title" data-aos="fade-up"><%= bannerTitle %></h1>
+      <% if (typeof bannerSubtitle !== 'undefined' && bannerSubtitle) { %>
+        <p class="page-banner-subtitle" data-aos="fade-up" data-aos-delay="100"><%= bannerSubtitle %></p>
+      <% } %>
+      <nav class="breadcrumb" data-aos="fade-up" data-aos-delay="200">
+        <a href="/">หน้าแรก</a>
+        <% if (typeof breadcrumbs !== 'undefined' && breadcrumbs) { %>
+          <% breadcrumbs.forEach(b => { %>
+            <span class="separator">/</span>
+            <% if (b.url) { %><a href="<%= b.url %>"><%= b.label %></a><% } else { %><span><%= b.label %></span><% } %>
+          <% }); %>
+        <% } else { %>
+          <span class="separator">/</span>
+          <span><%= bannerTitle %></span>
+        <% } %>
+      </nav>
+    </div>
+  </div>
+</section>

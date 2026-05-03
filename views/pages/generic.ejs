@@ -1,0 +1,39 @@
+<%- include('../partials/page-banner', {
+  bannerImage: page.banner_image || '/images/banner-default.jpg',
+  bannerTitle: page.banner_title || page.title,
+  bannerSubtitle: page.banner_subtitle
+}) %>
+
+<section class="section-content">
+  <div class="container">
+    <% if (page.content) { %>
+      <div class="content-narrow rich-content" data-aos="fade-up">
+        <%- page.content %>
+      </div>
+    <% } %>
+
+    <% if (sections && sections.length > 0) { %>
+      <% sections.forEach((sec, i) => { %>
+        <div class="page-section page-section-<%= sec.section_type %>" data-aos="fade-up">
+          <% if (sec.section_type === 'image_text') { %>
+            <div class="section-grid <%= i % 2 === 0 ? '' : 'reverse' %>">
+              <% if (sec.image) { %>
+                <div class="section-image"><img src="<%= sec.image %>" alt="<%= sec.title %>"></div>
+              <% } %>
+              <div class="section-text">
+                <% if (sec.subtitle) { %><span class="section-tag"><%= sec.subtitle %></span><% } %>
+                <% if (sec.title) { %><h2 class="section-title"><%= sec.title %></h2><% } %>
+                <div class="rich-content"><%- sec.content %></div>
+              </div>
+            </div>
+          <% } else { %>
+            <% if (sec.title) { %><h2 class="section-title text-center"><%= sec.title %></h2><% } %>
+            <% if (sec.subtitle) { %><p class="section-desc text-center"><%= sec.subtitle %></p><% } %>
+            <% if (sec.image) { %><img src="<%= sec.image %>" alt="<%= sec.title %>" class="section-img"><% } %>
+            <div class="rich-content"><%- sec.content %></div>
+          <% } %>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+</section>

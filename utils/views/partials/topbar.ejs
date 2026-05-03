@@ -1,0 +1,57 @@
+<div class="topbar topbar-v3">
+  <div class="container">
+    <div class="topbar-inner">
+
+      <!-- LEFT: Language switcher (+ country tag desktop only) -->
+      <div class="topbar-left">
+        <% if (settings.enable_translate === '1') { %>
+        <%
+          const _cl = typeof currentLang !== 'undefined' ? currentLang : 'th';
+          const _labels = { th: 'ไทย', en: 'English', zh: '中文', ja: '日本語' };
+        %>
+        <div class="topbar-lang" id="topbarLang">
+          <button type="button" class="topbar-lang-toggle" aria-label="Language" aria-expanded="false">
+            <i class="fas fa-globe" style="font-size:11px;margin-right:5px;"></i>
+            <span class="topbar-lang-code" id="topbarLangCode"><%= _labels[_cl] || 'ไทย' %></span>
+            <i class="fas fa-chevron-down topbar-lang-chev"></i>
+          </button>
+          <div class="topbar-lang-dropdown">
+            <a href="?lang=th" data-lang="th" class="topbar-lang-option <%= _cl === 'th' ? 'active' : '' %>"><span>ไทย</span></a>
+            <a href="?lang=en" data-lang="en" class="topbar-lang-option <%= _cl === 'en' ? 'active' : '' %>"><span>English</span></a>
+            <a href="?lang=zh" data-lang="zh" class="topbar-lang-option <%= _cl === 'zh' ? 'active' : '' %>"><span>中文</span></a>
+            <a href="?lang=ja" data-lang="ja" class="topbar-lang-option <%= _cl === 'ja' ? 'active' : '' %>"><span>日本語</span></a>
+          </div>
+        </div>
+        <% } %>
+
+        <span class="country-tag"><%= settings.country_label || 'Thailand' %></span>
+      </div>
+
+      <!-- RIGHT: Stock ticker + utility links -->
+      <div class="topbar-right">
+        <% if (settings.stock_symbol) { %>
+          <div class="stock-ticker">
+            <span class="stock-symbol"><%= settings.stock_symbol %></span>
+            <span class="stock-price"><%= settings.stock_price || '0.00' %></span>
+            <% if (settings.stock_change) { %>
+              <span class="stock-change <%= settings.stock_change.startsWith('-') ? 'down' : 'up' %>">
+                <%= settings.stock_change %>
+              </span>
+            <% } %>
+          </div>
+        <% } %>
+
+        <a href="/careers" class="topbar-link">ร่วมงานกับเรา</a>
+        <a href="/contact" class="topbar-link">ติดต่อเรา</a>
+
+        <div class="social-links">
+          <% if (settings.social_facebook) { %><a href="<%= settings.social_facebook %>" target="_blank" rel="noopener" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a><% } %>
+          <% if (settings.social_line) { %><a href="<%= settings.social_line %>" target="_blank" rel="noopener" aria-label="LINE"><i class="fab fa-line"></i></a><% } %>
+          <% if (settings.social_youtube) { %><a href="<%= settings.social_youtube %>" target="_blank" rel="noopener" aria-label="YouTube"><i class="fab fa-youtube"></i></a><% } %>
+          <% if (settings.social_linkedin) { %><a href="<%= settings.social_linkedin %>" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a><% } %>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

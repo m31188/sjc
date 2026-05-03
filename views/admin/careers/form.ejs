@@ -1,0 +1,124 @@
+<div class="page-header">
+  <div>
+    <h2><%= job.id ? (adminLang === 'en' ? 'Edit Job' : 'แก้ไขตำแหน่งงาน') : (adminLang === 'en' ? 'New Job' : 'เพิ่มตำแหน่งงานใหม่') %></h2>
+  </div>
+  <div class="page-header-actions">
+    <% if (job.id) { %>
+      <a href="/<%= adminSlug %>/blocks/career/<%= job.id %>" class="btn btn-primary">
+        <i class="fas fa-th-large"></i> <%= adminLang === 'en' ? 'Manage Content Blocks' : 'จัดการบล็อกเนื้อหา' %>
+      </a>
+    <% } %>
+    <a href="/<%= adminSlug %>/careers" class="btn btn-outline"><i class="fas fa-arrow-left"></i> <%= adminLang === 'en' ? 'Back' : 'กลับ' %></a>
+  </div>
+</div>
+
+<div style="background:#eff6ff;border-left:4px solid #3b82f6;color:#1e3a8a;padding:14px 18px;border-radius:8px;margin-bottom:20px;font-size:13px;">
+  <i class="fas fa-lightbulb" style="color:#3b82f6;"></i>
+  <strong><%= adminLang === 'en' ? 'Tip:' : 'เคล็ดลับ:' %></strong>
+  <%= adminLang === 'en' ? 'Use the Description field below for the full job description. The rich-text editor supports headings, bold, lists, and links.' : 'ใช้ช่อง Description ด้านล่างสำหรับรายละเอียดงานเต็ม Rich-Text Editor รองรับหัวข้อ ตัวหนา รายการ และลิงก์' %>
+</div>
+
+<form method="POST" action="/<%= adminSlug %>/careers<%= job.id ? '/' + job.id : '' %>">
+  <div class="form-grid">
+    <div class="form-main">
+      <div class="card">
+        <div class="card-body">
+          <div class="form-group">
+            <label>ตำแหน่งงาน <span class="required">*</span></label>
+            <input type="text" name="title" value="<%= job.title || '' %>" required placeholder="เช่น Software Engineer">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label><%= adminLang === "en" ? "Department" : "แผนก" %></label>
+              <input type="text" name="department" value="<%= job.department || '' %>" placeholder="เช่น IT, Marketing">
+            </div>
+            <div class="form-group">
+              <label>สถานที่ทำงาน</label>
+              <input type="text" name="location" value="<%= job.location || '' %>" placeholder="เช่น กรุงเทพ">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>ประเภทงาน</label>
+              <select name="job_type">
+                <option value="full-time" <%= job.job_type === 'full-time' ? 'selected' : '' %>>งานประจำ</option>
+                <option value="part-time" <%= job.job_type === 'part-time' ? 'selected' : '' %>><%= adminLang === 'en' ? 'Part-time' : 'พาร์ทไทม์' %></option>
+                <option value="contract" <%= job.job_type === 'contract' ? 'selected' : '' %>>สัญญาจ้าง</option>
+                <option value="internship" <%= job.job_type === 'internship' ? 'selected' : '' %>><%= adminLang === 'en' ? 'Internship' : 'ฝึกงาน' %></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>เงินเดือน</label>
+              <input type="text" name="salary_range" value="<%= job.salary_range || '' %>" placeholder="เช่น 30,000-50,000 บาท">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label><%= adminLang === 'en' ? 'Job description' : 'รายละเอียดงาน' %></label>
+            <textarea name="description" class="rich-editor" rows="8"><%= job.description || '' %></textarea>
+          </div>
+
+          <div class="form-group">
+            <label><%= adminLang === 'en' ? 'Qualifications' : 'คุณสมบัติ' %></label>
+            <textarea name="requirements" class="rich-editor" rows="8"><%= job.requirements || '' %></textarea>
+          </div>
+
+          <div class="form-group">
+            <label><%= adminLang === 'en' ? 'Benefits' : 'สวัสดิการ' %></label>
+            <textarea name="benefits" class="rich-editor" rows="6"><%= job.benefits || '' %></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-side">
+      <div class="card">
+        <div class="card-body">
+          <h4><%= adminLang === 'en' ? 'Publishing' : 'การเผยแพร่' %></h4>
+          <div class="form-group">
+            <label class="check-label">
+              <input type="checkbox" name="active" value="1" <%= job.active === undefined || job.active ? 'checked' : '' %>>
+              <span><%= adminLang === "en" ? "Open" : "เปิดรับสมัคร" %></span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label class="check-label">
+              <input type="checkbox" name="featured" value="1" <%= job.featured ? 'checked' : '' %>>
+              <span>ตำแหน่งแนะนำ</span>
+            </label>
+          </div>
+          <div class="form-group">
+            <label>วันปิดรับสมัคร</label>
+            <input type="date" name="closing_date" value="<%= job.closing_date ? new Date(job.closing_date).toISOString().split('T')[0] : '' %>">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-save"></i> <%= adminLang === 'en' ? 'Save' : 'บันทึก' %>
+          </button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h4>การสมัคร</h4>
+          <div class="form-group">
+            <label>อีเมลรับสมัคร</label>
+            <input type="email" name="apply_email" value="<%= job.apply_email || '' %>" placeholder="hr@example.com">
+            <small>ผู้สมัครจะส่งใบสมัครไปยังอีเมลนี้</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<script>
+  tinymce.init({
+    selector: '.rich-editor',
+    height: 250,
+    plugins: 'lists link code',
+    toolbar: 'undo redo | bold italic | bullist numlist | link | code',
+    menubar: false
+  });
+</script>

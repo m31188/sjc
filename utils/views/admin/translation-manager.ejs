@@ -1,0 +1,245 @@
+<div class="page-header">
+  <h1>
+    <i class="fas fa-language" style="color:#0ea5e9;"></i>
+    <%= adminLang === 'en' ? 'Translation Manager' : 'จัดการคำแปล' %>
+  </h1>
+</div>
+
+<!-- ==================== Provider status ==================== -->
+<%
+  const providerLabels = {
+    mymemory: { name: 'MyMemory (Free)', desc: 'Free, no API key. Basic quality, suitable for short content.', color: '#9ca3af', warn: true },
+    anthropic: { name: 'Claude AI (Anthropic)', desc: 'High-quality AI translation. Preserves HTML and tone well.', color: '#7c3aed', warn: false },
+    deepl: { name: 'DeepL', desc: 'Premium translation quality, especially for European languages.', color: '#0c4a6e', warn: false }
+  };
+  const pInfo = providerLabels[provider] || providerLabels.mymemory;
+  const isReady = (provider === 'mymemory') ||
+                  (provider === 'anthropic' && hasClaudeKey) ||
+                  (provider === 'deepl' && hasDeeplKey);
+%>
+
+<div class="card" style="margin-bottom:20px;<%= isReady ? '' : 'border-left:4px solid #f59e0b;' %>">
+  <div class="card-body" style="padding:18px 22px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+    <div style="flex-shrink:0;width:54px;height:54px;border-radius:12px;background:<%= pInfo.color %>;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;">
+      <i class="fas fa-robot"></i>
+    </div>
+    <div style="flex:1;min-width:240px;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;">
+        <strong style="font-size:15px;color:#1a2540;"><%= adminLang === 'en' ? 'Translation Provider:' : 'ผู้ให้บริการแปล:' %></strong>
+        <span style="background:<%= pInfo.color %>;color:#fff;padding:3px 10px;border-radius:10px;font-size:12px;font-weight:700;"><%= pInfo.name %></span>
+        <% if (isReady) { %>
+          <span style="color:#059669;font-size:12px;font-weight:600;"><i class="fas fa-check-circle"></i> <%= adminLang === 'en' ? 'Ready' : 'พร้อมใช้งาน' %></span>
+        <% } else { %>
+          <span style="color:#dc2626;font-size:12px;font-weight:600;"><i class="fas fa-exclamation-triangle"></i> <%= adminLang === 'en' ? 'API key missing' : 'ขาดรหัส API' %></span>
+        <% } %>
+      </div>
+      <p style="margin:0;font-size:13px;color:#5b6478;line-height:1.5;"><%= pInfo.desc %></p>
+      <% if (provider === 'mymemory') { %>
+        <p style="margin:6px 0 0;font-size:12px;color:#92400e;">
+          <i class="fas fa-info-circle"></i>
+          <%= adminLang === 'en' ? 'For better quality, switch to Claude AI in Settings (you\'ll need an Anthropic API key from console.anthropic.com).' : 'เพื่อคุณภาพที่ดีกว่า เปลี่ยนเป็น Claude AI ในหน้า Settings (ต้องมีรหัส API จาก console.anthropic.com)' %>
+        </p>
+      <% } %>
+    </div>
+    <a href="/<%= adminSlug %>/settings#translation_provider" class="btn btn-secondary" style="flex-shrink:0;">
+      <i class="fas fa-cog"></i> <%= adminLang === 'en' ? 'Configure' : 'ตั้งค่า' %>
+    </a>
+  </div>
+</div>
+
+<!-- ==================== ONE-CLICK TRANSLATE EVERYTHING ==================== -->
+<div class="card" style="margin-bottom:24px;background:linear-gradient(135deg,#0c4a6e 0%,#0e7490 100%);color:#fff;border:0;">
+  <div class="card-body" style="padding:28px;">
+    <div style="display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;">
+      <div style="flex:1;min-width:260px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <i class="fas fa-magic" style="font-size:22px;color:#fbbf24;"></i>
+          <h2 style="margin:0;font-size:22px;color:#fff;font-weight:800;">
+            <%= adminLang === 'en' ? 'Translate Entire Website' : 'แปลทั้งเว็บไซต์' %>
+          </h2>
+        </div>
+        <p style="margin:0 0 14px;font-size:14px;color:rgba(255,255,255,0.9);line-height:1.6;">
+          <%= adminLang === 'en'
+              ? 'Auto-translate every news article and business in the database into the chosen language with one click. Already-translated posts are skipped (use Force re-translate to overwrite).'
+              : 'แปลข่าวและธุรกิจทุกรายการในฐานข้อมูลเป็นภาษาที่เลือกด้วยคลิกเดียว โพสต์ที่แปลแล้วจะถูกข้าม (ใช้ Force re-translate เพื่อเขียนทับ)' %>
+        </p>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:18px;">
+      <% [['en', 'English', '🇬🇧'], ['zh', '中文 Chinese', '🇨🇳'], ['ja', '日本語 Japanese', '🇯🇵']].forEach(function(row) { %>
+        <form method="POST" action="/<%= adminSlug %>/translation-manager/translate-all?lang=<%= row[0] %>"
+              onsubmit="this.querySelector('button').disabled=true; this.querySelector('button').innerHTML='<i class=\'fas fa-spinner fa-spin\'></i> <%= adminLang === 'en' ? 'Translating...' : 'กำลังแปล...' %>'; return confirm('<%= adminLang === 'en' ? 'Translate ALL untranslated posts to ' + row[1] + '? This may take 30-60 seconds.' : 'แปลโพสต์ที่ยังไม่ได้แปลทั้งหมดเป็น ' + row[1] + '? อาจใช้เวลา 30-60 วินาที' %>');"
+              style="margin:0;">
+          <button type="submit" style="width:100%;padding:18px;background:rgba(255,255,255,0.95);color:#0c4a6e;border:0;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:8px;">
+            <span style="font-size:30px;line-height:1;"><%= row[2] %></span>
+            <span><%= adminLang === 'en' ? 'Translate to ' + row[1] : 'แปลเป็น ' + row[1] %></span>
+          </button>
+        </form>
+      <% }); %>
+    </div>
+
+    <details style="margin-top:18px;">
+      <summary style="cursor:pointer;font-size:13px;color:rgba(255,255,255,0.85);">
+        <%= adminLang === 'en' ? 'Advanced: Force re-translate (overwrites existing translations)' : 'ขั้นสูง: บังคับแปลใหม่ (เขียนทับคำแปลเดิม)' %>
+      </summary>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-top:12px;">
+        <% [['en', 'English'], ['zh', '中文'], ['ja', '日本語']].forEach(function(row) { %>
+          <form method="POST" action="/<%= adminSlug %>/translation-manager/translate-all?lang=<%= row[0] %>&force=1"
+                onsubmit="this.querySelector('button').disabled=true; return confirm('<%= adminLang === 'en' ? 'OVERWRITE all existing ' + row[1] + ' translations? This cannot be undone.' : 'เขียนทับคำแปล ' + row[1] + ' ทั้งหมดที่มีอยู่? ไม่สามารถย้อนกลับได้' %>');"
+                style="margin:0;">
+            <button type="submit" style="width:100%;padding:10px;background:rgba(220,38,38,0.9);color:#fff;border:1px solid rgba(255,255,255,0.3);border-radius:8px;font-weight:600;font-size:12px;cursor:pointer;">
+              <i class="fas fa-redo"></i> Force <%= row[1] %>
+            </button>
+          </form>
+        <% }); %>
+      </div>
+    </details>
+  </div>
+</div>
+
+<!-- ==================== STATUS GRID ==================== -->
+<%
+  const sNews = newsStats || {};
+  const sBiz = bizStats || {};
+  function pct(done, total) {
+    if (!total) return 0;
+    return Math.round((done / total) * 100);
+  }
+%>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:24px;">
+  <% [
+    ['News', 'ข่าว', sNews, 'newspaper'],
+    ['Businesses', 'ธุรกิจ', sBiz, 'briefcase']
+  ].forEach(function(row) { %>
+    <div class="card">
+      <div class="card-body" style="padding:18px 22px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+          <i class="fas fa-<%= row[3] %>" style="color:#0ea5e9;"></i>
+          <strong style="font-size:14px;"><%= adminLang === 'en' ? row[0] : row[1] %></strong>
+          <span style="margin-left:auto;color:#6b7280;font-size:12px;"><%= row[2].total || 0 %> <%= adminLang === 'en' ? 'posts' : 'รายการ' %></span>
+        </div>
+
+        <% [['en', 'English'], ['zh', '中文'], ['ja', '日本語']].forEach(function(lc) { %>
+          <% const done = row[2]['done_' + lc[0]] || 0; const tot = row[2].total || 0; const p = pct(done, tot); %>
+          <div style="margin-bottom:10px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+              <span style="font-weight:600;"><%= lc[1] %></span>
+              <span style="color:<%= p === 100 ? '#059669' : p > 0 ? '#0ea5e9' : '#9ca3af' %>;font-weight:700;"><%= done %>/<%= tot %> (<%= p %>%)</span>
+            </div>
+            <div style="height:6px;background:#f3f4f6;border-radius:3px;overflow:hidden;">
+              <div style="height:100%;width:<%= p %>%;background:<%= p === 100 ? '#10b981' : 'linear-gradient(90deg,#0ea5e9,#7c3aed)' %>;transition:width 0.4s;"></div>
+            </div>
+          </div>
+        <% }); %>
+      </div>
+    </div>
+  <% }); %>
+</div>
+
+<!-- ==================== Per-post detail tables ==================== -->
+<style>
+  .tm-tabs { display: flex; gap: 8px; margin-bottom: 18px; border-bottom: 2px solid #e5e7eb; padding: 0; list-style: none; }
+  .tm-tab { padding: 12px 22px; font-weight: 600; color: #6b7280; cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -2px; transition: all 0.2s; user-select: none; }
+  .tm-tab:hover { color: #1a2540; }
+  .tm-tab.active { color: #0ea5e9; border-bottom-color: #0ea5e9; }
+  .tm-table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.06); }
+  .tm-table th { background: #f9fafb; text-align: left; padding: 12px 16px; font-size: 12px; font-weight: 700; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #e5e7eb; }
+  .tm-table td { padding: 12px 16px; border-bottom: 1px solid #f3f4f6; vertical-align: middle; font-size: 13px; }
+  .tm-table tr:last-child td { border-bottom: 0; }
+  .tm-table tr:hover { background: #fafbfc; }
+  .tm-status { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: 700; }
+  .tm-status.done { background: #d1fae5; color: #065f46; }
+  .tm-status.missing { background: #fee2e2; color: #991b1b; }
+  .tm-tab-panel { display: none; }
+  .tm-tab-panel.active { display: block; }
+</style>
+
+<h3 style="margin:24px 0 12px;font-size:16px;"><%= adminLang === 'en' ? 'Per-post translation status' : 'สถานะคำแปลรายโพสต์' %></h3>
+
+<ul class="tm-tabs" id="tmTabs">
+  <li class="tm-tab active" data-tab="news"><i class="fas fa-newspaper"></i> <%= adminLang === 'en' ? 'News' : 'ข่าว' %> (<%= newsRows.length %>)</li>
+  <li class="tm-tab" data-tab="biz"><i class="fas fa-briefcase"></i> <%= adminLang === 'en' ? 'Businesses' : 'ธุรกิจ' %> (<%= bizRows.length %>)</li>
+</ul>
+
+<div class="tm-tab-panel active" id="tab-news">
+  <% if (newsRows.length === 0) { %>
+    <div class="card"><div class="card-body" style="text-align:center;padding:40px;color:#6b7280;"><%= adminLang === 'en' ? 'No news articles yet.' : 'ยังไม่มีบทความข่าว' %></div></div>
+  <% } else { %>
+    <table class="tm-table">
+      <thead><tr>
+        <th style="width:50%;"><%= adminLang === 'en' ? 'Title (Thai)' : 'หัวข้อ (ไทย)' %></th>
+        <th style="text-align:center;width:90px;">EN</th>
+        <th style="text-align:center;width:90px;">中文</th>
+        <th style="text-align:center;width:90px;">日本語</th>
+        <th style="text-align:right;"><%= adminLang === 'en' ? 'Edit' : 'แก้ไข' %></th>
+      </tr></thead>
+      <tbody>
+        <% newsRows.forEach(function(n) { %>
+          <tr>
+            <td>
+              <div style="font-weight:600;color:#1a2540;"><%= n.title %></div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">/news/<%= n.slug %></div>
+            </td>
+            <td style="text-align:center;"><span class="tm-status <%= n.has_en ? 'done' : 'missing' %>"><i class="fas fa-<%= n.has_en ? 'check' : 'times' %>"></i></span></td>
+            <td style="text-align:center;"><span class="tm-status <%= n.has_zh ? 'done' : 'missing' %>"><i class="fas fa-<%= n.has_zh ? 'check' : 'times' %>"></i></span></td>
+            <td style="text-align:center;"><span class="tm-status <%= n.has_ja ? 'done' : 'missing' %>"><i class="fas fa-<%= n.has_ja ? 'check' : 'times' %>"></i></span></td>
+            <td style="text-align:right;">
+              <a href="/<%= adminSlug %>/news/<%= n.id %>/edit" class="btn-sm" style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:#f3f4f6;color:#1a2540;border-radius:5px;font-size:12px;text-decoration:none;font-weight:600;">
+                <i class="fas fa-edit"></i> <%= adminLang === 'en' ? 'Edit' : 'แก้ไข' %>
+              </a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<div class="tm-tab-panel" id="tab-biz">
+  <% if (bizRows.length === 0) { %>
+    <div class="card"><div class="card-body" style="text-align:center;padding:40px;color:#6b7280;"><%= adminLang === 'en' ? 'No businesses yet.' : 'ยังไม่มีธุรกิจ' %></div></div>
+  <% } else { %>
+    <table class="tm-table">
+      <thead><tr>
+        <th style="width:50%;"><%= adminLang === 'en' ? 'Name (Thai)' : 'ชื่อ (ไทย)' %></th>
+        <th style="text-align:center;width:90px;">EN</th>
+        <th style="text-align:center;width:90px;">中文</th>
+        <th style="text-align:center;width:90px;">日本語</th>
+        <th style="text-align:right;"><%= adminLang === 'en' ? 'Edit' : 'แก้ไข' %></th>
+      </tr></thead>
+      <tbody>
+        <% bizRows.forEach(function(b) { %>
+          <tr>
+            <td>
+              <div style="font-weight:600;color:#1a2540;"><%= b.title %></div>
+              <div style="font-size:11px;color:#9ca3af;margin-top:2px;">/businesses/<%= b.slug %></div>
+            </td>
+            <td style="text-align:center;"><span class="tm-status <%= b.has_en ? 'done' : 'missing' %>"><i class="fas fa-<%= b.has_en ? 'check' : 'times' %>"></i></span></td>
+            <td style="text-align:center;"><span class="tm-status <%= b.has_zh ? 'done' : 'missing' %>"><i class="fas fa-<%= b.has_zh ? 'check' : 'times' %>"></i></span></td>
+            <td style="text-align:center;"><span class="tm-status <%= b.has_ja ? 'done' : 'missing' %>"><i class="fas fa-<%= b.has_ja ? 'check' : 'times' %>"></i></span></td>
+            <td style="text-align:right;">
+              <a href="/<%= adminSlug %>/businesses/<%= b.id %>/edit" class="btn-sm" style="display:inline-flex;align-items:center;gap:5px;padding:5px 10px;background:#f3f4f6;color:#1a2540;border-radius:5px;font-size:12px;text-decoration:none;font-weight:600;">
+                <i class="fas fa-edit"></i> <%= adminLang === 'en' ? 'Edit' : 'แก้ไข' %>
+              </a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<script>
+(function() {
+  const tabs = document.querySelectorAll('#tmTabs .tm-tab');
+  const panels = document.querySelectorAll('.tm-tab-panel');
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.remove('active'));
+    panels.forEach(p => p.classList.remove('active'));
+    t.classList.add('active');
+    const pan = document.getElementById('tab-' + t.dataset.tab);
+    if (pan) pan.classList.add('active');
+  }));
+})();
+</script>

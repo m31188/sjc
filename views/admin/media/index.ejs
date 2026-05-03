@@ -1,0 +1,89 @@
+<div class="page-header">
+  <div>
+    <h2><i class="fas fa-photo-film"></i> <%= adminLang === 'en' ? 'Media Library' : 'คลังสื่อ' %></h2>
+    <p class="text-muted">
+      <%= adminLang === 'en' ? 'All uploaded images. Click to copy URL, or click the trash icon to delete.' : 'รูปภาพที่อัปโหลดทั้งหมด คลิกเพื่อคัดลอก URL หรือคลิกถังขยะเพื่อลบ' %>
+      &middot; <strong><%= files.length %></strong> <%= adminLang === 'en' ? 'files' : 'ไฟล์' %>
+    </p>
+  </div>
+</div>
+
+<% if (files.length === 0) { %>
+  <div class="card">
+    <div class="card-body text-center" style="padding:60px 20px;">
+      <i class="fas fa-photo-film" style="font-size:48px;color:#d1d5db;margin-bottom:16px;"></i>
+      <p class="text-muted"><%= adminLang === 'en' ? 'No uploaded images yet.' : 'ยังไม่มีรูปภาพ' %></p>
+    </div>
+  </div>
+<% } else { %>
+  <div id="mediaGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;max-width:100%;width:100%;">
+    <% files.forEach(f => { %>
+      <div class="media-tile" data-url="<%= f.url %>" data-name="<%= f.name %>" title="<%= f.name %>" style="position:relative;background:#fff;border:1px solid #e5e7eb;border-radius:10px;overflow:hidden;width:100%;transition:all 0.2s;">
+        <div onclick="window.copyMediaUrl(this.parentElement)" style="cursor:pointer;width:100%;aspect-ratio:1;background:#f3f4f6;overflow:hidden;display:block;">
+          <img src="<%= f.url %>" alt="<%= f.name %>" loading="lazy" style="width:100%;height:100%;object-fit:cover;display:block;">
+        </div>
+        <div style="padding:8px 10px;">
+          <div style="font-size:11.5px;color:#1a2540;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><%= f.name %></div>
+          <div style="font-size:10.5px;color:#9ca3af;margin-top:2px;display:flex;justify-content:space-between;align-items:center;">
+            <span><%= Math.round(f.size / 1024) %> KB</span>
+            <button type="button" onclick="window.deleteMedia(event, this.closest('.media-tile'))" style="background:none;border:0;color:#dc2626;cursor:pointer;font-size:13px;padding:2px 4px;" title="<%= adminLang === 'en' ? 'Delete' : 'ลบ' %>">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </div>
+        <div class="media-tile-copied" style="position:absolute;top:0;left:0;right:0;bottom:auto;background:rgba(34,197,94,0.95);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;opacity:0;pointer-events:none;transition:opacity 0.2s;padding:8px 0;"><i class="fas fa-check"></i> <%= adminLang === 'en' ? 'Copied!' : 'คัดลอกแล้ว!' %></div>
+      </div>
+    <% }); %>
+  </div>
+<% } %>
+
+<script>
+window.copyMediaUrl = function(tile) {
+  const url = tile.getAttribute('data-url');
+  const fullUrl = window.location.origin + url;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(fullUrl).catch(() => fallbackCopy(fullUrl));
+  } else {
+    fallbackCopy(fullUrl);
+  }
+  function fallbackCopy(t) {
+    const ta = document.createElement('textarea');
+    ta.value = t;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    ta.remove();
+  }
+  const c = tile.querySelector('.media-tile-copied');
+  if (c) {
+    c.style.opacity = '1';
+    setTimeout(() => { c.style.opacity = '0'; }, 1400);
+  }
+};
+
+window.deleteMedia = function(e, tile) {
+  e.stopPropagation();
+  e.preventDefault();
+  const url = tile.getAttribute('data-url');
+  const name = tile.getAttribute('data-name');
+  if (!confirm('<%= adminLang === "en" ? "Delete" : "ลบ" %> "' + name + '"?')) return;
+  fetch('/<%= adminSlug %>/media/delete', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded', 'X-Requested-With': 'XMLHttpRequest' },
+    body: 'url=' + encodeURIComponent(url),
+    credentials: 'same-origin'
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.ok) {
+      tile.style.transition = 'all 0.3s';
+      tile.style.opacity = '0';
+      tile.style.transform = 'scale(0.85)';
+      setTimeout(() => tile.remove(), 300);
+    } else {
+      alert('Delete failed: ' + (data.error || 'unknown'));
+    }
+  })
+  .catch(err => alert('Delete failed: ' + err.message));
+};
+</script>

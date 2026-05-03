@@ -1,0 +1,174 @@
+<%- include('../partials/page-banner', {
+  bannerImage: settings.default_career_banner || '/images/banner-careers.jpg',
+  bannerTitle: job.title,
+  breadcrumbs: [
+    { label: 'ร่วมงานกับเรา', url: '/careers' },
+    { label: job.title }
+  ]
+}) %>
+
+<% const applied = (typeof query !== 'undefined' && query.applied) || (currentPath && currentPath.indexOf('applied=1') !== -1); %>
+
+<section class="section-content">
+  <div class="container">
+    <div class="job-detail-wrap">
+      <div class="job-detail-main">
+        <div class="job-detail-header" data-aos="fade-up">
+          <h1 class="job-detail-title"><%= job.title %></h1>
+          <div class="job-detail-meta">
+            <% if (job.department) { %><span><i class="fas fa-building"></i> <%= job.department %></span><% } %>
+            <% if (job.location) { %><span><i class="fas fa-map-marker-alt"></i> <%= job.location %></span><% } %>
+            <span class="job-type job-type-<%= job.job_type %>">
+              <% const typeLabels = {
+                'full-time': 'งานประจำ',
+                'part-time': 'พาร์ทไทม์',
+                'contract': 'สัญญาจ้าง',
+                'internship': 'ฝึกงาน'
+              }; %>
+              <%= typeLabels[job.job_type] || job.job_type %>
+            </span>
+          </div>
+        </div>
+
+        <% if (job.description) { %>
+          <div class="job-section" data-aos="fade-up">
+            <h3><i class="fas fa-info-circle"></i> รายละเอียดงาน</h3>
+            <div class="rich-content"><%- job.description %></div>
+          </div>
+        <% } %>
+
+        <% if (job.requirements) { %>
+          <div class="job-section" data-aos="fade-up">
+            <h3><i class="fas fa-check-circle"></i> คุณสมบัติ</h3>
+            <div class="rich-content"><%- job.requirements %></div>
+          </div>
+        <% } %>
+
+        <% if (job.benefits) { %>
+          <div class="job-section" data-aos="fade-up">
+            <h3><i class="fas fa-gift"></i> สวัสดิการ</h3>
+            <div class="rich-content"><%- job.benefits %></div>
+          </div>
+        <% } %>
+
+        <%- include('../partials/content-blocks', { blocks: typeof blocks !== 'undefined' ? blocks : [] }) %>
+
+        <!-- ===== APPLICATION FORM ===== -->
+        <div class="job-section apply-section" id="apply" data-aos="fade-up">
+          <h3><i class="fas fa-paper-plane"></i> สมัครงาน / Apply for this Position</h3>
+          <p class="apply-intro">กรอกข้อมูลด้านล่างเพื่อส่งใบสมัคร เราจะติดต่อกลับทางอีเมลภายใน 7 วันทำการ</p>
+
+          <% if (flash.success && flash.success.length > 0) { %>
+            <div class="apply-alert apply-alert-success">
+              <i class="fas fa-check-circle"></i>
+              <%= flash.success.join(' ') %>
+            </div>
+          <% } %>
+          <% if (flash.error && flash.error.length > 0) { %>
+            <div class="apply-alert apply-alert-error">
+              <i class="fas fa-exclamation-circle"></i>
+              <%= flash.error.join(' ') %>
+            </div>
+          <% } %>
+
+          <form action="/careers/<%= job.slug %>/apply" method="POST" enctype="multipart/form-data" class="apply-form">
+            <input type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px;" aria-hidden="true">
+
+            <div class="apply-form-row">
+              <div class="apply-form-group">
+                <label for="full_name">ชื่อ-นามสกุล / Full Name <span class="req">*</span></label>
+                <input type="text" id="full_name" name="full_name" required maxlength="255" placeholder="ชื่อ นามสกุล">
+              </div>
+              <div class="apply-form-group">
+                <label for="email">อีเมล / Email <span class="req">*</span></label>
+                <input type="email" id="email" name="email" required maxlength="190" placeholder="your@email.com">
+              </div>
+            </div>
+
+            <div class="apply-form-group">
+              <label for="phone">เบอร์โทรศัพท์ / Phone</label>
+              <input type="tel" id="phone" name="phone" maxlength="50" placeholder="08X-XXX-XXXX">
+            </div>
+
+            <div class="apply-form-group">
+              <label for="resume">แนบ Resume / CV (PDF, DOC, DOCX, ขนาดไม่เกิน 10MB)</label>
+              <div class="apply-file-wrap">
+                <input type="file" id="resume" name="resume" accept=".pdf,.doc,.docx" class="apply-file-input">
+                <label for="resume" class="apply-file-label">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <span class="apply-file-text">เลือกไฟล์ / Choose file</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="apply-form-group">
+              <label for="cover_letter">จดหมายแนะนำตัว / Cover Letter</label>
+              <textarea id="cover_letter" name="cover_letter" rows="5" maxlength="5000" placeholder="แนะนำตัวคุณ ประสบการณ์ที่ผ่านมา และเหตุผลที่อยากร่วมงานกับเรา"></textarea>
+            </div>
+
+            <div class="apply-form-actions">
+              <button type="submit" class="btn btn-primary btn-large">
+                <i class="fas fa-paper-plane"></i> ส่งใบสมัคร / Submit Application
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <aside class="job-detail-sidebar" data-aos="fade-left">
+        <div class="job-apply-card">
+          <h3>ข้อมูลตำแหน่ง</h3>
+          <% if (job.salary_range) { %>
+            <div class="apply-info-row">
+              <span class="apply-label">เงินเดือน</span>
+              <span class="apply-value"><%= job.salary_range %></span>
+            </div>
+          <% } %>
+          <% if (job.closing_date) { %>
+            <div class="apply-info-row">
+              <span class="apply-label">ปิดรับสมัคร</span>
+              <span class="apply-value"><%= formatThaiDate(job.closing_date, { short: true }) %></span>
+            </div>
+          <% } %>
+          <% if (job.department) { %>
+            <div class="apply-info-row">
+              <span class="apply-label">แผนก</span>
+              <span class="apply-value"><%= job.department %></span>
+            </div>
+          <% } %>
+          <% if (job.location) { %>
+            <div class="apply-info-row">
+              <span class="apply-label">สถานที่</span>
+              <span class="apply-value"><%= job.location %></span>
+            </div>
+          <% } %>
+
+          <a href="#apply" class="btn btn-primary btn-block">
+            <i class="fas fa-paper-plane"></i> สมัครเลย / Apply Now
+          </a>
+
+          <div class="apply-share">
+            <span>แชร์ตำแหน่งนี้:</span>
+            <a href="https://www.facebook.com/sharer/sharer.php?u=<%= siteUrl + currentPath %>" target="_blank" rel="noopener"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://line.me/R/msg/text/?<%= encodeURIComponent(job.title + ' ' + siteUrl + currentPath) %>" target="_blank" rel="noopener"><i class="fab fa-line"></i></a>
+            <a href="mailto:?subject=<%= encodeURIComponent(job.title) %>&body=<%= encodeURIComponent(siteUrl + currentPath) %>"><i class="fas fa-envelope"></i></a>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<script>
+// Show selected filename
+(function() {
+  const fi = document.getElementById('resume');
+  if (!fi) return;
+  fi.addEventListener('change', function() {
+    const lbl = document.querySelector('.apply-file-text');
+    if (this.files && this.files[0] && lbl) {
+      lbl.textContent = this.files[0].name;
+    }
+  });
+})();
+</script>

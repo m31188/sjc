@@ -1,0 +1,71 @@
+<% if (typeof blocks !== 'undefined' && blocks && blocks.length > 0) { %>
+<div class="content-blocks">
+  <% blocks.forEach(function(b) { %>
+    <% if (!b.active) return; %>
+
+    <% if (b.block_type === 'heading') { %>
+      <h2 class="cb-heading"><%= b.heading || '' %></h2>
+
+    <% } else if (b.block_type === 'text') { %>
+      <div class="cb-text rich-content"><%- b.body || '' %></div>
+
+    <% } else if (b.block_type === 'image') { %>
+      <figure class="cb-image">
+        <% if (b.image_url) { %>
+          <img src="<%= b.image_url %>" alt="<%= b.image_alt || '' %>" loading="lazy">
+        <% } %>
+        <% if (b.body) { %><figcaption><%- b.body %></figcaption><% } %>
+      </figure>
+
+    <% } else if (b.block_type === 'video') { %>
+      <div class="cb-video">
+        <% var v = b.video_url || ''; %>
+        <% var ytMatch = v.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/); %>
+        <% var vimeoMatch = v.match(/vimeo\.com\/(\d+)/); %>
+        <% if (ytMatch) { %>
+          <div class="cb-video-frame"><iframe src="https://www.youtube.com/embed/<%= ytMatch[1] %>" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
+        <% } else if (vimeoMatch) { %>
+          <div class="cb-video-frame"><iframe src="https://player.vimeo.com/video/<%= vimeoMatch[1] %>" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>
+        <% } else if (v && (v.endsWith('.mp4') || v.endsWith('.webm') || v.startsWith('/uploads/'))) { %>
+          <video controls <%= b.image_url ? 'poster="' + b.image_url + '"' : '' %> preload="metadata"><source src="<%= v %>"></video>
+        <% } else if (v) { %>
+          <a href="<%= v %>" target="_blank" rel="noopener"><%= v %></a>
+        <% } %>
+        <% if (b.body) { %><div class="cb-video-caption"><%- b.body %></div><% } %>
+      </div>
+
+    <% } else if (b.block_type === 'gallery') { %>
+      <div class="cb-gallery">
+        <% if (b.image_url) { %>
+          <a href="<%= b.image_url %>" target="_blank" rel="noopener">
+            <img src="<%= b.image_url %>" alt="<%= b.image_alt || '' %>" loading="lazy">
+          </a>
+        <% } %>
+        <% if (b.body) { %><div class="cb-gallery-caption"><%- b.body %></div><% } %>
+      </div>
+
+    <% } else if (b.block_type === 'quote') { %>
+      <blockquote class="cb-quote">
+        <div class="cb-quote-text"><%- b.body || '' %></div>
+        <% if (b.heading) { %><cite class="cb-quote-cite">— <%= b.heading %></cite><% } %>
+      </blockquote>
+
+    <% } else if (b.block_type === 'cta') { %>
+      <div class="cb-cta">
+        <% if (b.heading) { %><h3 class="cb-cta-title"><%= b.heading %></h3><% } %>
+        <% if (b.body) { %><div class="cb-cta-body"><%- b.body %></div><% } %>
+        <% if (b.cta_url && b.cta_text) { %>
+          <a href="<%= b.cta_url %>" class="cb-cta-btn"><%= b.cta_text %> <i class="fas fa-arrow-right"></i></a>
+        <% } %>
+      </div>
+
+    <% } else if (b.block_type === 'embed') { %>
+      <div class="cb-embed"><%- b.embed_code || b.body || '' %></div>
+
+    <% } else if (b.block_type === 'divider') { %>
+      <hr class="cb-divider">
+
+    <% } %>
+  <% }); %>
+</div>
+<% } %>

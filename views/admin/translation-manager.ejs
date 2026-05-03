@@ -1,0 +1,83 @@
+<div class="page-header">
+  <h1>
+    <i class="fas fa-language" style="color:#4285f4;"></i>
+    <%= adminLang === 'en' ? 'Translation' : 'การแปลภาษา' %>
+  </h1>
+</div>
+
+<!-- Info card about Google Translate -->
+<div class="card" style="margin-bottom:20px;">
+  <div class="card-body" style="padding:24px;">
+    <div style="display:flex;align-items:flex-start;gap:18px;flex-wrap:wrap;">
+      <div style="flex-shrink:0;width:60px;height:60px;border-radius:14px;background:linear-gradient(135deg,#4285f4 0%,#34a853 50%,#fbbc04 100%);display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;">
+        <i class="fas fa-globe"></i>
+      </div>
+      <div style="flex:1;min-width:240px;">
+        <h2 style="margin:0 0 6px;font-size:18px;color:#1a2540;">
+          <%= adminLang === 'en' ? 'Google Translate is active' : 'Google Translate กำลังทำงาน' %>
+        </h2>
+        <p style="margin:0 0 10px;font-size:14px;color:#5b6478;line-height:1.6;">
+          <%= adminLang === 'en'
+              ? 'Your site uses Google Translate to dynamically translate content for visitors. When a visitor selects English, 中文, or 日本語 in the language switcher, Google instantly translates ALL visible content on the page - no manual translation needed.'
+              : 'เว็บไซต์ของคุณใช้ Google Translate เพื่อแปลเนื้อหาให้ผู้เข้าชมโดยอัตโนมัติ เมื่อผู้เข้าชมเลือก English, 中文 หรือ 日本語 ในตัวเลือกภาษา Google จะแปลเนื้อหาทั้งหมดบนหน้าทันที - ไม่ต้องแปลด้วยตนเอง' %>
+        </p>
+        <p style="margin:0;font-size:13px;color:#0c4a6e;background:#eff6ff;padding:10px 14px;border-radius:8px;border-left:3px solid #0ea5e9;">
+          <i class="fas fa-info-circle"></i>
+          <%= adminLang === 'en'
+              ? 'You only need to write content in Thai. Translations happen automatically in the visitor browser when they switch languages.'
+              : 'คุณเขียนเนื้อหาเป็นภาษาไทยเท่านั้น คำแปลจะเกิดขึ้นโดยอัตโนมัติในเบราว์เซอร์ของผู้เข้าชมเมื่อพวกเขาเปลี่ยนภาษา' %>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Available languages -->
+<div class="card">
+  <div class="card-body" style="padding:20px 24px;">
+    <h3 style="margin:0 0 14px;font-size:15px;color:#1a2540;"><%= adminLang === 'en' ? 'Available languages' : 'ภาษาที่รองรับ' %></h3>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;">
+      <% [
+        { code: 'th', name: 'ไทย', desc: adminLang === 'en' ? 'Default - Thai' : 'ค่าเริ่มต้น - ภาษาไทย' },
+        { code: 'en', name: 'English', desc: adminLang === 'en' ? 'Auto-translated' : 'แปลอัตโนมัติ' },
+        { code: 'zh-CN', name: '中文', desc: adminLang === 'en' ? 'Auto-translated to Simplified Chinese' : 'แปลอัตโนมัติเป็นจีนตัวย่อ' },
+        { code: 'ja', name: '日本語', desc: adminLang === 'en' ? 'Auto-translated to Japanese' : 'แปลอัตโนมัติเป็นภาษาญี่ปุ่น' }
+      ].forEach(function(lang) { %>
+        <div style="padding:14px;border:1px solid #e5e7eb;border-radius:8px;background:#fafbfc;">
+          <div style="font-size:16px;font-weight:700;color:#1a2540;margin-bottom:4px;"><%= lang.name %></div>
+          <div style="font-size:12px;color:#6b7280;"><%= lang.desc %></div>
+          <div style="font-size:11px;color:#9ca3af;margin-top:6px;font-family:monospace;">code: <%= lang.code %></div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</div>
+
+<!-- How it works -->
+<div class="card" style="margin-top:20px;">
+  <div class="card-body" style="padding:20px 24px;">
+    <h3 style="margin:0 0 14px;font-size:15px;color:#1a2540;"><%= adminLang === 'en' ? 'How it works' : 'การทำงาน' %></h3>
+    <ol style="margin:0;padding-left:22px;font-size:13.5px;color:#5b6478;line-height:1.9;">
+      <li><%= adminLang === 'en' ? 'You write all content in Thai (news, businesses, pages, menu items, etc.)' : 'คุณเขียนเนื้อหาทั้งหมดเป็นภาษาไทย (ข่าว ธุรกิจ หน้า เมนู ฯลฯ)' %></li>
+      <li><%= adminLang === 'en' ? 'Visitor opens your site - sees Thai content by default' : 'ผู้เข้าชมเปิดเว็บไซต์ของคุณ - เห็นเนื้อหาภาษาไทยเป็นค่าเริ่มต้น' %></li>
+      <li><%= adminLang === 'en' ? 'Visitor clicks the language pill in the top bar and chooses English / 中文 / 日本語' : 'ผู้เข้าชมคลิกตัวเลือกภาษาในแถบด้านบนแล้วเลือก English / 中文 / 日本語' %></li>
+      <li><%= adminLang === 'en' ? 'Google Translate translates the entire page on the fly in their browser' : 'Google Translate แปลทั้งหน้าทันทีในเบราว์เซอร์ของพวกเขา' %></li>
+      <li><%= adminLang === 'en' ? 'Their preference is remembered for next visits via cookie' : 'ความชอบของพวกเขาจะถูกจดจำสำหรับการเข้าชมครั้งถัดไปผ่านคุกกี้' %></li>
+    </ol>
+  </div>
+</div>
+
+<!-- Enable/disable note -->
+<div class="card" style="margin-top:20px;background:#fffbeb;border-left:4px solid #f59e0b;">
+  <div class="card-body" style="padding:16px 22px;">
+    <strong style="color:#92400e;">
+      <i class="fas fa-cog"></i>
+      <%= adminLang === 'en' ? 'To disable the language switcher:' : 'ปิดใช้งานตัวสลับภาษา:' %>
+    </strong>
+    <span style="color:#78350f;">
+      <%= adminLang === 'en' ? ' Go to ' : ' ไปที่ ' %>
+      <a href="/<%= adminSlug %>/settings" style="color:#92400e;text-decoration:underline;font-weight:600;"><%= adminLang === 'en' ? 'Settings' : 'การตั้งค่า' %></a>
+      <%= adminLang === 'en' ? ' - General - uncheck "Enable Frontend Language Switcher".' : ' - ทั่วไป - ยกเลิกการเลือก "เปิดใช้งานตัวสลับภาษาด้านหน้า"' %>
+    </span>
+  </div>
+</div>

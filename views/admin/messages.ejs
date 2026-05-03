@@ -1,0 +1,57 @@
+<div class="page-header">
+  <div>
+    <h2><%= t('messages.title') %></h2>
+    <p class="text-muted"><%= adminLang === 'en' ? 'Messages from website contact form' : 'ข้อความจากแบบฟอร์มติดต่อในเว็บไซต์' %></p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-body p-0">
+    <% if (messages && messages.length > 0) { %>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th width="40"></th>
+            <th><%= adminLang === 'en' ? 'Sender' : 'ผู้ส่ง' %></th>
+            <th><%= adminLang === "en" ? "Title" : "หัวข้อ" %></th>
+            <th><%= adminLang === 'en' ? 'Message' : 'ข้อความ' %></th>
+            <th width="120"><%= adminLang === "en" ? "Date" : "วันที่" %></th>
+            <th width="120"><%= adminLang === "en" ? "Actions" : "การจัดการ" %></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% messages.forEach(m => { %>
+            <tr class="<%= m.is_read ? '' : 'row-unread' %>">
+              <td>
+                <% if (!m.is_read) { %>
+                  <span class="dot-unread" title="<%= adminLang === 'en' ? 'Unread' : 'ยังไม่อ่าน' %>"></span>
+                <% } %>
+              </td>
+              <td>
+                <strong><%= m.name %></strong><br>
+                <small class="text-muted">
+                  <a href="mailto:<%= m.email %>"><%= m.email %></a>
+                  <% if (m.phone) { %><br><i class="fas fa-phone"></i> <%= m.phone %><% } %>
+                </small>
+              </td>
+              <td><%= m.subject || '-' %></td>
+              <td><small class="text-muted"><%= (m.message || '').substring(0, 80) + (m.message && m.message.length > 80 ? '...' : '') %></small></td>
+              <td><small><%= new Date(m.created_at).toLocaleDateString('th-TH') %><br><%= new Date(m.created_at).toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' }) %></small></td>
+              <td>
+                <a href="/<%= adminSlug %>/messages/<%= m.id %>" class="btn-icon" title="<%= adminLang === 'en' ? 'View' : 'อ่าน' %>"><i class="fas fa-eye"></i></a>
+                <form method="POST" action="/<%= adminSlug %>/messages/<%= m.id %>/delete" class="d-inline" onsubmit="return confirm('ยืนยันลบ?')">
+                  <button type="submit" class="btn-icon btn-icon-danger"><i class="fas fa-trash"></i></button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } else { %>
+      <div class="empty-state">
+        <i class="fas fa-envelope-open"></i>
+        <p><%= adminLang === 'en' ? 'No messages yet' : 'ยังไม่มีข้อความ' %></p>
+      </div>
+    <% } %>
+  </div>
+</div>

@@ -1,0 +1,26 @@
+<%- include('../partials/page-banner', {
+  bannerImage: item.banner || item.thumbnail || settings.default_sustainability_banner || '/images/banner-default.jpg',
+  bannerTitle: item.title,
+  breadcrumbs: [
+    { label: 'ความยั่งยืน', url: '/sustainability' },
+    { label: item.title }
+  ]
+}) %>
+
+<section class="section-content">
+  <div class="container">
+    <div class="content-narrow">
+      <% if (item.category) { %>
+        <span class="content-tag" data-aos="fade-up"><%= item.category %></span>
+      <% } %>
+      <% if (item.short_description) { %>
+        <p class="lead" data-aos="fade-up"><%= item.short_description %></p>
+      <% } %>
+      <% if (item.full_description) { %>
+        <div class="rich-content" data-aos="fade-up" data-aos-delay="100">
+          <%- item.full_description %>
+        </div>
+      <% } %>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= typeof title !== 'undefined' ? title : 'Admin' %> | <%= settings.site_name || 'SJC' %> Admin</title>
+  <meta name="robots" content="noindex,nofollow">
+
+  <link rel="icon" href="<%= settings.site_favicon || '/images/favicon.png' %>">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/admin.css">
+
+  <% if (settings.admin_anti_inspect === '1') { %>
+  <script>
+    // Anti-inspect (basic deterrent)
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      if (e.key === 'F12' ||
+          (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key)) ||
+          (e.ctrlKey && e.key === 'U')) {
+        e.preventDefault();
+      }
+    });
+  </script>
+  <% } %>
+</head>
+<body class="admin-body">
+
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <a href="/<%= adminSlug %>/dashboard" class="sidebar-logo">
+        <img src="<%= settings.site_logo || '/images/logo-placeholder.png' %>" alt="Admin">
+        <span>Admin Panel</span>
+      </a>
+      <button class="sidebar-close" id="sidebarClose"><i class="fas fa-times"></i></button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a href="/<%= adminSlug %>/dashboard" class="sb-link <%= activeMenu === 'dashboard' ? 'active' : '' %>">
+        <i class="fas fa-tachometer-alt"></i> <%= t('nav.dashboard') %>
+      </a>
+      <a href="/<%= adminSlug %>/homepage-manager" class="sb-link <%= activeMenu === 'homepage-manager' ? 'active' : '' %>">
+        <i class="fas fa-home"></i> <%= adminLang === 'en' ? 'Homepage Manager' : 'จัดการหน้าแรก' %>
+      </a>
+
+      <div class="sb-section"><%= t('nav.content') %></div>
+
+      <a href="/<%= adminSlug %>/sliders" class="sb-link <%= activeMenu === 'sliders' ? 'active' : '' %>">
+        <i class="fas fa-images"></i> <%= t('nav.sliders') %>
+      </a>
+      <a href="/<%= adminSlug %>/news" class="sb-link <%= activeMenu === 'news' ? 'active' : '' %>">
+        <i class="fas fa-newspaper"></i> <%= t('nav.news') %>
+      </a>
+      <a href="/<%= adminSlug %>/businesses" class="sb-link <%= activeMenu === 'businesses' ? 'active' : '' %>">
+        <i class="fas fa-briefcase"></i> <%= t('nav.businesses') %>
+      </a>
+      <a href="/<%= adminSlug %>/sustainability" class="sb-link <%= activeMenu === 'sustainability' ? 'active' : '' %>">
+        <i class="fas fa-leaf"></i> <%= t('nav.sustainability') %>
+      </a>
+      <a href="/<%= adminSlug %>/careers" class="sb-link <%= activeMenu === 'careers' ? 'active' : '' %>">
+        <i class="fas fa-user-tie"></i> <%= t('nav.careers') %>
+      </a>
+      <a href="/<%= adminSlug %>/applications" class="sb-link <%= activeMenu === 'applications' ? 'active' : '' %>">
+        <i class="fas fa-inbox"></i> <%= adminLang === 'en' ? 'Applications' : 'ใบสมัครงาน' %>
+      </a>
+      <a href="/<%= adminSlug %>/ir-documents" class="sb-link <%= activeMenu === 'ir-documents' ? 'active' : '' %>">
+        <i class="fas fa-file-pdf"></i> <%= adminLang === 'en' ? 'Investor Documents' : 'เอกสารนักลงทุน' %>
+      </a>
+      <a href="/<%= adminSlug %>/media" class="sb-link <%= activeMenu === 'media' ? 'active' : '' %>">
+        <i class="fas fa-photo-film"></i> <%= adminLang === 'en' ? 'Media Library' : 'คลังสื่อ' %>
+      </a>
+      <a href="/<%= adminSlug %>/pages" class="sb-link <%= activeMenu === 'pages' ? 'active' : '' %>">
+        <i class="fas fa-file-alt"></i> <%= t('nav.pages') %>
+      </a>
+
+      <div class="sb-section"><%= t('nav.settings') %></div>
+
+      <a href="/<%= adminSlug %>/translation-manager" class="sb-link <%= activeMenu === 'translation' ? 'active' : '' %>">
+        <i class="fas fa-language"></i> <%= adminLang === 'en' ? 'Translation Manager' : 'จัดการคำแปล' %>
+      </a>
+      <a href="/<%= adminSlug %>/menus" class="sb-link <%= activeMenu === 'menus' ? 'active' : '' %>">
+        <i class="fas fa-bars"></i> <%= t('nav.menus') %>
+      </a>
+      <a href="/<%= adminSlug %>/settings" class="sb-link <%= activeMenu === 'settings' ? 'active' : '' %>">
+        <i class="fas fa-cog"></i> <%= t('nav.settings') %>
+      </a>
+      <a href="/<%= adminSlug %>/messages" class="sb-link <%= activeMenu === 'messages' ? 'active' : '' %>">
+        <i class="fas fa-envelope"></i> <%= t('nav.messages') %>
+      </a>
+
+      <% if (user && user.role === 'admin') { %>
+        <div class="sb-section"><%= t('nav.system') %></div>
+        <a href="/<%= adminSlug %>/users" class="sb-link <%= activeMenu === 'users' ? 'active' : '' %>">
+          <i class="fas fa-users"></i> <%= t('nav.users') %>
+        </a>
+      <% } %>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="/" target="_blank" class="sb-link">
+        <i class="fas fa-external-link-alt"></i> <%= t('nav.view_site') %>
+      </a>
+    </div>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <button class="sidebar-toggle" id="sidebarToggle">
+        <i class="fas fa-bars"></i>
+      </button>
+      <h1 class="admin-page-title"><%= typeof title !== 'undefined' ? title : '' %></h1>
+      <div class="admin-topbar-right">
+        <!-- Language Switch -->
+        <div class="admin-lang-switch">
+          <a href="/<%= adminSlug %>/lang/th" class="admin-lang-btn <%= adminLang === 'th' ? 'active' : '' %>">TH</a>
+          <a href="/<%= adminSlug %>/lang/en" class="admin-lang-btn <%= adminLang === 'en' ? 'active' : '' %>">EN</a>
+        </div>
+        <a href="/" target="_blank" class="topbar-icon" title="<%= t('nav.view_site') %>"><i class="fas fa-eye"></i></a>
+        <div class="user-menu" id="userMenu">
+          <button class="user-toggle">
+            <div class="user-avatar"><%= user.name ? user.name.charAt(0).toUpperCase() : 'U' %></div>
+            <span class="user-name-text"><%= user.name %></span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="user-dropdown">
+            <a href="/<%= adminSlug %>/profile"><i class="fas fa-user"></i> <%= t('nav.profile') %></a>
+            <a href="/<%= adminSlug %>/auth/logout"><i class="fas fa-sign-out-alt"></i> <%= t('nav.logout') %></a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <% if (flash.success && flash.success.length > 0) { %>
+      <div class="admin-toast admin-toast-success" id="adminToast" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.25);padding:40px 56px;min-width:360px;max-width:540px;text-align:center;border:1px solid rgba(34,197,94,0.3);animation:adminToastPopIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards,adminToastFadeOut 0.6s ease-in 4s forwards;">
+        <div style="position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:-1;animation:adminToastBackdropIn 0.3s ease-out forwards;"></div>
+        <i class="fas fa-check-circle" style="font-size:56px;color:#16a34a;display:block;margin-bottom:14px;"></i>
+        <div style="font-size:18px;font-weight:600;color:#166534;line-height:1.4;"><%= flash.success[0] %></div>
+        <button class="admin-toast-close" onclick="this.parentElement.remove()" style="position:absolute;top:12px;right:14px;background:none;border:0;font-size:26px;color:#9ca3af;cursor:pointer;">&times;</button>
+      </div>
+    <% } %>
+    <% if (flash.error && flash.error.length > 0) { %>
+      <div class="admin-toast admin-toast-error" id="adminToast" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:9999;background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.25);padding:40px 56px;min-width:360px;max-width:540px;text-align:center;border:1px solid rgba(239,68,68,0.3);animation:adminToastPopIn 0.35s cubic-bezier(0.34,1.56,0.64,1) forwards,adminToastFadeOut 0.6s ease-in 4s forwards;">
+        <div style="position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:-1;animation:adminToastBackdropIn 0.3s ease-out forwards;"></div>
+        <i class="fas fa-exclamation-circle" style="font-size:56px;color:#dc2626;display:block;margin-bottom:14px;"></i>
+        <div style="font-size:18px;font-weight:600;color:#991b1b;line-height:1.4;"><%= flash.error[0] %></div>
+        <button class="admin-toast-close" onclick="this.parentElement.remove()" style="position:absolute;top:12px;right:14px;background:none;border:0;font-size:26px;color:#9ca3af;cursor:pointer;">&times;</button>
+      </div>
+    <% } %>
+    <style>
+      @keyframes adminToastPopIn {
+        0% { opacity: 0; transform: translate(-50%, -50%) scale(0.7); }
+        60% { opacity: 1; transform: translate(-50%, -50%) scale(1.04); }
+        100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+      }
+      @keyframes adminToastFadeOut {
+        to { opacity: 0; transform: translate(-50%, -50%) scale(0.9); pointer-events: none; }
+      }
+      @keyframes adminToastBackdropIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+    </style>
+
+    <div class="admin-content">
+      <%- body %>
+    </div>
+  </div>
+
+  <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
+  <!-- Global media picker modal -->
+  <div id="mediaPickerModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9998;display:none;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:#fff;border-radius:14px;width:100%;max-width:1000px;max-height:90vh;display:flex;flex-direction:column;overflow:hidden;">
+      <div style="padding:16px 22px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;">
+        <h3 style="margin:0;font-size:18px;"><%= adminLang === 'en' ? 'Choose from Media Library' : 'เลือกจากคลังสื่อ' %></h3>
+        <button type="button" onclick="closeMediaPicker()" style="background:none;border:0;font-size:22px;cursor:pointer;color:#9ca3af;line-height:1;">&times;</button>
+      </div>
+      <div id="mediaPickerBody" style="padding:18px 22px;overflow:auto;flex:1;">
+        <div style="text-align:center;padding:40px;color:#9ca3af;">Loading...</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var __mediaPickerCallback = null;
+    function openMediaPicker(targetInputName) {
+      __mediaPickerCallback = targetInputName;
+      var modal = document.getElementById('mediaPickerModal');
+      var body = document.getElementById('mediaPickerBody');
+      modal.style.display = 'flex';
+      body.innerHTML = '<div style="text-align:center;padding:40px;color:#9ca3af;"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+      fetch('/<%= adminSlug %>/media?format=json', { credentials: 'same-origin' })
+        .then(r => r.json())
+        .then(data => {
+          if (!data.files || data.files.length === 0) {
+            body.innerHTML = '<div style="text-align:center;padding:40px;color:#9ca3af;"><i class="fas fa-photo-film" style="font-size:36px;color:#d1d5db;display:block;margin-bottom:10px;"></i><p>No images uploaded yet. Upload images first.</p></div>';
+            return;
+          }
+          var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;">';
+          data.files.forEach(function(f) {
+            var safeUrl = f.url.replace(/'/g, "\\'");
+            html += '<div onclick="pickMedia(\'' + safeUrl + '\')" style="cursor:pointer;background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;transition:all 0.2s;" onmouseover="this.style.borderColor=\'#c8102e\'" onmouseout="this.style.borderColor=\'#e5e7eb\'">';
+            html += '<div style="width:100%;aspect-ratio:1;background:#f3f4f6;overflow:hidden;"><img src="' + f.url + '" alt="" style="width:100%;height:100%;object-fit:cover;display:block;"></div>';
+            html += '<div style="padding:6px 8px;font-size:11px;color:#1a2540;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">' + (f.name || '') + '</div>';
+            html += '</div>';
+          });
+          html += '</div>';
+          body.innerHTML = html;
+        })
+        .catch(function(err) {
+          body.innerHTML = '<div style="text-align:center;padding:40px;color:#dc2626;">Error loading media: ' + err.message + '</div>';
+        });
+    }
+    function pickMedia(url) {
+      if (!__mediaPickerCallback) return closeMediaPicker();
+      // Find target input (could be by name or a dispatched callback)
+      if (typeof __mediaPickerCallback === 'function') {
+        __mediaPickerCallback(url);
+      } else {
+        var inputs = document.querySelectorAll('input[name="' + __mediaPickerCallback + '"]');
+        inputs.forEach(inp => { inp.value = url; });
+        // Find any preview elements next to it
+        inputs.forEach(inp => {
+          var preview = inp.parentElement.querySelector('.image-preview, .img-preview');
+          if (preview) {
+            var img = preview.querySelector('img');
+            if (img) img.src = url;
+            else preview.innerHTML = '<img src="' + url + '" style="max-width:200px;border-radius:6px;">';
+          }
+        });
+      }
+      closeMediaPicker();
+    }
+    function closeMediaPicker() {
+      document.getElementById('mediaPickerModal').style.display = 'none';
+      __mediaPickerCallback = null;
+    }
+    document.addEventListener('click', function(e) {
+      if (e.target.id === 'mediaPickerModal') {
+        closeMediaPicker();
+      }
+    });
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+  <script src="/js/admin.js"></script>
+</body>
+</html>

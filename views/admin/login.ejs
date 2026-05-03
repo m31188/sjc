@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In | <%= settings.site_name || 'SJC' %></title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="icon" href="<%= settings.site_favicon || '/images/favicon.png' %>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="login-body">
+  <div class="login-wrap">
+    <div class="login-card">
+      <div class="login-header">
+        <img src="<%= settings.site_logo || '/images/logo-placeholder.png' %>" alt="<%= settings.site_name || 'SJC' %>" class="login-logo">
+        <h1><%= adminLang === 'en' ? 'Log In' : 'เข้าสู่ระบบ' %></h1>
+        <p><%= adminLang === 'en' ? 'Website Admin Panel' : 'ระบบจัดการเว็บไซต์' %></p>
+      </div>
+
+      <% if (flash.error && flash.error.length > 0) { %>
+        <div class="alert alert-error"><i class="fas fa-exclamation-circle"></i> <%= flash.error[0] %></div>
+      <% } %>
+      <% if (flash.success && flash.success.length > 0) { %>
+        <div class="alert alert-success"><i class="fas fa-check-circle"></i> <%= flash.success[0] %></div>
+      <% } %>
+
+      <form method="POST" action="/<%= adminSlug %>/auth/login" class="login-form">
+        <div class="form-group">
+          <label for="email"><i class="fas fa-envelope"></i> <%= adminLang === 'en' ? 'Email' : 'อีเมล' %></label>
+          <input type="email" id="email" name="email" required autofocus placeholder="admin@example.com">
+        </div>
+        <div class="form-group">
+          <label for="password"><i class="fas fa-lock"></i> <%= adminLang === 'en' ? 'Password' : 'รหัสผ่าน' %></label>
+          <input type="password" id="password" name="password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">
+          <i class="fas fa-sign-in-alt"></i> <%= adminLang === 'en' ? 'Log In' : 'เข้าสู่ระบบ' %>
+        </button>
+      </form>
+
+      <div class="login-footer">
+        <a href="/"><i class="fas fa-arrow-left"></i> <%= adminLang === 'en' ? 'Back to website' : 'กลับสู่หน้าเว็บ' %></a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
